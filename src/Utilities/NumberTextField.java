@@ -1,5 +1,7 @@
 package Utilities;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
@@ -8,18 +10,26 @@ import javafx.scene.control.TextField;
  * Created by Edison on 1/14/18.
  */
 public class NumberTextField extends TextField{
-    int value = 0;
+    IntegerProperty value = new SimpleIntegerProperty(this, "value", 0);
+    int minVal;
+    int maxVal;
+
 
     public NumberTextField() {
-        this(0);
+        this(0, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
     public NumberTextField(int defaultVal) {
-        value = defaultVal;
+        this(defaultVal, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+    public NumberTextField(int defaultVal, int min, int max) {
+        value.set(defaultVal);
+        minVal = min;
+        maxVal = max;
 
-
-        setText(String.valueOf(value));
+        setText(String.valueOf(value.get()));
 
         setPrefWidth(50);
+
         textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -27,23 +37,29 @@ public class NumberTextField extends TextField{
                 if (!newValue.matches("\\d{0,4}?")) {
                     setText(oldValue);
                 } else {
-
                     if (newValue.isEmpty()) {
-                        value = 0;
+                        setValue(minVal);
                     } else {
-                        value = Integer.parseInt(newValue);
+                        int newVal = Integer.parseInt(newValue);
+                        if (newVal > maxVal) {
+                            newVal = maxVal;
+                        } else if (newVal < minVal) {
+                            newVal = minVal;
+                        }
+                        setValue(newVal);
                     }
                 }
             }
-
-
         });
     }
 
-
     public void setValue(int v) {
-        value = v;
+        value.set(v);
         setText(String.valueOf(v));
+        positionCaret(3);
+    }
+    public IntegerProperty getValue() {
+        return value;
     }
 }
 

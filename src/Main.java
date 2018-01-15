@@ -25,6 +25,8 @@ public class Main extends Application {
     int displayMatrixSpacing = 5;
     int displayMatrixRectangleScaleY = 20;
 
+    String[] presetTitles = {"None", "Rainbow", "Twinkle"};
+
 
     //Window Elements
     Scene mainScene;
@@ -50,7 +52,7 @@ public class Main extends Application {
     HBox noteDisplay;
     VBox noteWindow;
     Rectangle[] noteButtons;
-    TextField noteSelectionField;
+    NumberTextField noteSelectionField;
     Label currentNoteLabel;
     String noteLetters[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
@@ -74,6 +76,11 @@ public class Main extends Application {
     TabPane lightTab;
     Tab ledDisplayTab;
     Tab dmxTab;
+
+    //Presets
+    HBox presetWindow;
+    ChoiceBox<String> presetSelectionBox;
+
 
 
     public static void main(String[] args) {
@@ -144,7 +151,8 @@ public class Main extends Application {
 
         }
         //Textfield and Current Key Display
-        noteSelectionField = new TextField(Integer.toString(currentNote));
+        noteSelectionField = new NumberTextField(currentNote+1, 1, 128);
+        noteSelectionField.getValue().addListener((v, oldValue, newValue) -> noteButtonPressed(newValue.intValue()-1));
         currentNoteLabel = new Label(getPianoNote());
         noteDisplay = new HBox();
         noteDisplay.getChildren().addAll(noteSelectionField, currentNoteLabel);
@@ -210,11 +218,23 @@ public class Main extends Application {
             notes[i] = new Note(i);
         }
 
+        //Presets
+        presetWindow = new HBox();
+        presetSelectionBox = new ChoiceBox<>();
+        presetSelectionBox.getItems().addAll(presetTitles);
+        presetSelectionBox.setValue(presetTitles[0]);
+        presetSelectionBox.setOnAction(event -> setPreset(presetSelectionBox.getValue()));
+        presetWindow.getChildren().addAll(presetSelectionBox);
+        displayMatrixWindow.getChildren().add(presetWindow);
+
+        NumberTextField t = new NumberTextField(0);
+        t.getValue().addListener((v,oldValue, newValue) -> changeT(newValue.intValue()));
 
 
         exteriorPane.setCenter(noteWindow);
         exteriorPane.setBottom(lightTab);
         exteriorPane.setTop(toolbar);
+//        exteriorPane.setLeft(t);
 
         //Show Window
         window.setScene(mainScene);
@@ -264,6 +284,7 @@ public class Main extends Application {
         System.out.println("Note Pressed: " + ind);
         currentNote = ind;
         currentNoteLabel.setText(getPianoNote());
+        noteSelectionField.setValue(currentNote+1);
         setDisplayMatrix();
 
     }
@@ -272,6 +293,10 @@ public class Main extends Application {
         System.out.println("Selected: " + x + " " + y);
         notes[currentNote].toggleSelected(x, y);
         displayMatrixRectangles[x][y].setStroke(notes[currentNote].getLEDSelected(x, y) ? Color.WHITE : Color.BLACK);
+    }
+
+    void setPreset(String p) {
+        System.out.println("Preset: " + p);
     }
 
     void selectRow(int i) {
@@ -317,6 +342,10 @@ public class Main extends Application {
                 displayMatrixRectangles[x][y].setStroke(tStroke);
             }
         }
+    }
+
+    void changeT(int a) {
+        System.out.println(a);
     }
 
 
