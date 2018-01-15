@@ -20,6 +20,13 @@ public class Main extends Application {
     int noteAmount = 128;
     int noteRectangleScaleY = 100;
     int currentNote = 0;
+    int ledsPerStrip = 30;
+    int strips = 5;
+    int displayMatrixSpacing = 5;
+    int displayMatrixRectangleScaleY = 20;
+
+
+
 
 
     //Window Elements
@@ -49,6 +56,13 @@ public class Main extends Application {
     TextField noteSelectionField;
     Label currentNoteLabel;
     String noteLetters[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+
+    //Matrix Display
+    Rectangle[][] displayMatrixRectangles;
+    VBox displayMatrixRows;
+    HBox[] displayMatrixCols;
+
+
 
 
     public static void main(String[] args) {
@@ -124,18 +138,36 @@ public class Main extends Application {
         noteWindow = new VBox();
         noteWindow.getChildren().addAll(noteContainer, noteDisplay);
 
+        //Display Matrix
+        displayMatrixRectangles = new Rectangle[ledsPerStrip][strips];
+        displayMatrixRows = new VBox();
+        displayMatrixRows.setSpacing(displayMatrixSpacing);
+        displayMatrixCols = new HBox[strips];
+        for (int y = 0; y < strips; y++) {
+            displayMatrixCols[y] = new HBox();
+            displayMatrixCols[y].setSpacing(displayMatrixSpacing);
+            for (int x = 0; x < ledsPerStrip; x++) {
+                displayMatrixRectangles[x][y] = new Rectangle();
+                displayMatrixRectangles[x][y].setFill(Color.BLACK);
+                displayMatrixRectangles[x][y].setStroke(Color.WHITE);
+                int tempX = x;
+                int tempY = y;
+                displayMatrixRectangles[x][y].setOnMouseClicked(event -> displayMatrixRectanglesPressed(tempX, tempY));
+                displayMatrixCols[y].getChildren().add(displayMatrixRectangles[x][y]);
+            }
+            displayMatrixRows.getChildren().add(displayMatrixCols[y]);
+        }
 
 
 
         exteriorPane.setCenter(noteWindow);
+        exteriorPane.setBottom(displayMatrixRows);
         exteriorPane.setTop(toolbar);
 
         //Show Window
-
         window.setScene(mainScene);
         window.show();
-
-        setScales();
+        setScales(); //set after window is shown
     }
 
 
@@ -170,13 +202,25 @@ public class Main extends Application {
         currentNote = ind;
         currentNoteLabel.setText(getPianoNote());
     }
+    void displayMatrixRectanglesPressed(int x, int y) {
+        System.out.println("Selected: " + x + " " + y);
+    }
 
     void setScales() {
-        int scaleX = (int)noteContainer.getWidth()/noteAmount;
+        int noteButtonScaleX = (int)noteContainer.getWidth()/noteAmount;
         for (int i = 0; i < noteAmount; i++) {
-            noteButtons[i].setWidth(scaleX);
+            noteButtons[i].setWidth(noteButtonScaleX);
             noteButtons[i].setHeight(noteRectangleScaleY);
         }
+        int horizontalSpacingTotal = displayMatrixSpacing*ledsPerStrip-1;
+        int displayMatrixRectangleScaleX = ((int)Math.floor(displayMatrixRows.getWidth())-horizontalSpacingTotal)/ledsPerStrip;
+        for (int y = 0; y < strips; y++) {
+            for (int x = 0; x < ledsPerStrip; x++) {
+                displayMatrixRectangles[x][y].setWidth(displayMatrixRectangleScaleX);
+                displayMatrixRectangles[x][y].setHeight(displayMatrixRectangleScaleY);
+            }
+        }
+
     }
 
     String getPianoNote() {
