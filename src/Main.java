@@ -58,9 +58,22 @@ public class Main extends Application {
     Rectangle[][] displayMatrixRectangles;
     VBox displayMatrixRows;
     HBox[] displayMatrixCols;
+    HBox horizontalMatrixButtonWindow;
+    VBox verticalMatrixButtonWindow;
+    Button[] horizontalMatrixSelectButtons;
+    Button[] verticalMatrixSelectButtons;
+    HBox displayMatrixWindow;
 
     //Notes
     Note[] notes;
+
+    //Clipboard
+    Note noteClipboard;
+
+    //Light Tab
+    TabPane lightTab;
+    Tab ledDisplayTab;
+    Tab dmxTab;
 
 
     public static void main(String[] args) {
@@ -76,6 +89,8 @@ public class Main extends Application {
         exteriorPane.setStyle("-fx-background-color: #FFFFFF;");
         mainScene = new Scene(exteriorPane, screenWidth, screenHeight);
 
+        //Initialize Clipboard
+        noteClipboard = new Note(-1);
 
         //Initialize Toolbar
         toolbar = new ToolBar();
@@ -137,10 +152,30 @@ public class Main extends Application {
         noteWindow.getChildren().addAll(noteContainer, noteDisplay);
 
         //Display Matrix
-        displayMatrixRectangles = new Rectangle[ledsPerStrip][strips];
+        displayMatrixRectangles = new Rectangle[ledsPerStrip][strips+1];
         displayMatrixRows = new VBox();
         displayMatrixRows.setSpacing(displayMatrixSpacing);
         displayMatrixCols = new HBox[strips];
+        horizontalMatrixButtonWindow = new HBox();
+        verticalMatrixButtonWindow = new VBox();
+        horizontalMatrixSelectButtons = new Button[ledsPerStrip];
+        verticalMatrixSelectButtons = new Button[strips];
+        displayMatrixWindow = new HBox();
+        for (int i = 0; i < ledsPerStrip; i++) {
+            int tempI = i;
+            horizontalMatrixSelectButtons[i] = new Button(".");
+            horizontalMatrixSelectButtons[i].setOnAction(event -> selectCol(tempI));
+            horizontalMatrixButtonWindow.getChildren().add(horizontalMatrixSelectButtons[i]);
+        }
+        for (int i = 0; i < strips; i++) {
+            int tempI = i;
+            verticalMatrixSelectButtons[i] = new Button(".");
+            verticalMatrixSelectButtons[i].setOnAction(event -> selectRow(tempI));
+            verticalMatrixButtonWindow.getChildren().add(verticalMatrixSelectButtons[i]);
+        }
+
+        displayMatrixRows.getChildren().add(horizontalMatrixButtonWindow);
+
         for (int y = 0; y < strips; y++) {
             displayMatrixCols[y] = new HBox();
             displayMatrixCols[y].setSpacing(displayMatrixSpacing);
@@ -156,7 +191,18 @@ public class Main extends Application {
             }
             displayMatrixRows.getChildren().add(displayMatrixCols[y]);
             displayMatrixRows.setStyle("-fx-background-color: #AAAAAA;");
+
         }
+        displayMatrixWindow.getChildren().addAll(verticalMatrixButtonWindow, displayMatrixRows);
+
+        //Light Tab
+        lightTab = new TabPane();
+        lightTab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        ledDisplayTab = new Tab("LED Strips");
+        dmxTab = new Tab("DMX");
+        lightTab.getTabs().addAll(ledDisplayTab, dmxTab);
+        ledDisplayTab.setContent(displayMatrixWindow);
+        dmxTab.setContent(new Label("DMX LATER :)"));
 
         //Notes
         notes = new Note[noteAmount];
@@ -165,8 +211,9 @@ public class Main extends Application {
         }
 
 
+
         exteriorPane.setCenter(noteWindow);
-        exteriorPane.setBottom(displayMatrixRows);
+        exteriorPane.setBottom(lightTab);
         exteriorPane.setTop(toolbar);
 
         //Show Window
@@ -204,10 +251,13 @@ public class Main extends Application {
 
     void paste() {
         System.out.println("PASTE");
+
     }
 
     void clear() {
         System.out.println("CLEAR");
+        notes[currentNote].resetMatrix();
+        setDisplayMatrix();
     }
 
     void noteButtonPressed(int ind) {
@@ -222,6 +272,19 @@ public class Main extends Application {
         System.out.println("Selected: " + x + " " + y);
         notes[currentNote].toggleSelected(x, y);
         displayMatrixRectangles[x][y].setStroke(notes[currentNote].getLEDSelected(x, y) ? Color.WHITE : Color.BLACK);
+    }
+
+    void selectRow(int i) {
+        for (int j = 0; j < ledsPerStrip; j++) {
+            notes[currentNote].toggleSelected(j,i);
+        }
+        setDisplayMatrix();
+    }
+    void selectCol(int i) {
+        for (int j = 0; j < strips; j++)  {
+            notes[currentNote].toggleSelected(i,j);
+        }
+        setDisplayMatrix();
     }
 
     void setScales() {

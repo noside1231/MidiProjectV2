@@ -45,6 +45,14 @@ public class LEDMatrix {
         leds[x][y].toggleSelected();
     }
 
+    void reset() {
+        for (int x = 0; x < ledsPerStrip; x++) {
+            for (int y = 0; y < strips; y++) {
+                leds[x][y].reset();
+            }
+        }
+    }
+
     public int getStrips() {
         return strips;
     }

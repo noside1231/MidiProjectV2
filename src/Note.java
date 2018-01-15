@@ -23,5 +23,9 @@ class Note {
         matrix.toggleSelected(x, y);
     }
 
+    void resetMatrix() {
+        matrix.reset();
+    }
+
 
 }
