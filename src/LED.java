@@ -6,20 +6,43 @@ import javafx.scene.paint.Color;
 public class LED {
 
     Color ledColor;
+    boolean selected;
 
     public LED() {
         ledColor = Color.rgb(0,0,0);
+        selected = false;
     }
 
     void setColor(int r, int g, int b) {
         ledColor = Color.rgb(r,g,b);
     }
-    Color getColor() {
+
+    void setColor(Color c) {
+        ledColor = c;
+    }
+    Color getLED() {
         return ledColor;
     }
 
+    void toggleSelected() {
+        selected = !selected;
+    }
+
+    boolean getSelected() {
+        return selected;
+    }
+
     void reset() {
-        setColor(0,0,0);
+        resetColor();
+        resetSelected();
+    }
+
+    void resetSelected() {
+        selected = false;
+    }
+
+    void resetColor() {
+        ledColor = Color.BLACK;
     }
 
 

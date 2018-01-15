@@ -26,9 +26,6 @@ public class Main extends Application {
     int displayMatrixRectangleScaleY = 20;
 
 
-
-
-
     //Window Elements
     Scene mainScene;
     BorderPane exteriorPane;
@@ -48,7 +45,7 @@ public class Main extends Application {
     MenuButton optionMenu;
     Menu serialPortMenu;
 
-    //Note Selection
+    //Note Key Selection
     HBox noteContainer;
     HBox noteDisplay;
     VBox noteWindow;
@@ -62,7 +59,8 @@ public class Main extends Application {
     VBox displayMatrixRows;
     HBox[] displayMatrixCols;
 
-
+    //Notes
+    Note[] notes;
 
 
     public static void main(String[] args) {
@@ -149,15 +147,22 @@ public class Main extends Application {
             for (int x = 0; x < ledsPerStrip; x++) {
                 displayMatrixRectangles[x][y] = new Rectangle();
                 displayMatrixRectangles[x][y].setFill(Color.BLACK);
-                displayMatrixRectangles[x][y].setStroke(Color.WHITE);
+                displayMatrixRectangles[x][y].setStroke(Color.BLACK);
+                displayMatrixRectangles[x][y].setStrokeWidth(3);
                 int tempX = x;
                 int tempY = y;
                 displayMatrixRectangles[x][y].setOnMouseClicked(event -> displayMatrixRectanglesPressed(tempX, tempY));
                 displayMatrixCols[y].getChildren().add(displayMatrixRectangles[x][y]);
             }
             displayMatrixRows.getChildren().add(displayMatrixCols[y]);
+            displayMatrixRows.setStyle("-fx-background-color: #AAAAAA;");
         }
 
+        //Notes
+        notes = new Note[noteAmount];
+        for (int i = 0; i < noteAmount; i++) {
+            notes[i] = new Note(i);
+        }
 
 
         exteriorPane.setCenter(noteWindow);
@@ -175,45 +180,58 @@ public class Main extends Application {
     void newFile() {
         System.out.println("NEW FILE");
     }
+
     void openFile() {
         System.out.println("OPEN FILE");
     }
+
     void saveFile() {
         System.out.println("SAVE FILE");
     }
+
     void saveFileAs() {
         System.out.println("SAVE FILE AS");
     }
+
     void quit() {
         System.out.println("QUIT");
         System.exit(0);
     }
+
     void copy() {
         System.out.println("COPY");
     }
+
     void paste() {
         System.out.println("PASTE");
     }
+
     void clear() {
         System.out.println("CLEAR");
     }
+
     void noteButtonPressed(int ind) {
         System.out.println("Note Pressed: " + ind);
         currentNote = ind;
         currentNoteLabel.setText(getPianoNote());
+        setDisplayMatrix();
+
     }
+
     void displayMatrixRectanglesPressed(int x, int y) {
         System.out.println("Selected: " + x + " " + y);
+        notes[currentNote].toggleSelected(x, y);
+        displayMatrixRectangles[x][y].setStroke(notes[currentNote].getLEDSelected(x, y) ? Color.WHITE : Color.BLACK);
     }
 
     void setScales() {
-        int noteButtonScaleX = (int)noteContainer.getWidth()/noteAmount;
+        int noteButtonScaleX = (int) noteContainer.getWidth() / noteAmount;
         for (int i = 0; i < noteAmount; i++) {
             noteButtons[i].setWidth(noteButtonScaleX);
             noteButtons[i].setHeight(noteRectangleScaleY);
         }
-        int horizontalSpacingTotal = displayMatrixSpacing*ledsPerStrip-1;
-        int displayMatrixRectangleScaleX = ((int)Math.floor(displayMatrixRows.getWidth())-horizontalSpacingTotal)/ledsPerStrip;
+        int horizontalSpacingTotal = displayMatrixSpacing * ledsPerStrip - 1;
+        int displayMatrixRectangleScaleX = ((int) Math.floor(displayMatrixRows.getWidth()) - horizontalSpacingTotal) / ledsPerStrip;
         for (int y = 0; y < strips; y++) {
             for (int x = 0; x < ledsPerStrip; x++) {
                 displayMatrixRectangles[x][y].setWidth(displayMatrixRectangleScaleX);
@@ -224,12 +242,19 @@ public class Main extends Application {
     }
 
     String getPianoNote() {
-        return (noteLetters[currentNote%12])+" "+((currentNote/12)-2);
+        return (noteLetters[currentNote % 12]) + " " + ((currentNote / 12) - 2);
     }
 
-
-
-
+    void setDisplayMatrix() {
+        Color tStroke;
+        for (int y = 0; y < strips; y++) {
+            for (int x = 0; x < ledsPerStrip; x++) {
+                displayMatrixRectangles[x][y].setFill(notes[currentNote].getLED(x, y));
+                tStroke = (notes[currentNote].getLEDSelected(x, y)) ? Color.WHITE : Color.BLACK;
+                displayMatrixRectangles[x][y].setStroke(tStroke);
+            }
+        }
+    }
 
 
 }

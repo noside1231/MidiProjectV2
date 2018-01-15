@@ -1,3 +1,5 @@
+import javafx.scene.paint.Color;
+
 /**
  * Created by edisongrauman on 12/20/17.
  */
@@ -27,6 +29,20 @@ public class LEDMatrix {
             }
         }
 
+    }
+
+    void setLED(int x, int y, Color c) {
+        leds[x][y].setColor(c);
+    }
+    Color getLED(int x, int y) {
+        return leds[x][y].getLED();
+    }
+    boolean getLEDSelected(int x, int y) {
+        return leds[x][y].getSelected();
+    }
+
+    void toggleSelected(int x, int y) {
+        leds[x][y].toggleSelected();
     }
 
     public int getStrips() {
