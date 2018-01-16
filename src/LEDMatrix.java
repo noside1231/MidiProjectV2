@@ -37,6 +37,10 @@ public class LEDMatrix {
     Color getLED(int x, int y) {
         return leds[x][y].getLED();
     }
+
+    String getLEDString(int x, int y) {
+        return leds[x][y].getLEDString();
+    }
     boolean getLEDSelected(int x, int y) {
         return leds[x][y].getSelected();
     }

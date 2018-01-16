@@ -45,6 +45,14 @@ public class LED {
         ledColor = Color.BLACK;
     }
 
+    String getLEDString() {
+        return String.format( "#%02X%02X%02X",
+                (int)( ledColor.getRed() * 255 ),
+                (int)( ledColor.getGreen() * 255 ),
+                (int)( ledColor.getBlue() * 255 ) );
+    }
+
+
 
 
 }

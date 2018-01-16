@@ -1,6 +1,8 @@
 import Utilities.ColorPickerSlider;
 import Utilities.NumberTextField;
 import Utilities.SliderTextField;
+import com.oracle.javafx.jmx.json.JSONReader;
+import com.oracle.javafx.jmx.json.JSONWriter;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,7 +18,17 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+import jdk.nashorn.internal.IntDeque;
+import jdk.nashorn.internal.parser.JSONParser;
+import libraries.JSSC.src.java.jssc.SerialPortList;
+import org.json.JSONObject;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.util.regex.Pattern;
 
 public class Main extends Application {
 
@@ -32,6 +44,8 @@ public class Main extends Application {
     int displayMatrixRectangleScaleY = 20;
 
     String[] presetTitles = {"None", "Rainbow", "Twinkle"};
+
+    File fileOpen;
 
 
     //Window Elements
@@ -52,6 +66,7 @@ public class Main extends Application {
     MenuItem clearItem;
     MenuButton optionMenu;
     Menu serialPortMenu;
+    Label fileOpenLabel;
 
     //Note Key Selection
     HBox noteContainer;
@@ -87,6 +102,9 @@ public class Main extends Application {
     HBox presetWindow;
     ChoiceBox<String> presetSelectionBox;
 
+    //Loaded File
+    JSONObject currentFile;
+
 
     public static void main(String[] args) {
         launch(args);
@@ -100,6 +118,9 @@ public class Main extends Application {
         exteriorPane = new BorderPane();
         exteriorPane.setStyle("-fx-background-color: #FFFFFF;");
         mainScene = new Scene(exteriorPane, screenWidth, screenHeight);
+
+        //Initialize File
+        currentFile = new JSONObject();
 
         //Initialize Clipboard
         noteClipboard = new Note(-1);
@@ -143,10 +164,15 @@ public class Main extends Application {
         //Options Menu
         optionMenu = new MenuButton("Options");
         serialPortMenu = new Menu("Select Port:");
+//        for (int i = 0; i < SerialPortList.getPortNames("/dev", Pattern.compile("tty.")).length; i++) {
+//            serialPortMenu.getItems().add(new MenuItem(SerialPortList.getPortNames("/dev", Pattern.compile("tty."))[i]));
+//        }
+        //File Open Label
+        fileOpenLabel = new Label();
         //Add To Menu
         optionMenu.getItems().addAll(serialPortMenu);
         //Add Items To Toolbar
-        toolbar.getItems().addAll(fileMenu, editMenu, optionMenu);
+        toolbar.getItems().addAll(fileMenu, editMenu, optionMenu, fileOpenLabel);
 
         //Notes
         noteContainer = new HBox();
@@ -260,14 +286,41 @@ public class Main extends Application {
 
     void openFile() {
         System.out.println("OPEN FILE");
+
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project File: .mpv2", "*.mpv2"));
+        File selectedFile = fc.showOpenDialog(new Stage());
+
+        if (selectedFile != null) {
+            fileOpen = selectedFile;
+            fileOpenLabel.setText(fileOpen.getName());
+            readFile(selectedFile);
+        }
+
     }
 
     void saveFile() {
         System.out.println("SAVE FILE");
+        saveData();
+        if (fileOpen == null) {
+            saveFileAs();
+        } else {
+            writeToFile(fileOpen);
+        }
+
     }
 
     void saveFileAs() {
         System.out.println("SAVE FILE AS");
+        saveData();
+        FileChooser fc = new FileChooser();
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project File: .mpv2", "*.mpv2"));
+        File selectedFile = fc.showSaveDialog(new Stage());
+        if (selectedFile != null) {
+            fileOpen = selectedFile;
+            fileOpenLabel.setText(fileOpen.getName());
+            writeToFile(selectedFile);
+        }
     }
 
     void quit() {
@@ -366,6 +419,70 @@ public class Main extends Application {
         }
     }
 
+    void writeToFile(File f) {
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put("name", "Edison");
+//        jsonObject.put("test", "123");
+        try {
+            FileWriter fileWriter = new FileWriter(f);
+            fileWriter.write(currentFile.toString());
+            fileWriter.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    void readFile(File f) {
+        try {
+
+            InputStream is = new FileInputStream(f);
+            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+            String line = buf.readLine();
+            StringBuilder sb = new StringBuilder();
+            while (line != null) {
+                sb.append(line).append("\n");
+                line = buf.readLine();
+            }
+            String fileString = sb.toString();
+//            System.out.println(fileString);
+            currentFile = new JSONObject(fileString);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        loadData();
+    }
+
+    void loadData() {
+
+        for (int i = 0; i < noteAmount; i++) {
+            //load matrix data
+            JSONObject tMatrixObj = currentFile.getJSONObject(Integer.toString(i));
+            for (int y = 0; y < strips; y++) {
+                for (int x = 0; x < ledsPerStrip; x++) {
+                    String tCol = tMatrixObj.get((Integer.toString(x) + " " + Integer.toString(y))).toString();
+                    notes[i].setLED(x, y, Color.web(tCol));
+
+                }
+            }
+
+        }
+        setDisplayMatrix();
+
+    }
+
+    void saveData() {
+        for (int i = 0; i < noteAmount; i++) {
+            //set matrix data
+            JSONObject tMatrixObj = new JSONObject();
+            for (int y = 0; y < strips; y++) {
+                for (int x = 0; x < ledsPerStrip; x++) {
+                    tMatrixObj.put((Integer.toString(x) + " " + Integer.toString(y)), notes[i].getLEDString(x, y));
+                }
+            }
+            currentFile.put(Integer.toString(i), tMatrixObj);
+        }
+    }
 
 
 }

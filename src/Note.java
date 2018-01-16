@@ -15,6 +15,10 @@ class Note {
     Color getLED(int x, int y) {
         return matrix.getLED(x, y);
     }
+
+    String getLEDString(int x, int y) {
+        return matrix.getLEDString(x, y);
+    }
     boolean getLEDSelected(int x, int y) {
         return matrix.getLEDSelected(x, y);
     }
@@ -26,6 +30,7 @@ class Note {
     void resetMatrix() {
         matrix.reset();
     }
+
 
 
 }
