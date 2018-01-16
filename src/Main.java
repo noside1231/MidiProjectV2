@@ -6,6 +6,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -103,7 +107,7 @@ public class Main extends Application {
         //Initialize Toolbar
         toolbar = new ToolBar();
 
-        //File Menu
+        //Initialize File Menu
         fileMenu = new MenuButton("File");
         newItem = new MenuItem("New");
         openItem = new MenuItem("Open");
@@ -114,10 +118,15 @@ public class Main extends Application {
         fileMenu.getItems().addAll(newItem, openItem, new SeparatorMenuItem(), saveItem, saveAsItem, new SeparatorMenuItem(), quitItem);
         //Handlers
         newItem.setOnAction(event -> newFile());
+        newItem.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.META_DOWN));
         openItem.setOnAction(event -> openFile());
+        openItem.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.META_DOWN));
         saveItem.setOnAction(event -> saveFile());
+        saveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.META_DOWN));
         saveAsItem.setOnAction(event -> saveFileAs());
+        saveAsItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.META_DOWN));
         quitItem.setOnAction(event -> quit());
+        quitItem.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.META_DOWN));
         //Edit Menu
         editMenu = new MenuButton("Edit");
         copyItem = new MenuItem("Copy");
@@ -125,16 +134,17 @@ public class Main extends Application {
         clearItem = new MenuItem("Clear");
         //Add To Menu
         editMenu.getItems().addAll(copyItem, pasteItem, new SeparatorMenuItem(), clearItem);
-
+        //Handlers
+        copyItem.setOnAction(event -> copy());
+        copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.META_DOWN));
+        pasteItem.setOnAction(event -> paste());
+        pasteItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.META_DOWN));
+        clearItem.setOnAction(event -> clear());
         //Options Menu
         optionMenu = new MenuButton("Options");
         serialPortMenu = new Menu("Select Port:");
         //Add To Menu
         optionMenu.getItems().addAll(serialPortMenu);
-        //Handlers
-        copyItem.setOnAction(event -> copy());
-        pasteItem.setOnAction(event -> paste());
-        clearItem.setOnAction(event -> clear());
         //Add Items To Toolbar
         toolbar.getItems().addAll(fileMenu, editMenu, optionMenu);
 
@@ -149,7 +159,6 @@ public class Main extends Application {
             int tempInd = i;
             noteButtons[i].setOnMouseClicked(event -> noteButtonPressed(tempInd));
             noteContainer.getChildren().add(noteButtons[i]);
-
         }
         //Textfield and Current Key Display
         noteSelectionField = new NumberTextField(currentNote + 1, 1, 128);
@@ -351,12 +360,12 @@ public class Main extends Application {
             for (int x = 0; x < ledsPerStrip; x++) {
                 displayMatrixRectangles[x][y].setFill(notes[currentNote].getLED(x, y));
                 if (notes[currentNote].getLEDSelected(x, y)) {
-                    displayMatrixRectangles[x][y].setFill(c);
+                    notes[currentNote].setLED(x, y, c);
                 }
             }
         }
-        System.out.println(c.getRed() + " " + c.getGreen() + " " + c.getBlue());
     }
+
 
 
 }

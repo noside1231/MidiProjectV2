@@ -5,6 +5,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -19,6 +21,8 @@ public class ColorPickerSlider extends VBox{
     SliderTextField g;
     SliderTextField b;
     SimpleObjectProperty<Color> selectedColor;
+    ButtonBar buttonOptions;
+    Button setButton;
 
     public ColorPickerSlider() {
         selectedColor = new SimpleObjectProperty<>();
@@ -26,12 +30,18 @@ public class ColorPickerSlider extends VBox{
         r = new SliderTextField(lowerBound, upperBound);
         g = new SliderTextField(lowerBound, upperBound);
         b = new SliderTextField(lowerBound, upperBound);
-
         r.getValue().addListener(event -> updateColor());
         g.getValue().addListener(event -> updateColor());
         b.getValue().addListener(event -> updateColor());
 
-        getChildren().addAll(r,g,b);
+        buttonOptions = new ButtonBar();
+        setButton = new Button("Set");
+        setButton.setOnAction(event -> updateColor());
+
+        buttonOptions.getButtons().addAll(setButton);
+        getChildren().addAll(r,g,b, buttonOptions);
+
+
     }
 
     void updateColor() {
