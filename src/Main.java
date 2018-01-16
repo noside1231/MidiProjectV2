@@ -1,4 +1,6 @@
+import Utilities.ColorPickerSlider;
 import Utilities.NumberTextField;
+import Utilities.SliderTextField;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -82,7 +84,6 @@ public class Main extends Application {
     ChoiceBox<String> presetSelectionBox;
 
 
-
     public static void main(String[] args) {
         launch(args);
     }
@@ -151,8 +152,8 @@ public class Main extends Application {
 
         }
         //Textfield and Current Key Display
-        noteSelectionField = new NumberTextField(currentNote+1, 1, 128);
-        noteSelectionField.getValue().addListener((v, oldValue, newValue) -> noteButtonPressed(newValue.intValue()-1));
+        noteSelectionField = new NumberTextField(currentNote + 1, 1, 128);
+        noteSelectionField.getValue().addListener((v, oldValue, newValue) -> noteButtonPressed(newValue.intValue() - 1));
         currentNoteLabel = new Label(getPianoNote());
         noteDisplay = new HBox();
         noteDisplay.getChildren().addAll(noteSelectionField, currentNoteLabel);
@@ -160,7 +161,7 @@ public class Main extends Application {
         noteWindow.getChildren().addAll(noteContainer, noteDisplay);
 
         //Display Matrix
-        displayMatrixRectangles = new Rectangle[ledsPerStrip][strips+1];
+        displayMatrixRectangles = new Rectangle[ledsPerStrip][strips + 1];
         displayMatrixRows = new VBox();
         displayMatrixRows.setSpacing(displayMatrixSpacing);
         displayMatrixCols = new HBox[strips];
@@ -227,14 +228,14 @@ public class Main extends Application {
         presetWindow.getChildren().addAll(presetSelectionBox);
         displayMatrixWindow.getChildren().add(presetWindow);
 
-        NumberTextField t = new NumberTextField(0);
-        t.getValue().addListener((v,oldValue, newValue) -> changeT(newValue.intValue()));
-
+        //Color Picker
+        ColorPickerSlider n = new ColorPickerSlider();
+        n.getColor().addListener(event -> updateSelectedColor(n.getColor().get()));
+        exteriorPane.setLeft(n);
 
         exteriorPane.setCenter(noteWindow);
         exteriorPane.setBottom(lightTab);
         exteriorPane.setTop(toolbar);
-//        exteriorPane.setLeft(t);
 
         //Show Window
         window.setScene(mainScene);
@@ -284,7 +285,7 @@ public class Main extends Application {
         System.out.println("Note Pressed: " + ind);
         currentNote = ind;
         currentNoteLabel.setText(getPianoNote());
-        noteSelectionField.setValue(currentNote+1);
+        noteSelectionField.setValue(currentNote + 1);
         setDisplayMatrix();
 
     }
@@ -301,13 +302,14 @@ public class Main extends Application {
 
     void selectRow(int i) {
         for (int j = 0; j < ledsPerStrip; j++) {
-            notes[currentNote].toggleSelected(j,i);
+            notes[currentNote].toggleSelected(j, i);
         }
         setDisplayMatrix();
     }
+
     void selectCol(int i) {
-        for (int j = 0; j < strips; j++)  {
-            notes[currentNote].toggleSelected(i,j);
+        for (int j = 0; j < strips; j++) {
+            notes[currentNote].toggleSelected(i, j);
         }
         setDisplayMatrix();
     }
@@ -344,8 +346,16 @@ public class Main extends Application {
         }
     }
 
-    void changeT(int a) {
-        System.out.println(a);
+    void updateSelectedColor(Color c) {
+        for (int y = 0; y < strips; y++) {
+            for (int x = 0; x < ledsPerStrip; x++) {
+                displayMatrixRectangles[x][y].setFill(notes[currentNote].getLED(x, y));
+                if (notes[currentNote].getLEDSelected(x, y)) {
+                    displayMatrixRectangles[x][y].setFill(c);
+                }
+            }
+        }
+        System.out.println(c.getRed() + " " + c.getGreen() + " " + c.getBlue());
     }
 
 
