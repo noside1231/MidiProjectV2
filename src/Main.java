@@ -1,34 +1,22 @@
 import Utilities.ColorPickerSlider;
+import Utilities.ColorPickerWindow;
 import Utilities.NumberTextField;
-import Utilities.SliderTextField;
-import com.oracle.javafx.jmx.json.JSONReader;
-import com.oracle.javafx.jmx.json.JSONWriter;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
-import jdk.nashorn.internal.IntDeque;
-import jdk.nashorn.internal.parser.JSONParser;
-import libraries.JSSC.src.java.jssc.SerialPortList;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.util.regex.Pattern;
 
 public class Main extends Application {
 
@@ -104,6 +92,9 @@ public class Main extends Application {
 
     //Loaded File
     JSONObject currentFile;
+
+    //Color Picker
+    ColorPickerWindow colorPickerWindow;
 
 
     public static void main(String[] args) {
@@ -264,9 +255,9 @@ public class Main extends Application {
         displayMatrixWindow.getChildren().add(presetWindow);
 
         //Color Picker
-        ColorPickerSlider n = new ColorPickerSlider();
-        n.getColor().addListener(event -> updateSelectedColor(n.getColor().get()));
-        exteriorPane.setLeft(n);
+        colorPickerWindow = new ColorPickerWindow();
+        colorPickerWindow.getColor().addListener(event -> updateSelectedColor(colorPickerWindow.getColor().get()));
+        exteriorPane.setLeft(colorPickerWindow);
 
         exteriorPane.setCenter(noteWindow);
         exteriorPane.setBottom(lightTab);
@@ -391,6 +382,8 @@ public class Main extends Application {
             }
         }
 
+        colorPickerWindow.setScale();
+
     }
 
     String getPianoNote() {
@@ -420,9 +413,6 @@ public class Main extends Application {
     }
 
     void writeToFile(File f) {
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put("name", "Edison");
-//        jsonObject.put("test", "123");
         try {
             FileWriter fileWriter = new FileWriter(f);
             fileWriter.write(currentFile.toString());
@@ -444,7 +434,6 @@ public class Main extends Application {
                 line = buf.readLine();
             }
             String fileString = sb.toString();
-//            System.out.println(fileString);
             currentFile = new JSONObject(fileString);
 
         } catch (Exception e) {
@@ -454,7 +443,6 @@ public class Main extends Application {
     }
 
     void loadData() {
-
         for (int i = 0; i < noteAmount; i++) {
             //load matrix data
             JSONObject tMatrixObj = currentFile.getJSONObject(Integer.toString(i));
@@ -462,13 +450,10 @@ public class Main extends Application {
                 for (int x = 0; x < ledsPerStrip; x++) {
                     String tCol = tMatrixObj.get((Integer.toString(x) + " " + Integer.toString(y))).toString();
                     notes[i].setLED(x, y, Color.web(tCol));
-
                 }
             }
-
         }
         setDisplayMatrix();
-
     }
 
     void saveData() {
