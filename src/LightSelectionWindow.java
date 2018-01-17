@@ -73,7 +73,7 @@ public class LightSelectionWindow extends VBox {
         displayMatrixWindow = new DisplayMatrixWindow(ledsPerStrip, strips);
 
         displayMatrixWindow.getPressed().addListener(event -> setLastPressed(displayMatrixWindow.getPressed().get()));
-        displayMatrixWindow.getSelectAll().addListener(selectAllInt -> selectAllSelected());
+        displayMatrixWindow.getSelectAll().addListener(selectAllInt -> selectAllSelected(displayMatrixWindow.getSelectAll().get()));
         displayMatrixWindow.getSelectRow().addListener(selectRowInt -> selectRowSelected(displayMatrixWindow.getSelectRow().get()));
         displayMatrixWindow.getSelectCol().addListener(selectColInt -> selectColSelected(displayMatrixWindow.getSelectCol().get()));
 
@@ -125,8 +125,12 @@ public class LightSelectionWindow extends VBox {
        return times;
     }
 
-    void selectAllSelected() {
-        selectAllInt.set((selectAllInt.get()+1)%2);
+    void selectAllSelected(int s) {
+        if (s > 0) {
+            selectAllInt.set(Math.abs(selectAllInt.get())+1);
+        } else {
+            selectAllInt.set(-Math.abs(selectAllInt.get())-1);
+        }
     }
 
     SimpleIntegerProperty getSelectAll() {

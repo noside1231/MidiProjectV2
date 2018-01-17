@@ -3,6 +3,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -28,6 +29,7 @@ public class DisplayMatrixWindow extends HBox {
 
     ContextMenu rightClickOptionMenu;
     MenuItem selectAllItem;
+    MenuItem deselectAllItem;
     Menu selectRowMenu;
     Menu selectColMenu;
     MenuItem[] selectRowItem;
@@ -80,7 +82,9 @@ public class DisplayMatrixWindow extends HBox {
         setOnContextMenuRequested(event -> rightClick(event));
 
         selectAllItem = new MenuItem("Select All");
-        selectAllItem.setOnAction(event -> selectAll());
+        selectAllItem.setOnAction(event -> selectAll(true));
+        deselectAllItem = new MenuItem("Deselect All");
+        deselectAllItem.setOnAction(event -> selectAll(false));
         selectRowMenu = new Menu("Select Row:");
         selectColMenu = new Menu("Select Column:");
 
@@ -101,7 +105,7 @@ public class DisplayMatrixWindow extends HBox {
         }
         selectColMenu.getItems().addAll(selectColItem);
 
-        rightClickOptionMenu.getItems().addAll(selectAllItem, selectRowMenu, selectColMenu);
+        rightClickOptionMenu.getItems().addAll(selectAllItem, deselectAllItem, new SeparatorMenuItem(), selectRowMenu, selectColMenu);
 
 
     }
@@ -147,8 +151,12 @@ public class DisplayMatrixWindow extends HBox {
         rightClickOptionMenu.show(this, event.getScreenX(), event.getScreenY());
     }
 
-    void selectAll() {
-        selectAllInt.set((selectAllInt.get()+1)%2);
+    void selectAll(boolean t) {
+        if (t) {
+            selectAllInt.set(Math.abs(selectAllInt.get()+1));
+        } else {
+            selectAllInt.set(-Math.abs(selectAllInt.get())-1);
+        }
     }
 
     void selectRow(int i) {

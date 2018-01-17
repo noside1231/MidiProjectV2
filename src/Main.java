@@ -19,7 +19,6 @@ public class Main extends Application {
     int screenWidth = 1280;
     int screenHeight = 800;
     int noteAmount = 128;
-    int noteRectangleScaleY = 100;
     int currentNote = 0;
     int ledsPerStrip = 30;
     int strips = 5;
@@ -27,7 +26,6 @@ public class Main extends Application {
     String[] presetTitles = {"None", "Rainbow", "Twinkle"};
 
     File fileOpen;
-
 
     //Window Elements
     Scene mainScene;
@@ -64,13 +62,6 @@ public class Main extends Application {
     //Presets
     HBox presetWindow;
     ChoiceBox<String> presetSelectionBox;
-
-    //Scene Trigger Time
-//    HBox setTriggerTimeBar;
-//    Button triggerButton;
-//    NumberTextField fadeInField;
-//    NumberTextField holdField;
-//    NumberTextField fadeOutField;
 
     //Loaded File
     JSONObject currentFile;
@@ -156,7 +147,7 @@ public class Main extends Application {
         lightSelectionWindow.getLastPressed().addListener(event -> displayMatrixRectanglesPressed(lightSelectionWindow.getLastPressed().get()));
         lightSelectionWindow.getTriggerPressed().addListener(event -> triggerNote());
         lightSelectionWindow.getTimeChanged().addListener(event -> timesEntered(lightSelectionWindow.getTimeChanged().get()));
-        lightSelectionWindow.getSelectAll().addListener(event -> selectAll());
+        lightSelectionWindow.getSelectAll().addListener(event -> selectAll(lightSelectionWindow.getSelectAll().get()));
         lightSelectionWindow.getSelectRow().addListener(event -> selectRow(lightSelectionWindow.getSelectRow().get()));
         lightSelectionWindow.getSelectCol().addListener(event -> selectCol(lightSelectionWindow.getSelectCol().get()));
 
@@ -178,6 +169,9 @@ public class Main extends Application {
         colorPickerWindow = new ColorPickerWindow();
         colorPickerWindow.getColor().addListener(event -> updateSelectedColor(colorPickerWindow.getColor().get()));
         exteriorPane.setLeft(colorPickerWindow);
+
+        PresetWindow p = new PresetWindow();
+        exteriorPane.setRight(p);
 
         exteriorPane.setCenter(displayNoteWindow);
         exteriorPane.setBottom(lightSelectionWindow);
@@ -371,10 +365,10 @@ public class Main extends Application {
         notes[currentNote].setFadeOut(t[2]);
     }
 
-    void selectAll() {
+    void selectAll(int t) {
         for (int y = 0; y < strips; y++) {
             for (int x = 0; x < ledsPerStrip; x++) {
-                notes[currentNote].setSelected(x, y, true);
+                notes[currentNote].setSelected(x, y, t > 0 ? true : false);
             }
         }
         setDisplay();

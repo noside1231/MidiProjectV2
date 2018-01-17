@@ -79,7 +79,7 @@ class Note {
     }
 
     public void setSelected(int x, int y, boolean s) {
-        matrix.setSelected(x, y, true);
+        matrix.setSelected(x, y, s);
     }
 
 
