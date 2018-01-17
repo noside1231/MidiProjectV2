@@ -56,6 +56,10 @@ public class Led {
                 (int)( ledColor.getBlue() * 255 ) );
     }
 
+    public void setSelected(boolean t) {
+        selected = t;
+    }
+
 
 
 

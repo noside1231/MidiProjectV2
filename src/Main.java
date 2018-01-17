@@ -52,9 +52,6 @@ public class Main extends Application {
     //Note Key Selection
     DisplayNoteWindow displayNoteWindow;
 
-    //Matrix Display
-    DisplayMatrixWindow displayMatrixWindow;
-
     //Notes
     Note[] notes;
 
@@ -159,6 +156,9 @@ public class Main extends Application {
         lightSelectionWindow.getLastPressed().addListener(event -> displayMatrixRectanglesPressed(lightSelectionWindow.getLastPressed().get()));
         lightSelectionWindow.getTriggerPressed().addListener(event -> triggerNote());
         lightSelectionWindow.getTimeChanged().addListener(event -> timesEntered(lightSelectionWindow.getTimeChanged().get()));
+        lightSelectionWindow.getSelectAll().addListener(event -> selectAll());
+        lightSelectionWindow.getSelectRow().addListener(event -> selectRow(lightSelectionWindow.getSelectRow().get()));
+        lightSelectionWindow.getSelectCol().addListener(event -> selectCol(lightSelectionWindow.getSelectCol().get()));
 
         //Notes
         notes = new Note[noteAmount];
@@ -173,7 +173,6 @@ public class Main extends Application {
         presetSelectionBox.setValue(presetTitles[0]);
         presetSelectionBox.setOnAction(event -> setPreset(presetSelectionBox.getValue()));
         presetWindow.getChildren().addAll(presetSelectionBox);
-//        displayMatrixWindow.getChildren().add(presetWindow);
 
         //Color Picker
         colorPickerWindow = new ColorPickerWindow();
@@ -370,6 +369,29 @@ public class Main extends Application {
         notes[currentNote].setFadeIn(t[0]);
         notes[currentNote].setHold(t[1]);
         notes[currentNote].setFadeOut(t[2]);
+    }
+
+    void selectAll() {
+        for (int y = 0; y < strips; y++) {
+            for (int x = 0; x < ledsPerStrip; x++) {
+                notes[currentNote].setSelected(x, y, true);
+            }
+        }
+        setDisplay();
+    }
+
+    void selectRow(int i) {
+        for (int j = 0; j < ledsPerStrip; j++) {
+            notes[currentNote].setSelected(j, i, true);
+        }
+        setDisplay();
+    }
+
+    void selectCol(int i) {
+        for (int j = 0; j < strips; j++) {
+            notes[currentNote].setSelected(i, j, true);
+        }
+        setDisplay();
     }
 
 }

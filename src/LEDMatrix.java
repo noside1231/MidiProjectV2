@@ -70,5 +70,8 @@ public class LEDMatrix {
         return ledsPerStrip;
     }
 
+    public void setSelected(int x, int y, boolean t) {
+        leds[x][y].setSelected(t);
+    }
 
 }

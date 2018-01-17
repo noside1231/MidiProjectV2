@@ -1,4 +1,11 @@
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -19,12 +26,30 @@ public class DisplayMatrixWindow extends HBox {
     VBox displayRectRows;
     HBox[] displayMatrixCols;
 
+    ContextMenu rightClickOptionMenu;
+    MenuItem selectAllItem;
+    Menu selectRowMenu;
+    Menu selectColMenu;
+    MenuItem[] selectRowItem;
+    MenuItem[] selectColItem;
+
     SimpleObjectProperty<Integer[]> lastClicked;
+
+    SimpleIntegerProperty selectAllInt;
+    SimpleIntegerProperty selectRowInt;
+    SimpleIntegerProperty selectColInt;
 
     public DisplayMatrixWindow(int lPS, int s) {
         setPrefHeight(100);
         strips = s;
         ledsPerStrip = lPS;
+
+        selectAllInt = new SimpleIntegerProperty();
+        selectAllInt.set(0);
+        selectRowInt = new SimpleIntegerProperty();
+        selectRowInt.set(0);
+        selectColInt = new SimpleIntegerProperty();
+        selectColInt.set(0);
 
         lastClicked = new SimpleObjectProperty<>();
 
@@ -43,7 +68,7 @@ public class DisplayMatrixWindow extends HBox {
                 displayRects[x][y].setStrokeWidth(strokeWidth);
                 int tempX = x;
                 int tempY = y;
-                displayRects[x][y].setOnMouseClicked(event -> rectanglePressed(tempX, tempY));
+                displayRects[x][y].setOnMouseClicked(event -> rectanglePressed(event, tempX, tempY));
                 displayMatrixCols[y].getChildren().add(displayRects[x][y]);
             }
         }
@@ -51,11 +76,41 @@ public class DisplayMatrixWindow extends HBox {
         getChildren().add(displayRectRows);
         displayRectRows.setStyle("-fx-background-color: #00FFFF;");
 
+        rightClickOptionMenu = new ContextMenu();
+        setOnContextMenuRequested(event -> rightClick(event));
+
+        selectAllItem = new MenuItem("Select All");
+        selectAllItem.setOnAction(event -> selectAll());
+        selectRowMenu = new Menu("Select Row:");
+        selectColMenu = new Menu("Select Column:");
+
+        selectRowItem = new MenuItem[strips];
+        for (int i = 0; i < strips; i++) {
+            selectRowItem[i] = new MenuItem(Integer.toString(i+1));
+            int tInt = i;
+            selectRowItem[i].setOnAction(event -> selectRow(tInt));
+        }
+        selectRowMenu.getItems().addAll(selectRowItem);
+
+        selectColItem = new MenuItem[ledsPerStrip];
+        for (int i = 0; i < ledsPerStrip; i++) {
+            selectColItem[i] = new MenuItem(Integer.toString(i+1));
+            int tInt = i;
+            selectColItem[i].setOnAction(event -> selectCol(tInt));
+
+        }
+        selectColMenu.getItems().addAll(selectColItem);
+
+        rightClickOptionMenu.getItems().addAll(selectAllItem, selectRowMenu, selectColMenu);
+
 
     }
 
-    public void rectanglePressed(int x, int y) {
-        lastClicked.set(new Integer[]{x, y});
+    public void rectanglePressed(MouseEvent event, int x, int y) {
+        if (event.getButton() == MouseButton.PRIMARY) {
+            rightClickOptionMenu.hide();
+            lastClicked.set(new Integer[]{x, y});
+        }
     }
 
     public SimpleObjectProperty<Integer[]> getPressed() {
@@ -86,6 +141,31 @@ public class DisplayMatrixWindow extends HBox {
         }
 
 
+    }
+
+    void rightClick(ContextMenuEvent event) {
+        rightClickOptionMenu.show(this, event.getScreenX(), event.getScreenY());
+    }
+
+    void selectAll() {
+        selectAllInt.set((selectAllInt.get()+1)%2);
+    }
+
+    void selectRow(int i) {
+        selectRowInt.set(i);
+    }
+    void selectCol(int i) {
+        selectColInt.set(i);
+    }
+
+    SimpleIntegerProperty getSelectAll() {
+        return selectAllInt;
+    }
+    SimpleIntegerProperty getSelectRow() {
+        return selectRowInt;
+    }
+    SimpleIntegerProperty getSelectCol() {
+        return selectColInt;
     }
 
 }

@@ -31,11 +31,22 @@ public class LightSelectionWindow extends VBox {
 
     SimpleObjectProperty<Integer[]> lastMatrixRectSelected;
 
+    SimpleIntegerProperty selectAllInt;
+    SimpleIntegerProperty selectRowInt;
+    SimpleIntegerProperty selectColInt;
+
     public LightSelectionWindow(int ledsPerStrip, int strips) {
         setPrefWidth(super.getWidth());
 
         triggerInt = new SimpleIntegerProperty();
         triggerInt.set(0);
+        selectAllInt = new SimpleIntegerProperty();
+        selectAllInt.set(0);
+        selectRowInt = new SimpleIntegerProperty();
+        selectRowInt.set(0);
+        selectColInt = new SimpleIntegerProperty();
+        selectColInt.set(0);
+
         setTriggerTimeBar = new HBox();
         triggerButton = new Button("Trigger");
         fadeInField = new NumberTextField();
@@ -62,6 +73,9 @@ public class LightSelectionWindow extends VBox {
         displayMatrixWindow = new DisplayMatrixWindow(ledsPerStrip, strips);
 
         displayMatrixWindow.getPressed().addListener(event -> setLastPressed(displayMatrixWindow.getPressed().get()));
+        displayMatrixWindow.getSelectAll().addListener(selectAllInt -> selectAllSelected());
+        displayMatrixWindow.getSelectRow().addListener(selectRowInt -> selectRowSelected(displayMatrixWindow.getSelectRow().get()));
+        displayMatrixWindow.getSelectCol().addListener(selectColInt -> selectColSelected(displayMatrixWindow.getSelectCol().get()));
 
         ledDisplayTab.setContent(displayMatrixWindow);
         dmxTab.setContent(new Label("DMX LATER :)"));
@@ -111,7 +125,27 @@ public class LightSelectionWindow extends VBox {
        return times;
     }
 
+    void selectAllSelected() {
+        selectAllInt.set((selectAllInt.get()+1)%2);
+    }
 
+    SimpleIntegerProperty getSelectAll() {
+        return selectAllInt;
+    }
+
+    void selectRowSelected(int i) {
+        selectRowInt.set(i);
+    }
+    void selectColSelected(int i) {
+        selectColInt.set(i);
+    }
+
+    SimpleIntegerProperty getSelectRow() {
+        return selectRowInt;
+    }
+    SimpleIntegerProperty getSelectCol() {
+        return selectColInt;
+    }
 
 
 }
