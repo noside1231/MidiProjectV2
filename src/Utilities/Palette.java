@@ -1,6 +1,8 @@
 package Utilities;
 
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -9,18 +11,22 @@ import javafx.scene.shape.Rectangle;
 /**
  * Created by Edison on 1/15/18.
  */
+
+
+
 public class Palette extends VBox{
 
     int xAmt = 7;
     int yAmt = 3;
 
     SimpleObjectProperty<Color> selectedColor;
-
+    Color previewColor;
 
     Rectangle[][] rectangleOptions;
     HBox rectRows[];
 
-    Palette() {
+    public Palette() {
+        previewColor = Color.BLACK;
         rectRows = new HBox[yAmt];
         selectedColor = new SimpleObjectProperty<>();
         rectangleOptions = new Rectangle[xAmt][yAmt];
@@ -32,7 +38,7 @@ public class Palette extends VBox{
                 rectangleOptions[x][y].setStroke(Color.WHITE);
                 int tempX = x;
                 int tempY = y;
-                rectangleOptions[x][y].setOnMouseReleased(event -> setSelectedColor(tempX, tempY));
+                rectangleOptions[x][y].setOnMouseClicked(event -> mouseEvent(tempX, tempY, event));
                 rectRows[y].getChildren().add(rectangleOptions[x][y]);
             }
         }
@@ -43,11 +49,13 @@ public class Palette extends VBox{
         selectedColor.set((Color)rectangleOptions[x][y].getFill());
     }
 
-    SimpleObjectProperty<Color> getColor() {
+
+
+    public SimpleObjectProperty<Color> getColor() {
         return selectedColor;
     }
 
-    void setScale() {
+    public void setScale() {
         System.out.println(getWidth());
         int scale = (int)getWidth()/xAmt;
 
@@ -57,6 +65,19 @@ public class Palette extends VBox{
                 rectangleOptions[x][y].setHeight(scale);
             }
         }
+    }
+
+    void mouseEvent(int x, int y, MouseEvent event) {
+        if (event.getButton() == MouseButton.PRIMARY) {
+
+            setSelectedColor(x, y);
+        } else if (event.getButton() == MouseButton.SECONDARY) {
+            rectangleOptions[x][y].setFill(previewColor);
+        }
+    }
+
+    public void setPreviewColor(Color c) {
+        previewColor = c;
     }
 
 }

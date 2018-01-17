@@ -21,8 +21,7 @@ public class ColorPickerSlider extends VBox{
     SliderTextField g;
     SliderTextField b;
     SimpleObjectProperty<Color> selectedColor;
-    ButtonBar buttonOptions;
-    Button setButton;
+
 
     public ColorPickerSlider() {
         selectedColor = new SimpleObjectProperty<>();
@@ -34,15 +33,9 @@ public class ColorPickerSlider extends VBox{
         g.getValue().addListener(event -> updateColor());
         b.getValue().addListener(event -> updateColor());
 
-        buttonOptions = new ButtonBar();
-        setButton = new Button("Set");
-        setButton.setOnAction(event -> updateColor());
-
-        buttonOptions.getButtons().addAll(setButton);
-        getChildren().addAll(r,g,b, buttonOptions);
-
-
+        getChildren().addAll(r,g,b);
     }
+
 
     void updateColor() {
         selectedColor.set(Color.rgb(r.getValue().intValue(), g.getValue().intValue(), b.getValue().intValue()));

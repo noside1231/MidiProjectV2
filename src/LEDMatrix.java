@@ -3,9 +3,10 @@ import javafx.scene.paint.Color;
 /**
  * Created by edisongrauman on 12/20/17.
  */
+
 public class LEDMatrix {
 
-    LED[][] leds;
+    Led[][] leds;
 
     static int defaultStrips = 5;
     static int defaultLedsPerStrip = 30;
@@ -21,11 +22,11 @@ public class LEDMatrix {
         strips = s;
         ledsPerStrip = lps;
 
-        leds = new LED[ledsPerStrip][strips];
+        leds = new Led[ledsPerStrip][strips];
 
         for (int x = 0; x < ledsPerStrip; x++) {
             for (int y = 0; y < strips; y++) {
-                leds[x][y]  = new LED();
+                leds[x][y]  = new Led();
             }
         }
 
@@ -55,6 +56,10 @@ public class LEDMatrix {
                 leds[x][y].reset();
             }
         }
+    }
+
+    public Led[][] getLEDS() {
+        return leds;
     }
 
     public int getStrips() {

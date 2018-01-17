@@ -3,12 +3,12 @@ import javafx.scene.paint.Color;
 /**
  * Created by edisongrauman on 12/20/17.
  */
-public class LED {
+public class Led {
 
     Color ledColor;
     boolean selected;
 
-    public LED() {
+    public Led() {
         ledColor = Color.rgb(0,0,0);
         selected = false;
     }
@@ -35,6 +35,10 @@ public class LED {
     void reset() {
         resetColor();
         resetSelected();
+    }
+
+    Color getLEDColor() {
+        return ledColor;
     }
 
     void resetSelected() {

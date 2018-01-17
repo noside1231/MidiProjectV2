@@ -16,10 +16,10 @@ public class NumberTextField extends TextField{
 
 
     public NumberTextField() {
-        this(0, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        this(0, 0, Integer.MAX_VALUE);
     }
     public NumberTextField(int defaultVal) {
-        this(defaultVal, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        this(defaultVal, 0, Integer.MAX_VALUE);
     }
     public NumberTextField(int defaultVal, int min, int max) {
         value.set(defaultVal);
@@ -57,6 +57,10 @@ public class NumberTextField extends TextField{
         value.set(v);
         setText(String.valueOf(v));
         positionCaret(3);
+    }
+
+    public void setValue(float f) {
+        setValue((int) f);
     }
     public IntegerProperty getValue() {
         return value;
