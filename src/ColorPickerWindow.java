@@ -1,8 +1,6 @@
 import Utilities.ColorPickerSlider;
-import Utilities.Palette;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
@@ -38,7 +36,7 @@ public class ColorPickerWindow extends VBox{
         selectedColor.set(Color.BLACK);
 
         s = new ColorPickerSlider();
-        p = new Palette();
+        p = new Palette(3,7);
 
         s.getColor().addListener(event -> setPreviewColor(s.getColor().getValue()));
 
@@ -86,4 +84,21 @@ public class ColorPickerWindow extends VBox{
         previewColor.setFill(c);
         p.setPreviewColor(c);
     }
+
+    String getColorPaletteString(int x, int y) {
+        return p.getPaletteColorString(x, y);
+    }
+
+    int getPaletteX() {
+        return p.getxAmt();
+    }
+    int getPaletteY() {
+        return p.getyAmt();
+    }
+
+    void setPaletteColor(int x, int y, Color c) {
+        p.setPaletteColor(x, y, c);
+    }
+
+
 }

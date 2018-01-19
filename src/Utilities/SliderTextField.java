@@ -2,8 +2,11 @@ package Utilities;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.TextAlignment;
 
 /**
  * Created by Edison on 1/15/18.
@@ -12,33 +15,41 @@ public class SliderTextField extends HBox {
 
     Slider s;
     NumberTextField n;
+    Label l;
     int lowerBound;
     int upperBound;
     IntegerProperty val = new SimpleIntegerProperty(this, "val", 0);
 
     public SliderTextField(int lowerB, int upperB) {
-        this(lowerB, lowerB, upperB);
+        this(lowerB, lowerB, upperB, "");
     }
 
-    public SliderTextField(int defV, int lowerB, int upperB) {
+    public SliderTextField(int defV, int lowerB, int upperB, String name) {
         lowerBound = lowerB;
         upperBound = upperB;
         val.set(defV);
         s = new Slider(lowerB, upperB, defV);
-        s.valueProperty().addListener(event -> setValue((int)s.getValue()));
+        l = new Label(name);
+//        l.setPrefWidth(15);
+        s.valueProperty().addListener(event -> setValue((int) s.getValue()));
         n = new NumberTextField(defV, lowerB, upperB);
         n.getValue().addListener(event -> setValue(n.getValue().intValue()));
-        getChildren().addAll(s,n);
+        getChildren().addAll(l, s, n);
+        alignmentProperty().set(Pos.TOP_RIGHT);
     }
 
-    void setValue(int value) {
+    public void setValue(int value) {
         val.set(value);
         n.setValue(value);
         s.setValue(value);
     }
 
-    IntegerProperty getValue() {
+    public IntegerProperty getValue() {
         return val;
+    }
+
+    public String getName() {
+        return l.getText();
     }
 
 }

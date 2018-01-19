@@ -6,6 +6,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -22,8 +23,6 @@ public class Main extends Application {
     int currentNote = 0;
     int ledsPerStrip = 30;
     int strips = 5;
-
-    String[] presetTitles = {"None", "Rainbow", "Twinkle"};
 
     File fileOpen;
 
@@ -60,8 +59,7 @@ public class Main extends Application {
     LightSelectionWindow lightSelectionWindow;
 
     //Presets
-    HBox presetWindow;
-    ChoiceBox<String> presetSelectionBox;
+    PresetWindow presetWindow;
 
     //Loaded File
     JSONObject currentFile;
@@ -158,22 +156,25 @@ public class Main extends Application {
         }
 
         //Presets
-        presetWindow = new HBox();
-        presetSelectionBox = new ChoiceBox<>();
-        presetSelectionBox.getItems().addAll(presetTitles);
-        presetSelectionBox.setValue(presetTitles[0]);
-        presetSelectionBox.setOnAction(event -> setPreset(presetSelectionBox.getValue()));
-        presetWindow.getChildren().addAll(presetSelectionBox);
+        presetWindow = new PresetWindow();
+        presetWindow.getLastChangedPresetProperty().addListener(event -> notes[currentNote].setPresetProperty(presetWindow.getLastChangedPresetProperty().get()));
+        presetWindow.getLastSelectedPreset().addListener(event -> notes[currentNote].setCurrentPreset(presetWindow.getLastSelectedPreset().get()));
 
         //Color Picker
         colorPickerWindow = new ColorPickerWindow();
         colorPickerWindow.getColor().addListener(event -> updateSelectedColor(colorPickerWindow.getColor().get()));
         exteriorPane.setLeft(colorPickerWindow);
 
-        PresetWindow p = new PresetWindow();
-        exteriorPane.setRight(p);
 
-        exteriorPane.setCenter(displayNoteWindow);
+        VBox noteC = new VBox();
+        HBox horNoteC = new HBox();
+        horNoteC.getChildren().addAll(colorPickerWindow, presetWindow);
+        noteC.getChildren().addAll(displayNoteWindow, horNoteC);
+
+
+//        exteriorPane.setLeft(presetWindow);
+
+        exteriorPane.setCenter(noteC);
         exteriorPane.setBottom(lightSelectionWindow);
         exteriorPane.setTop(toolbar);
 
@@ -261,10 +262,6 @@ public class Main extends Application {
         setDisplay();
     }
 
-    void setPreset(String p) {
-        System.out.println("Preset: " + p);
-    }
-
     void setScales() {
         displayNoteWindow.setScale();
         lightSelectionWindow.setScale();
@@ -275,6 +272,7 @@ public class Main extends Application {
     void setDisplay() {
         lightSelectionWindow.setLEDDisplay(notes[currentNote].getLEDS());
         lightSelectionWindow.setTimes(notes[currentNote].getFadeIn(), notes[currentNote].getHold(), notes[currentNote].getFadeOut());
+        presetWindow.setPresetDisplay(notes[currentNote].getPresetContainer(), notes[currentNote].getCurrentPreset());
     }
 
     void updateSelectedColor(Color c) {
@@ -331,6 +329,22 @@ public class Main extends Application {
                 }
             }
 
+            //load preset data
+            JSONObject tPresetObj = currentObj.getJSONObject("PresetData");
+            for(int tInc = 0; !tPresetObj.isNull(Integer.toString(tInc)); tInc++) {
+                notes[i].setPresetProperty(tPresetObj.getString(Integer.toString(tInc)));
+
+            }
+
+            JSONObject tPaletteObj = currentObj.getJSONObject("Palette");
+            for (int  y = 0; y < colorPickerWindow.getPaletteY(); y++) {
+                for (int x = 0; x < colorPickerWindow.getPaletteX(); y++) {
+                    colorPickerWindow.setPaletteColor(x, y,Color.web(tPaletteObj.getString((Integer.toString(x) + " " + Integer.toString(y)))));
+                }
+            }
+
+            notes[i].setCurrentPreset(currentObj.getString("CurrentPreset"));
+
             notes[i].setTimeFromString(currentObj.getString("Times"));
 
         }
@@ -347,9 +361,26 @@ public class Main extends Application {
                 }
             }
 
+            JSONObject tPresetObj = new JSONObject();
+            for (int j = 0; j < notes[i].getPresetContainer().size(); j++) {
+                tPresetObj.put(Integer.toString(j), notes[i].getPresetContainer().get(j));
+            }
+
+            //save palette
+//            JSONObject tPaletteObj = new JSONObject();
+//            System.out.println(colorPickerWindow.getPaletteX() + " " + colorPickerWindow.getPaletteY());
+//            for (int  y = 0; y < colorPickerWindow.getPaletteY(); y++) {
+//                for (int x = 0; x < colorPickerWindow.getPaletteX(); y++) {
+//                    tPaletteObj.put(Integer.toString(y) + " " + Integer.toString(x), colorPickerWindow.getColorPaletteString(y, x));
+//                }
+//            }
+
             JSONObject currentObj = new JSONObject();
             currentObj.put("Matrix", tMatrixObj);
             currentObj.put("Times", notes[i].getTimeString());
+            currentObj.put("PresetData", tPresetObj);
+            currentObj.put("CurrentPreset", notes[i].getCurrentPreset());
+//            currentObj.put("Palette", tPaletteObj);
 
             currentFile.put(Integer.toString(i), currentObj);
         }
@@ -387,5 +418,6 @@ public class Main extends Application {
         }
         setDisplay();
     }
+
 
 }
