@@ -1,11 +1,9 @@
+import Utilities.LabelCheckBox;
 import Utilities.NumberTextField;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -24,6 +22,7 @@ public class LightSelectionWindow extends VBox {
     NumberTextField holdField;
     NumberTextField fadeOutField;
     SimpleIntegerProperty triggerInt;
+    LabelCheckBox editMode;
 
     DisplayMatrixWindow displayMatrixWindow;
 
@@ -34,6 +33,8 @@ public class LightSelectionWindow extends VBox {
     SimpleIntegerProperty selectAllInt;
     SimpleIntegerProperty selectRowInt;
     SimpleIntegerProperty selectColInt;
+
+    SimpleBooleanProperty lastEditToggle;
 
     public LightSelectionWindow(int ledsPerStrip, int strips) {
         setPrefWidth(super.getWidth());
@@ -53,14 +54,23 @@ public class LightSelectionWindow extends VBox {
         fadeOutField = new NumberTextField();
         holdField = new NumberTextField();
 
+        editMode = new LabelCheckBox("Edit Mode", true);
+        lastEditToggle = new SimpleBooleanProperty();
+        lastEditToggle.set(true);
+
         triggerButton.setOnAction(event -> triggerPressed());
+        editMode.getChecked().addListener(event -> editToggled(editMode.getChecked().get()));
 
         times = new SimpleObjectProperty<>();
         times.set(new Float[] {(float)0,(float)0,(float)0});
 
-        fadeInField.setOnAction(event -> setTime(new Float[] {(float)fadeInField.getValue().get(),  (float)holdField.getValue().get(), (float)fadeOutField.getValue().get()}));
+        fadeInField.getValue().addListener(event -> setTime(new Float[] {(float)fadeInField.getValue().get(),  (float)holdField.getValue().get(), (float)fadeOutField.getValue().get()}));
+        holdField.getValue().addListener(event -> setTime(new Float[] {(float)fadeInField.getValue().get(),  (float)holdField.getValue().get(), (float)fadeOutField.getValue().get()}));
+        fadeOutField.getValue().addListener(event -> setTime(new Float[] {(float)fadeInField.getValue().get(),  (float)holdField.getValue().get(), (float)fadeOutField.getValue().get()}));
 
-        setTriggerTimeBar.getChildren().addAll(fadeInField, holdField, fadeOutField, triggerButton);
+
+
+        setTriggerTimeBar.getChildren().addAll(fadeInField, holdField, fadeOutField, triggerButton, editMode);
 
         lastMatrixRectSelected = new SimpleObjectProperty<>();
         lightTab = new TabPane();
@@ -109,6 +119,17 @@ public class LightSelectionWindow extends VBox {
 
     void triggerPressed() {
         triggerInt.set((triggerInt.get() + 1)%2);
+        editToggled(false);
+    }
+
+    void editToggled(boolean t) {
+        System.out.println("BB");
+        lastEditToggle.set(t);
+        editMode.setChecked(lastEditToggle.get());
+    }
+
+    public SimpleBooleanProperty getLastEditToggle() {
+        return lastEditToggle;
     }
 
     public SimpleIntegerProperty getTriggerPressed() {

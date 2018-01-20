@@ -1,3 +1,4 @@
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -23,6 +24,7 @@ public class Main extends Application {
     int currentNote = 0;
     int ledsPerStrip = 30;
     int strips = 5;
+    boolean editMode = true;
 
     File fileOpen;
 
@@ -42,6 +44,7 @@ public class Main extends Application {
     MenuItem copyItem;
     MenuItem pasteItem;
     MenuItem clearItem;
+    MenuItem frameRateItem;
     MenuButton optionMenu;
     Menu serialPortMenu;
     Label fileOpenLabel;
@@ -66,6 +69,9 @@ public class Main extends Application {
 
     //Color Picker
     ColorPickerWindow colorPickerWindow;
+
+    //Mixer
+    Mixer mixer;
 
 
     public static void main(String[] args) {
@@ -125,6 +131,7 @@ public class Main extends Application {
         clearItem.setOnAction(event -> clear());
         //Options Menu
         optionMenu = new MenuButton("Options");
+        frameRateItem = new MenuItem("FrameRate: ");
         serialPortMenu = new Menu("Select Port:");
 //        for (int i = 0; i < SerialPortList.getPortNames("/dev", Pattern.compile("tty.")).length; i++) {
 //            serialPortMenu.getItems().add(new MenuItem(SerialPortList.getPortNames("/dev", Pattern.compile("tty."))[i]));
@@ -132,7 +139,7 @@ public class Main extends Application {
         //File Open Label
         fileOpenLabel = new Label();
         //Add To Menu
-        optionMenu.getItems().addAll(serialPortMenu);
+        optionMenu.getItems().addAll(frameRateItem, serialPortMenu);
         //Add Items To Toolbar
         toolbar.getItems().addAll(fileMenu, editMenu, optionMenu, fileOpenLabel);
 
@@ -148,6 +155,7 @@ public class Main extends Application {
         lightSelectionWindow.getSelectAll().addListener(event -> selectAll(lightSelectionWindow.getSelectAll().get()));
         lightSelectionWindow.getSelectRow().addListener(event -> selectRow(lightSelectionWindow.getSelectRow().get()));
         lightSelectionWindow.getSelectCol().addListener(event -> selectCol(lightSelectionWindow.getSelectCol().get()));
+        lightSelectionWindow.getLastEditToggle().addListener(event -> setEditMode(lightSelectionWindow.getLastEditToggle().get()));
 
         //Notes
         notes = new Note[noteAmount];
@@ -165,6 +173,9 @@ public class Main extends Application {
         colorPickerWindow.getColor().addListener(event -> updateSelectedColor(colorPickerWindow.getColor().get()));
         exteriorPane.setLeft(colorPickerWindow);
 
+        //Mixer
+        mixer = new Mixer();
+
 
         VBox noteC = new VBox();
         HBox horNoteC = new HBox();
@@ -174,6 +185,7 @@ public class Main extends Application {
 
 //        exteriorPane.setLeft(presetWindow);
 
+
         exteriorPane.setCenter(noteC);
         exteriorPane.setBottom(lightSelectionWindow);
         exteriorPane.setTop(toolbar);
@@ -182,6 +194,44 @@ public class Main extends Application {
         window.setScene(mainScene);
         window.show();
         setScales(); //set after window is shown
+
+        //Animation Timer
+        new AnimationTimer() {
+            final long[] frameTimes = new long[100];
+            int frameTimeIndex = 0;
+            boolean arrayFilled = false;
+            double frameRate;
+
+            @Override
+            public void handle(long now) {
+                //Calculate FPS
+                long oldFrameTime = frameTimes[frameTimeIndex];
+                frameTimes[frameTimeIndex] = now;
+                frameTimeIndex = (frameTimeIndex + 1) % frameTimes.length;
+                if (frameTimeIndex == 0) {
+                    arrayFilled = true;
+                }
+                if (arrayFilled) {
+                    long elapsedNanos = now - oldFrameTime;
+                    long elapsedNanosPerFrame = elapsedNanos / frameTimes.length;
+                    frameRate = 1_000_000_000.0 / elapsedNanosPerFrame;
+                    frameRateItem.setText(String.format("Frame Rate: %.3f", frameRate));
+                }
+
+
+                //update mixer
+                Led[][] lastUpdatedMixer = mixer.update(now);
+                if (!editMode) {
+                    System.out.println("AA");
+                    lightSelectionWindow.setLEDDisplay(lastUpdatedMixer);
+                }
+
+
+
+            }
+        }.start();
+
+
     }
 
 
@@ -331,15 +381,15 @@ public class Main extends Application {
 
             //load preset data
             JSONObject tPresetObj = currentObj.getJSONObject("PresetData");
-            for(int tInc = 0; !tPresetObj.isNull(Integer.toString(tInc)); tInc++) {
+            for (int tInc = 0; !tPresetObj.isNull(Integer.toString(tInc)); tInc++) {
                 notes[i].setPresetProperty(tPresetObj.getString(Integer.toString(tInc)));
 
             }
 
             JSONObject tPaletteObj = currentObj.getJSONObject("Palette");
-            for (int  y = 0; y < colorPickerWindow.getPaletteY(); y++) {
+            for (int y = 0; y < colorPickerWindow.getPaletteY(); y++) {
                 for (int x = 0; x < colorPickerWindow.getPaletteX(); y++) {
-                    colorPickerWindow.setPaletteColor(x, y,Color.web(tPaletteObj.getString((Integer.toString(x) + " " + Integer.toString(y)))));
+                    colorPickerWindow.setPaletteColor(x, y, Color.web(tPaletteObj.getString((Integer.toString(x) + " " + Integer.toString(y)))));
                 }
             }
 
@@ -388,6 +438,7 @@ public class Main extends Application {
 
     void triggerNote() {
         System.out.println("Triggered");
+        mixer.setTriggered(notes[currentNote]);
     }
 
     void timesEntered(Float[] t) {
@@ -417,6 +468,13 @@ public class Main extends Application {
             notes[currentNote].setSelected(i, j, true);
         }
         setDisplay();
+    }
+
+    void setEditMode(boolean t) {
+        editMode = t;
+        if (t) {
+            setDisplay();
+        }
     }
 
 

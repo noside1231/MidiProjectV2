@@ -34,7 +34,7 @@ public class RainbowPreset extends VBox {
         spreadField.getValue().addListener(event -> presetChanged(spreadField.getName(), spreadField.getValue().get()));
         offsetField.getValue().addListener(event -> presetChanged(offsetField.getName(), offsetField.getValue().get()));
         skipField.getValue().addListener(event -> presetChanged(skipField.getName(), skipField.getValue().get()));
-        reverseField.getChecked().addListener(event ->presetChanged(reverseField.getName(), reverseField.getChecked().get() ? 1 : 0));
+        reverseField.getChecked().addListener(event -> presetChanged(reverseField.getName(), reverseField.getChecked().get() ? 1 : 0));
 
 
         getChildren().addAll(speedField, spreadField, offsetField, skipField, reverseField);

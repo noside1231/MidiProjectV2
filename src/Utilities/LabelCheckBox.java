@@ -43,6 +43,7 @@ public class LabelCheckBox extends HBox {
 
     public void setChecked(boolean t) {
         c.setSelected(t);
+        selected.set(t);
     }
 
 
