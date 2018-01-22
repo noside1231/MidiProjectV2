@@ -8,24 +8,18 @@ public class LEDMatrix {
 
     Led[][] leds;
 
-    static int defaultStrips = 5;
-    static int defaultLedsPerStrip = 30;
-
     int strips;
     int ledsPerStrip;
 
-    public LEDMatrix() {
-        this(defaultStrips, defaultLedsPerStrip);
-    }
 
-    public LEDMatrix(int s, int lps) {
-        strips = s;
-        ledsPerStrip = lps;
+    public LEDMatrix(int strips, int ledsPerStrip) {
+        this.strips = strips;
+        this.ledsPerStrip = ledsPerStrip;
 
         leds = new Led[ledsPerStrip][strips];
 
-        for (int x = 0; x < ledsPerStrip; x++) {
-            for (int y = 0; y < strips; y++) {
+        for (int y = 0; y < strips; y++) {
+            for (int x = 0; x < ledsPerStrip; x++) {
                 leds[x][y]  = new Led();
             }
         }
@@ -51,8 +45,8 @@ public class LEDMatrix {
     }
 
     void reset() {
-        for (int x = 0; x < ledsPerStrip; x++) {
-            for (int y = 0; y < strips; y++) {
+        for (int y = 0; y < strips; y++) {
+            for (int x = 0; x < ledsPerStrip; x++) {
                 leds[x][y].reset();
             }
         }
@@ -72,6 +66,10 @@ public class LEDMatrix {
 
     public void setSelected(int x, int y, boolean t) {
         leds[x][y].setSelected(t);
+    }
+
+    public void addToLED(int x, int y, Color c) {
+        leds[x][y].addColor(c);
     }
 
 }

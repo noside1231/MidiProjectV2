@@ -1,4 +1,5 @@
 import javafx.scene.paint.Color;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -15,9 +16,9 @@ public class Note {
     float hold;
     int id;
 
-    public Note(int j) {
+    public Note(int j, int strips, int ledsPerStrip) {
         id = j;
-        matrix = new LEDMatrix();
+        matrix = new LEDMatrix(strips, ledsPerStrip);
         fadeIn = 0;
         fadeOut = 0;
         hold = 0;
@@ -138,5 +139,58 @@ public class Note {
             System.out.println("  "+presetContainer.get(i));
         }
         System.out.println();
+    }
+
+    public void loadData(JSONObject obj) {
+        //load matrix
+        JSONObject tMatrixObj = obj.getJSONObject("Matrix");
+        for (int y = 0; y < matrix.getStrips(); y++) {
+            for (int x = 0; x < matrix.getLedsPerStrip(); x++) {
+                String tCol = tMatrixObj.getString((Integer.toString(x) + " " + Integer.toString(y)));
+                setLED(x, y, Color.web(tCol));
+            }
+        }
+        //load presets
+        JSONObject tPresetObj = obj.getJSONObject("PresetData");
+        for (int tInc = 0; !tPresetObj.isNull(Integer.toString(tInc)); tInc++) {
+            setPresetProperty(tPresetObj.getString(Integer.toString(tInc)));
+        }
+        setCurrentPreset(obj.getString("CurrentPreset"));
+        //load times
+        setTimeFromString(obj.getString("Times"));
+    }
+
+    public JSONObject saveData() {
+        JSONObject obj = new JSONObject();
+
+        //save matrix
+        JSONObject tMatrixObj = new JSONObject();
+        for (int y = 0; y < matrix.getStrips(); y++) {
+            for (int x = 0; x < matrix.getLedsPerStrip(); x++) {
+                tMatrixObj.put((Integer.toString(x) + " " + Integer.toString(y)), getLEDString(x, y));
+            }
+        }
+        //save presets
+        JSONObject tPresetObj = new JSONObject();
+        for (int j = 0; j < getPresetContainer().size(); j++) {
+            tPresetObj.put(Integer.toString(j), getPresetContainer().get(j));
+        }
+        obj.put("Times", getTimeString());
+        obj.put("PresetData", tPresetObj);
+        obj.put("CurrentPreset", getCurrentPreset());
+        obj.put("Matrix", tMatrixObj);
+
+
+        return obj;
+    }
+
+    void updateSelectedColor(Color c) {
+        for (int y = 0; y < matrix.getStrips(); y++) {
+            for (int x = 0; x < matrix.getLedsPerStrip(); x++) {
+                if (getLEDSelected(x, y)) {
+                    setLED(x, y, c);
+                }
+            }
+        }
     }
 }

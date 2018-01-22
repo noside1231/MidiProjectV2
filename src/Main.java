@@ -32,6 +32,7 @@ public class Main extends Application {
     Scene mainScene;
     BorderPane exteriorPane;
 
+
     //Toolbar
     ToolBar toolbar;
     MenuButton fileMenu;
@@ -91,7 +92,7 @@ public class Main extends Application {
         currentFile = new JSONObject();
 
         //Initialize Clipboard
-        noteClipboard = new Note(-1);
+        noteClipboard = new Note(-1, strips, ledsPerStrip);
 
         //Initialize Toolbar
         toolbar = new ToolBar();
@@ -160,7 +161,7 @@ public class Main extends Application {
         //Notes
         notes = new Note[noteAmount];
         for (int i = 0; i < noteAmount; i++) {
-            notes[i] = new Note(i);
+            notes[i] = new Note(i, strips, ledsPerStrip);
         }
 
         //Presets
@@ -174,7 +175,7 @@ public class Main extends Application {
         exteriorPane.setLeft(colorPickerWindow);
 
         //Mixer
-        mixer = new Mixer();
+        mixer = new Mixer(strips, ledsPerStrip);
 
 
         VBox noteC = new VBox();
@@ -222,7 +223,6 @@ public class Main extends Application {
                 //update mixer
                 Led[][] lastUpdatedMixer = mixer.update(now);
                 if (!editMode) {
-                    System.out.println("AA");
                     lightSelectionWindow.setLEDDisplay(lastUpdatedMixer);
                 }
 
@@ -261,7 +261,7 @@ public class Main extends Application {
         if (fileOpen == null) {
             saveFileAs();
         } else {
-            writeToFile(fileOpen);
+            writeFile(fileOpen);
         }
 
     }
@@ -275,7 +275,7 @@ public class Main extends Application {
         if (selectedFile != null) {
             fileOpen = selectedFile;
             fileOpenLabel.setText(fileOpen.getName());
-            writeToFile(selectedFile);
+            writeFile(selectedFile);
         }
     }
 
@@ -326,17 +326,11 @@ public class Main extends Application {
     }
 
     void updateSelectedColor(Color c) {
-        for (int y = 0; y < strips; y++) {
-            for (int x = 0; x < ledsPerStrip; x++) {
-                if (notes[currentNote].getLEDSelected(x, y)) {
-                    notes[currentNote].setLED(x, y, c);
-                }
-            }
-        }
+        notes[currentNote].updateSelectedColor(c);
         setDisplay();
     }
 
-    void writeToFile(File f) {
+    void writeFile(File f) {
         try {
             FileWriter fileWriter = new FileWriter(f);
             fileWriter.write(currentFile.toString());
@@ -367,73 +361,28 @@ public class Main extends Application {
     }
 
     void loadData() {
+        //load each notes data
         for (int i = 0; i < noteAmount; i++) {
-            //load matrix data
             JSONObject currentObj = currentFile.getJSONObject(Integer.toString(i));
-
-            JSONObject tMatrixObj = currentObj.getJSONObject("Matrix");
-            for (int y = 0; y < strips; y++) {
-                for (int x = 0; x < ledsPerStrip; x++) {
-                    String tCol = tMatrixObj.getString((Integer.toString(x) + " " + Integer.toString(y)));
-                    notes[i].setLED(x, y, Color.web(tCol));
-                }
-            }
-
-            //load preset data
-            JSONObject tPresetObj = currentObj.getJSONObject("PresetData");
-            for (int tInc = 0; !tPresetObj.isNull(Integer.toString(tInc)); tInc++) {
-                notes[i].setPresetProperty(tPresetObj.getString(Integer.toString(tInc)));
-
-            }
-
-            JSONObject tPaletteObj = currentObj.getJSONObject("Palette");
-            for (int y = 0; y < colorPickerWindow.getPaletteY(); y++) {
-                for (int x = 0; x < colorPickerWindow.getPaletteX(); y++) {
-                    colorPickerWindow.setPaletteColor(x, y, Color.web(tPaletteObj.getString((Integer.toString(x) + " " + Integer.toString(y)))));
-                }
-            }
-
-            notes[i].setCurrentPreset(currentObj.getString("CurrentPreset"));
-
-            notes[i].setTimeFromString(currentObj.getString("Times"));
-
+            notes[i].loadData(currentObj);
         }
+        //load palette
+        colorPickerWindow.loadData(currentFile.getJSONObject("Palette"));
         setDisplay();
     }
 
     void saveData() {
+        //save each notes data
         for (int i = 0; i < noteAmount; i++) {
-            //set matrix data
-            JSONObject tMatrixObj = new JSONObject();
-            for (int y = 0; y < strips; y++) {
-                for (int x = 0; x < ledsPerStrip; x++) {
-                    tMatrixObj.put((Integer.toString(x) + " " + Integer.toString(y)), notes[i].getLEDString(x, y));
-                }
-            }
-
-            JSONObject tPresetObj = new JSONObject();
-            for (int j = 0; j < notes[i].getPresetContainer().size(); j++) {
-                tPresetObj.put(Integer.toString(j), notes[i].getPresetContainer().get(j));
-            }
-
-            //save palette
-//            JSONObject tPaletteObj = new JSONObject();
-//            System.out.println(colorPickerWindow.getPaletteX() + " " + colorPickerWindow.getPaletteY());
-//            for (int  y = 0; y < colorPickerWindow.getPaletteY(); y++) {
-//                for (int x = 0; x < colorPickerWindow.getPaletteX(); y++) {
-//                    tPaletteObj.put(Integer.toString(y) + " " + Integer.toString(x), colorPickerWindow.getColorPaletteString(y, x));
-//                }
-//            }
-
-            JSONObject currentObj = new JSONObject();
-            currentObj.put("Matrix", tMatrixObj);
-            currentObj.put("Times", notes[i].getTimeString());
-            currentObj.put("PresetData", tPresetObj);
-            currentObj.put("CurrentPreset", notes[i].getCurrentPreset());
-//            currentObj.put("Palette", tPaletteObj);
-
+            JSONObject currentObj = notes[i].saveData();
             currentFile.put(Integer.toString(i), currentObj);
         }
+
+        //save palette
+            JSONObject tPaletteObj = colorPickerWindow.saveData();
+            currentFile.put("Palette", tPaletteObj);
+
+
     }
 
     void triggerNote() {

@@ -7,6 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.json.JSONObject;
 
 /**
  * Created by Edison on 1/15/18.
@@ -22,7 +23,7 @@ public class ColorPickerWindow extends VBox{
     Tab colorPickerPaletteTab;
 
     ColorPickerSlider s;
-    Palette p;
+    Palette palette;
 
     SimpleObjectProperty<Color> selectedColor;
 
@@ -36,13 +37,13 @@ public class ColorPickerWindow extends VBox{
         selectedColor.set(Color.BLACK);
 
         s = new ColorPickerSlider();
-        p = new Palette(3,7);
+        palette = new Palette(3,7);
 
         s.getColor().addListener(event -> setPreviewColor(s.getColor().getValue()));
 
-        p.getColor().addListener(event -> setPreviewColor(p.getColor().getValue()));
+        palette.getColor().addListener(event -> setPreviewColor(palette.getColor().getValue()));
         colorPickerSliderTab.setContent(s);
-        colorPickerPaletteTab.setContent(p);
+        colorPickerPaletteTab.setContent(palette);
 
         buttonOptions = new HBox();
         setButton = new Button("Set");
@@ -67,7 +68,7 @@ public class ColorPickerWindow extends VBox{
     }
 
     public void setScale() {
-        p.setScale();
+        palette.setScale();
 
         previewColor.setHeight(buttonOptions.getHeight());
         previewColor.setWidth(buttonOptions.getWidth()-setButton.getWidth());
@@ -82,22 +83,30 @@ public class ColorPickerWindow extends VBox{
 
     void setPreviewColor(Color c) {
         previewColor.setFill(c);
-        p.setPreviewColor(c);
+        palette.setPreviewColor(c);
     }
 
     String getColorPaletteString(int x, int y) {
-        return p.getPaletteColorString(x, y);
+        return palette.getPaletteColorString(x, y);
     }
 
     int getPaletteX() {
-        return p.getxAmt();
+        return palette.getxAmt();
     }
     int getPaletteY() {
-        return p.getyAmt();
+        return palette.getyAmt();
     }
 
     void setPaletteColor(int x, int y, Color c) {
-        p.setPaletteColor(x, y, c);
+        palette.setPaletteColor(x, y, c);
+    }
+
+    void loadData(JSONObject obj) {
+        palette.loadData(obj);
+    }
+
+    JSONObject saveData() {
+        return palette.saveData();
     }
 
 

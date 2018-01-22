@@ -5,6 +5,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.json.JSONObject;
 
 /**
  * Created by Edison on 1/15/18.
@@ -94,6 +95,25 @@ public class Palette extends VBox {
     public void setPaletteColor(int x, int y, Color c) {
         rectangleOptions[x][y].setFill(c);
         colorMatrix.setLED(x, y, c);
+    }
+
+    public JSONObject saveData() {
+        JSONObject obj = new JSONObject();
+        for (int y = 0; y < colorMatrix.getStrips(); y++) {
+            for (int x = 0; x < colorMatrix.getLedsPerStrip(); x++) {
+                obj.put((Integer.toString(x) + " " + Integer.toString(y)), colorMatrix.getLEDString(x, y));
+            }
+        }
+        return obj;
+    }
+
+    public void loadData(JSONObject obj) {
+        for (int y = 0; y < colorMatrix.getStrips(); y++) {
+            for (int x = 0; x < colorMatrix.getLedsPerStrip(); x++) {
+                String tCol = obj.getString((Integer.toString(x) + " " + Integer.toString(y)));
+                setPaletteColor(x, y, Color.web(tCol));
+            }
+        }
     }
 
 }

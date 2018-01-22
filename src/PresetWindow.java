@@ -106,6 +106,7 @@ public class PresetWindow extends VBox {
         for (int i = 0; i < s.length; i++) {
             String[] splitted = s[i].split(";");
             if (splitted[0].equals(presets[1])) { //If Rainbow
+                System.out.println(splitted[0] + splitted[1] + splitted[2]);
                 rainbowPreset.setPresetField(splitted[1], splitted[2]);
             }
             else if (splitted[0].equals(presets[2])) { //If Flash

@@ -1,5 +1,7 @@
 import javafx.scene.paint.Color;
 
+import static jdk.nashorn.internal.objects.NativeMath.min;
+
 /**
  * Created by edisongrauman on 12/20/17.
  */
@@ -17,9 +19,22 @@ public class Led {
         ledColor = Color.rgb(r,g,b);
     }
 
+    void addColor(Color c) {
+        int r = (int)((c.getRed() + ledColor.getRed())*255);
+        int g = (int)((c.getGreen() + ledColor.getGreen())*255);
+        int b = (int)((c.getBlue() + ledColor.getBlue())*255);
+
+        if (r > 255) r = 255;
+        if (g > 255) g = 255;
+        if (b > 255) g = 255;
+
+        ledColor = Color.rgb(r,g,b);
+    }
+
     void setColor(Color c) {
         ledColor = c;
     }
+
     Color getLED() {
         return ledColor;
     }
