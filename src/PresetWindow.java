@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public class PresetWindow extends VBox {
 
-    String[] presets = {"None", "Rainbow", "Flash", "Trail", "Twinkle"};//, "Multi"};
+    String[] presets = {"None", "Rainbow", "Flash", "Trail", "Twinkle", "Multi"};
 
     ChoiceBox<String> presetOptions;
     Pane presetPane;
@@ -23,6 +23,7 @@ public class PresetWindow extends VBox {
     FlashPreset flashPreset;
     TrailPreset trailPreset;
     TwinklePreset twinklePreset;
+    MultiPreset multiPreset;
 
     SimpleStringProperty lastChangedPresetProperty;
     SimpleStringProperty lastSelectedPreset;
@@ -49,17 +50,21 @@ public class PresetWindow extends VBox {
         flashPreset = new FlashPreset(presets[2]);
         trailPreset = new TrailPreset(presets[3]);
         twinklePreset = new TwinklePreset(presets[4]);
+        multiPreset = new MultiPreset(presets[5]);
+
         lastChangedPresetProperty.set("A");
         rainbowPreset.changedProperty().addListener(event -> changedPresetProperty(rainbowPreset.changedProperty().get()));
         flashPreset.changedProperty().addListener(event -> changedPresetProperty(flashPreset.changedProperty().get()));
         trailPreset.changedProperty().addListener(event -> changedPresetProperty(trailPreset.changedProperty().get()));
         twinklePreset.changedProperty().addListener(event -> changedPresetProperty(twinklePreset.changedProperty().get()));
+        multiPreset.changedProperty().addListener(event ->changedPresetProperty(multiPreset.changedProperty().get()));
 
         presetWindows.add(nonePreset);
         presetWindows.add(rainbowPreset);
         presetWindows.add(flashPreset);
         presetWindows.add(trailPreset);
         presetWindows.add(twinklePreset);
+        presetWindows.add(multiPreset);
 
         for (int i = 0; i < presetWindows.size(); i++) {
             presetPane.getChildren().add(presetWindows.get(i));
@@ -102,9 +107,7 @@ public class PresetWindow extends VBox {
         flashPreset.resetFields();
         trailPreset.resetFields();
         twinklePreset.resetFields();
-
-//        String[] p = pText.toArray(new String[pText.size()]);
-
+        multiPreset.resetFields();
 
 
         //lol don't mess with this mess
