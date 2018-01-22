@@ -68,7 +68,6 @@ public class Mixer {
                                     break;
                                 }
                                 opacity = 1-(currentTime-tNote.getTimeTriggered())/(1000000000.0*tNote.getNote().getFadeOut());
-                                System.out.println(opacity);
                                 tColor = Color.color(tColor.getRed()*opacity, tColor.getGreen()*opacity, tColor.getBlue()*opacity);
                                 mixerMatrix.addToLED(x, y, tColor);
                                 break;

@@ -300,14 +300,12 @@ public class Main extends Application {
     }
 
     void noteButtonPressed(int ind) {
-//        System.out.println("Note Pressed: " + ind);
         currentNote = ind;
         setDisplay();
 
     }
 
     void displayMatrixRectanglesPressed(Integer[] pair) {
-//        System.out.println("Selected: " + pair[0] + " " + pair[1]);
         notes[currentNote].toggleSelected(pair[0], pair[1]);
         setDisplay();
     }
@@ -322,7 +320,11 @@ public class Main extends Application {
     void setDisplay() {
         lightSelectionWindow.setLEDDisplay(notes[currentNote].getLEDS());
         lightSelectionWindow.setTimes(notes[currentNote].getFadeIn(), notes[currentNote].getHold(), notes[currentNote].getFadeOut());
-        presetWindow.setPresetDisplay(notes[currentNote].getPresetContainer(), notes[currentNote].getCurrentPreset());
+
+        if (currentNote != presetWindow.getCurrentlyDisplayingNote()) {
+            presetWindow.setCurrentlyDisplayingNote(currentNote);
+            presetWindow.setPresetDisplay(notes[currentNote].getPresetContainer(), notes[currentNote].getCurrentPreset());
+        }
     }
 
     void updateSelectedColor(Color c) {

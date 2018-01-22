@@ -99,6 +99,8 @@ public class Note {
 
     public void setPresetProperty(String p) {
 
+        printPresetArray();
+
         String[] add = p.split(";");
 
         if (presetContainer.size() == 0) {

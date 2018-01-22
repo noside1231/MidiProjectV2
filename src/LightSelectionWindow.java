@@ -1,5 +1,6 @@
 import Utilities.LabelCheckBox;
 import Utilities.NumberTextField;
+import Utilities.NumberTextFieldDecimal;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -18,9 +19,9 @@ public class LightSelectionWindow extends VBox {
 
     HBox setTriggerTimeBar;
     Button triggerButton;
-    NumberTextField fadeInField;
-    NumberTextField holdField;
-    NumberTextField fadeOutField;
+    NumberTextFieldDecimal fadeInField;
+    NumberTextFieldDecimal holdField;
+    NumberTextFieldDecimal fadeOutField;
     SimpleIntegerProperty triggerInt;
     LabelCheckBox editMode;
 
@@ -50,9 +51,9 @@ public class LightSelectionWindow extends VBox {
 
         setTriggerTimeBar = new HBox();
         triggerButton = new Button("Trigger");
-        fadeInField = new NumberTextField();
-        fadeOutField = new NumberTextField();
-        holdField = new NumberTextField();
+        fadeInField = new NumberTextFieldDecimal();
+        fadeOutField = new NumberTextFieldDecimal();
+        holdField = new NumberTextFieldDecimal();
 
         editMode = new LabelCheckBox("Edit Mode", true);
         lastEditToggle = new SimpleBooleanProperty();
@@ -64,9 +65,9 @@ public class LightSelectionWindow extends VBox {
         times = new SimpleObjectProperty<>();
         times.set(new Float[] {(float)0,(float)0,(float)0});
 
-        fadeInField.getValue().addListener(event -> setTime(new Float[] {(float)fadeInField.getValue().get(),  (float)holdField.getValue().get(), (float)fadeOutField.getValue().get()}));
-        holdField.getValue().addListener(event -> setTime(new Float[] {(float)fadeInField.getValue().get(),  (float)holdField.getValue().get(), (float)fadeOutField.getValue().get()}));
-        fadeOutField.getValue().addListener(event -> setTime(new Float[] {(float)fadeInField.getValue().get(),  (float)holdField.getValue().get(), (float)fadeOutField.getValue().get()}));
+        fadeInField.getValue().addListener(event -> setTime(new Float[] {fadeInField.getValue().get(),  holdField.getValue().get(), fadeOutField.getValue().get()}));
+        holdField.getValue().addListener(event -> setTime(new Float[] {fadeInField.getValue().get(),  holdField.getValue().get(), fadeOutField.getValue().get()}));
+        fadeOutField.getValue().addListener(event -> setTime(new Float[] {fadeInField.getValue().get(),  holdField.getValue().get(), fadeOutField.getValue().get()}));
 
 
 
@@ -123,7 +124,6 @@ public class LightSelectionWindow extends VBox {
     }
 
     void editToggled(boolean t) {
-        System.out.println("BB");
         lastEditToggle.set(t);
         editMode.setChecked(lastEditToggle.get());
     }

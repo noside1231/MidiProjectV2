@@ -27,6 +27,8 @@ public class PresetWindow extends VBox {
     SimpleStringProperty lastChangedPresetProperty;
     SimpleStringProperty lastSelectedPreset;
 
+    int currentlyDisplayingNote = 0;
+
 
     public PresetWindow() {
 
@@ -101,6 +103,10 @@ public class PresetWindow extends VBox {
         trailPreset.resetFields();
         twinklePreset.resetFields();
 
+//        String[] p = pText.toArray(new String[pText.size()]);
+
+
+
         //lol don't mess with this mess
         String[] s = pText.toArray(new String[pText.size()]);
         for (int i = 0; i < s.length; i++) {
@@ -115,4 +121,11 @@ public class PresetWindow extends VBox {
         }
     }
 
+    public int getCurrentlyDisplayingNote() {
+        return currentlyDisplayingNote;
+    }
+
+    public void setCurrentlyDisplayingNote(int s) {
+        currentlyDisplayingNote = s;
+    }
 }
