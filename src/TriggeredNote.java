@@ -25,7 +25,8 @@ public class TriggeredNote {
         return status;
     }
 
-    void incrementStatus() {
+    void incrementStatus(long t) {
+        timeTriggered = t;
         status++;
     }
 

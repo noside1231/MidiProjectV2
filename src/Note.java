@@ -180,7 +180,6 @@ public class Note {
         obj.put("CurrentPreset", getCurrentPreset());
         obj.put("Matrix", tMatrixObj);
 
-
         return obj;
     }
 
