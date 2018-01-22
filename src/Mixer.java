@@ -2,6 +2,7 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Stack;
 
 /**
@@ -10,18 +11,14 @@ import java.util.Stack;
 public class Mixer {
 
     LEDMatrix mixerMatrix;
-    ArrayList<TriggeredNote> currentlyTriggeredNotes;
-    LinkedList<TriggeredNote> cur;
-//    ArrayList<TriggeredNote> currentlyTriggeredNotes;
+    LinkedList<TriggeredNote> currentlyTriggeredNotes;
+    ListIterator<TriggeredNote> iterator;
     long currentTime;
 
     public Mixer(int strips, int ledsPerStrip) {
 
         mixerMatrix = new LEDMatrix(strips, ledsPerStrip);
-        currentlyTriggeredNotes = new ArrayList<>();
-//        cur = new LinkedList<>();
-//
-//        cur.
+        currentlyTriggeredNotes = new LinkedList<>();
     }
 
     public Led[][] update(long curTime) {
@@ -29,10 +26,14 @@ public class Mixer {
 
         mixerMatrix.reset();
 
-//        System.out.println(currentlyTriggeredNotes.size());
-        for (int i = 0; i < currentlyTriggeredNotes.size(); i++) {
-            Note tNote = currentlyTriggeredNotes.get(i).getNote();
-            if ((curTime-currentlyTriggeredNotes.get(i).getTimeTriggered())/1000000000.0 < currentlyTriggeredNotes.get(i).getNote().getHold()) {
+
+        iterator = currentlyTriggeredNotes.listIterator();
+
+        while(iterator.hasNext()) {
+
+//        for (int i = 0; i < currentlyTriggeredNotes.size(); i++) {
+            TriggeredNote tNote = iterator.next();
+            if ((curTime-tNote.getTimeTriggered())/1000000000.0 < tNote.getNote().getHold()) {
                 for (int y = 0; y < mixerMatrix.getStrips(); y++) {
                     for (int x = 0; x < mixerMatrix.getLedsPerStrip(); x++) {
 
@@ -41,18 +42,18 @@ public class Mixer {
                             case 0:
                                 break;
                             case 1:
-                                mixerMatrix.addToLED(x, y, tNote.getLED(x, y));
+                                mixerMatrix.addToLED(x, y, tNote.getNote().getLED(x, y));
                                 break;
                             case 2:
                                 break;
                         }
 
 
-                        mixerMatrix.addToLED(x, y, tNote.getLED(x, y));
+                        mixerMatrix.addToLED(x, y, tNote.getNote().getLED(x, y));
                     }
                 }
             } else {
-                currentlyTriggeredNotes.remove(i);
+                iterator.remove();
             }
 
 
