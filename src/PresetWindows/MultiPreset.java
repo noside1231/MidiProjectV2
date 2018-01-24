@@ -1,8 +1,10 @@
 package PresetWindows;
 
+import Utilities.LabelCheckBox;
 import Utilities.SliderTextField;
 import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Pos;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.VBox;
@@ -12,44 +14,49 @@ import java.util.ArrayList;
 /**
  * Created by edisongrauman on 1/22/18.
  */
-public class MultiPreset extends VBox{
 
-//    SliderTextField FlashDurationField;
-//    SliderTextField FlashRateField;
+public class MultiPreset extends VBox {
+
     SimpleStringProperty lastChanged;
     String presetName;
 
-    ListView<String> viewField;
-    ListView<String> selected;
-    ArrayList<String> selections;
+    ArrayList<LabelCheckBox> selections;
+    ListView<LabelCheckBox> viewField;
+    ArrayList<LabelCheckBox> labelCheckBoxes;
+
+    Integer[] selected;
 
     public MultiPreset(String p) {
+        selected = new Integer[128];
+        for (int i = 0; i < selected.length; i++) {
+            selected[i] = 0;
+        }
         presetName = p;
-
         lastChanged = new SimpleStringProperty();
-        presetChanged("",0);
+        presetChanged("0", 0);
 
         viewField = new ListView<>();
         selections = new ArrayList<>();
-        selected = new ListView<>();
-        for(int i = 1; i <= 128; i++) {
-            selections.add(String.valueOf(i));
+        labelCheckBoxes = new ArrayList<>();
+        for (int i = 0; i < 128; i++) {
+            labelCheckBoxes.add(new LabelCheckBox(String.valueOf(i + 1)));
+            int tempI = i;
+            labelCheckBoxes.get(i).getChecked().addListener(event -> presetChanged(String.valueOf(tempI), selections.get(tempI).getChecked().get() ? 1 : 0));
+            labelCheckBoxes.get(i).setAlignment(Pos.CENTER_RIGHT);
         }
-        viewField.getItems().addAll(selections);
-        viewField.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        viewField.getSelectionModel().selectedItemProperty().addListener((obs,ov,nv)->{
-            selected.setItems(selected.getSelectionModel().getSelectedItems());
-        });
+        selections.addAll(labelCheckBoxes);
 
-//        FlashDurationField.getValue().addListener(event -> presetChanged(FlashDurationField.getName(), FlashDurationField.getValue().get()));
-//        FlashRateField.getValue().addListener(event -> presetChanged(FlashRateField.getName(), FlashRateField.getValue().get()));
+        viewField.setPrefWidth(90);
+        viewField.setPrefHeight(200);
+        viewField.getItems().addAll(selections);
 
         getChildren().addAll(viewField);
-
     }
 
-    void presetChanged(String field, int val) {
-        lastChanged.set(presetName+";"+field+";"+val);
+    void presetChanged(String field, int a) {
+        lastChanged.set(presetName + ";" + field + ";" + a);
+        setSelected(field, a);
+
     }
 
     public SimpleStringProperty changedProperty() {
@@ -57,17 +64,17 @@ public class MultiPreset extends VBox{
     }
 
     public void setPresetField(String name, String v) {
-
-//        int f = Integer.parseInt(v);
-//        if (name.equals(FlashDurationField.getName())) {
-////            FlashDurationField.setValue(f);
-//        } else if (name.equals(FlashRateField.getName())) {
-////            FlashRateField.setValue(f);
-//        }
+        int f = Integer.parseInt(name);
+        labelCheckBoxes.get(f).setChecked(v.equals("1"));
     }
 
     public void resetFields() {
-//        FlashDurationField.setValue(0);
-//        FlashRateField.setValue(0);
+        for (int i = 0; i < labelCheckBoxes.size(); i++) {
+            labelCheckBoxes.get(i).setChecked(false);
+        }
+    }
+
+    void setSelected(String i, int b) {
+        selected[Integer.parseInt(i)] = b;
     }
 }

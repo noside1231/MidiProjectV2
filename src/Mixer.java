@@ -91,7 +91,30 @@ public class Mixer {
     }
 
     public void setTriggered(Note n) {
+
+        for (int j = 0; j < getCurrentlyTriggeredNotes().size(); j++) {
+            if (n.getID() == getCurrentlyTriggeredNotes().get(j)) {
+                resetNote(n.getID());
+                return;
+            }
+        }
         currentlyTriggeredNotes.add(new TriggeredNote(n, currentTime));
+    }
+
+    ArrayList<Integer> getCurrentlyTriggeredNotes() {
+        ArrayList<Integer> a = new ArrayList<>();
+        for (int i = 0; i < currentlyTriggeredNotes.size(); i++) {
+            a.add(currentlyTriggeredNotes.get(i).getNote().getID());
+        }
+        return a;
+    }
+
+    void resetNote(int i) {
+        for (int j = 0; j < currentlyTriggeredNotes.size(); j++) {
+            if (i == currentlyTriggeredNotes.get(i).getNote().getID()) {
+                currentlyTriggeredNotes.get(i).resetTrigger(currentTime);
+            }
+        }
     }
 
 }

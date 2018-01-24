@@ -194,4 +194,8 @@ public class Note {
             }
         }
     }
+
+    public int getID() {
+        return id;
+    }
 }

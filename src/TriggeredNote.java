@@ -25,6 +25,11 @@ public class TriggeredNote {
         return status;
     }
 
+    public void resetTrigger(long t) {
+        timeTriggered = t;
+        status = 0;
+    }
+
     void incrementStatus(long t) {
         timeTriggered = t;
         status++;

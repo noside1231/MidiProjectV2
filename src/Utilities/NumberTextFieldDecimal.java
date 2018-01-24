@@ -33,10 +33,9 @@ public class NumberTextFieldDecimal extends TextField{
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (!newValue.matches("\\d*(\\.\\d*)?")) {
-//                if (!newValue.matches("\\d{0,4}?")) {
                     setText(oldValue);
                 } else {
-                    if (newValue.isEmpty()) {
+                    if (newValue.isEmpty() || newValue.equals(".")) {
                         setValue(minVal);
                     } else {
                         float newVal = Float.parseFloat(newValue);
