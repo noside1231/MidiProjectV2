@@ -84,9 +84,10 @@ public class DisplayNoteWindow extends VBox {
     }
 
     public void setScale() {
-        int noteRectScaleX = (int) noteContainer.getWidth() / noteAmount;
+        double noteRectScaleX = noteContainer.getWidth() / noteAmount;
         for (int i = 0; i < noteAmount; i++) {
             noteRects[i].setWidth(noteRectScaleX);
+//            noteRects[i].setWidth(screenX/noteAmount);
             noteRects[i].setHeight(noteRectScaleY);
         }
 

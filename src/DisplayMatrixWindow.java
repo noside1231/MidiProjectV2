@@ -42,7 +42,7 @@ public class DisplayMatrixWindow extends HBox {
     SimpleIntegerProperty selectColInt;
 
     public DisplayMatrixWindow(int lPS, int s) {
-        setPrefHeight(100);
+        setPrefHeight(200);
         strips = s;
         ledsPerStrip = lPS;
 
@@ -78,6 +78,8 @@ public class DisplayMatrixWindow extends HBox {
         getChildren().add(displayRectRows);
         displayRectRows.setStyle("-fx-background-color: #00FFFF;");
 
+
+        //Context Menu
         rightClickOptionMenu = new ContextMenu();
         setOnContextMenuRequested(event -> rightClick(event));
 

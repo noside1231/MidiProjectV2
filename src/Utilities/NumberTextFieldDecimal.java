@@ -10,8 +10,8 @@ import javafx.scene.control.TextField;
  */
 public class NumberTextFieldDecimal extends TextField{
     SimpleFloatProperty value = new SimpleFloatProperty(this, "value", 0);
-    float minVal;
-    float maxVal;
+    int minVal;
+    int maxVal;
 
 
     public NumberTextFieldDecimal() {
@@ -32,8 +32,8 @@ public class NumberTextFieldDecimal extends TextField{
         textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-
-                if (!newValue.matches("\\d{0,4}([\\.]\\d{0,4})?")) {
+                if (!newValue.matches("\\d*(\\.\\d*)?")) {
+//                if (!newValue.matches("\\d{0,4}?")) {
                     setText(oldValue);
                 } else {
                     if (newValue.isEmpty()) {
@@ -52,15 +52,12 @@ public class NumberTextFieldDecimal extends TextField{
         });
     }
 
-    public void setValue(int v) {
+    public void setValue(float v) {
         value.set(v);
         setText(String.valueOf(v));
         positionCaret(3);
     }
 
-    public void setValue(float f) {
-        setValue((int) f);
-    }
     public SimpleFloatProperty getValue() {
         return value;
     }
