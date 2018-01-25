@@ -72,6 +72,7 @@ public class TriggeredNote {
                 break;
         }
 
+        //apply fade
         switch (status) {
             case 0:
                 if ((t - getTimeStatus()) / 1000000000.0 >= note.getFadeIn() || note.getFadeIn() == 0) {
@@ -138,17 +139,18 @@ public class TriggeredNote {
     }
 
     Color[][] applyRainbowPreset(Color[][] cols, long t) {
-        double curT = (t-originalTriggerTime)/1000000000.0;
-        System.out.println(curT);
+        double curT = (t - originalTriggerTime) / 1000000000.0;
 
-        double speed = curT*note.getPresetParameter("Rainbow", "Speed");
+        double speed = curT * note.getPresetParameter("Rainbow", "Speed");
         double spread = note.getPresetParameter("Rainbow", "Spread");
         double offset = note.getPresetParameter("Rainbow", "Offset");
         double skip = note.getPresetParameter("Rainbow", "Skip");
 
         for (int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
-                cols[x][y] = Color.hsb((speed+(spread*x)+(y*offset))%360, 1, 1);
+                if (cols[x][y].getRed() != 0 || cols[x][y].getGreen() != 0 || cols[x][y].getBlue() != 0) {
+                    cols[x][y] = Color.hsb((speed + (spread * x) + (y * offset)) % 360, 1, 1);
+                }
             }
         }
         return cols;
@@ -156,14 +158,12 @@ public class TriggeredNote {
 
     Color[][] applyFlashPreset(Color[][] cols, long t) {
 
-        double curT = (t-originalTriggerTime)/1000000000.0;
+        double curT = (t - originalTriggerTime) / 1000000000.0;
 
         double frequency = note.getPresetParameter("Flash", "Speed");
         double length = note.getPresetParameter("Flash", "Spread");
 
-        double period = 1/frequency;
-
-
+        double period = 1 / frequency;
 
 
         for (int y = 0; y < note.getMatrix().getStrips(); y++) {

@@ -252,7 +252,6 @@ public class Main extends Application {
             fileOpenLabel.setText(fileOpen.getName());
             readFile(selectedFile);
         }
-
     }
 
     void saveFile() {
@@ -370,7 +369,8 @@ public class Main extends Application {
         }
         //load palette
         colorPickerWindow.loadData(currentFile.getJSONObject("Palette"));
-        setDisplay();
+        noteButtonPressed(1);
+        noteButtonPressed(0); //refresh current note display
     }
 
     void saveData() {
