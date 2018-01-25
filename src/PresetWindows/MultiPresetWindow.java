@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * Created by edisongrauman on 1/22/18.
  */
 
-public class MultiPreset extends VBox {
+public class MultiPresetWindow extends VBox {
 
     SimpleStringProperty lastChanged;
     String presetName;
@@ -26,7 +26,7 @@ public class MultiPreset extends VBox {
 
     Integer[] selected;
 
-    public MultiPreset(String p) {
+    public MultiPresetWindow(String p) {
         selected = new Integer[128];
         for (int i = 0; i < selected.length; i++) {
             selected[i] = 0;

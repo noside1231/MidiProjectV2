@@ -72,4 +72,14 @@ public class LEDMatrix {
         leds[x][y].addColor(c);
     }
 
+    public void addToLED(Color[][] c) {
+        for (int y = 0; y < strips; y++) {
+            for (int x = 0; x < ledsPerStrip; x++) {
+                leds[x][y].addColor(c[x][y]);
+            }
+        }
+    }
+
+
+
 }

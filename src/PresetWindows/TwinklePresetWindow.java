@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 /**
  * Created by edisongrauman on 1/18/18.
  */
-public class TwinklePreset extends VBox{
+public class TwinklePresetWindow extends VBox{
 
     SliderTextField amountField;
     SliderTextField varianceField;
@@ -19,7 +19,7 @@ public class TwinklePreset extends VBox{
     SimpleStringProperty lastChanged;
     String presetName;
 
-    public TwinklePreset(String p) {
+    public TwinklePresetWindow(String p) {
         presetName = p;
 
         lastChanged = new SimpleStringProperty();

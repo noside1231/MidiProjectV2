@@ -198,4 +198,8 @@ public class Note {
     public int getID() {
         return id;
     }
+
+    public LEDMatrix getMatrix() {
+        return matrix;
+    }
 }

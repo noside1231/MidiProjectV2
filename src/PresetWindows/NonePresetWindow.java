@@ -5,12 +5,12 @@ import javafx.scene.layout.VBox;
 /**
  * Created by Edison on 1/17/18.
  */
-public class NonePreset extends VBox{
+public class NonePresetWindow extends VBox{
 
     String presetName;
 
 
-    public NonePreset(String n) {
+    public NonePresetWindow(String n) {
      presetName = n;
     }
 }

@@ -6,38 +6,41 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.VBox;
 
 /**
- * Created by Edison on 1/17/18.
+ * Created by edisongrauman on 1/18/18.
  */
-public class RainbowPreset extends VBox {
+public class TrailPresetWindow extends VBox {
 
     SliderTextField speedField;
-    SliderTextField spreadField;
+    SliderTextField lengthField;
     SliderTextField offsetField;
     SliderTextField skipField;
-    LabelCheckBox reverseField;
+    LabelCheckBox halfField;
+    LabelCheckBox bounceField;
     SimpleStringProperty lastChanged;
     String presetName;
 
-    public RainbowPreset(String p) {
+    public TrailPresetWindow(String p) {
         presetName = p;
 
         lastChanged = new SimpleStringProperty();
         presetChanged("",0);
 
         speedField = new SliderTextField(0,0, 100, "Speed");
-        spreadField = new SliderTextField(0, 0, 100, "Spread");
+        lengthField = new SliderTextField(0, 0, 100, "Length");
         offsetField = new SliderTextField(0,0, 100, "Offset");
         skipField = new SliderTextField(0,0, 100, "Skip");
-        reverseField = new LabelCheckBox("Reverse");
+        bounceField = new LabelCheckBox("Bounce");
+        halfField = new LabelCheckBox("Half");
 
         speedField.getValue().addListener(event -> presetChanged(speedField.getName(), speedField.getValue().get()));
-        spreadField.getValue().addListener(event -> presetChanged(spreadField.getName(), spreadField.getValue().get()));
+        lengthField.getValue().addListener(event -> presetChanged(lengthField.getName(), lengthField.getValue().get()));
         offsetField.getValue().addListener(event -> presetChanged(offsetField.getName(), offsetField.getValue().get()));
         skipField.getValue().addListener(event -> presetChanged(skipField.getName(), skipField.getValue().get()));
-        reverseField.getChecked().addListener(event -> presetChanged(reverseField.getName(), reverseField.getChecked().get() ? 1 : 0));
+        bounceField.getChecked().addListener(event -> presetChanged(bounceField.getName(), bounceField.getChecked().get() ? 1 : 0));
+        halfField.getChecked().addListener(event -> presetChanged(bounceField.getName(), bounceField.getChecked().get() ? 1 : 0));
 
 
-        getChildren().addAll(speedField, spreadField, offsetField, skipField, reverseField);
+        getChildren().addAll(speedField, lengthField, offsetField, skipField, bounceField, halfField);
 
     }
 
@@ -54,14 +57,16 @@ public class RainbowPreset extends VBox {
         int f = Integer.parseInt(v);
         if (name.equals(speedField.getName())) {
             speedField.setValue(f);
-        } else if (name.equals(spreadField.getName())) {
-            spreadField.setValue(f);
+        } else if (name.equals(lengthField.getName())) {
+            lengthField.setValue(f);
         } else if (name.equals(offsetField.getName())) {
             offsetField.setValue(f);
         } else if (name.equals(skipField.getName())) {
             skipField.setValue(f);
-        } else if (name.equals(reverseField.getName())) {
-            reverseField.setChecked(f == 1 ? true : false);
+        } else if (name.equals(bounceField.getName())) {
+            bounceField.setChecked(f == 1 ? true : false);
+        } else if (name.equals(halfField.getName())) {
+            halfField.setChecked(f == 1 ? true : false);
         }
 
 
@@ -69,11 +74,14 @@ public class RainbowPreset extends VBox {
 
     public void resetFields() {
         speedField.setValue(0);
-        spreadField.setValue(0);
+        lengthField.setValue(0);
         offsetField.setValue(0);
         skipField.setValue(0);
-        reverseField.setChecked(false);
+        bounceField.setChecked(false);
+        halfField.setChecked(false);
     }
+
+
 
 
 }

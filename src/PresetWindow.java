@@ -18,12 +18,12 @@ public class PresetWindow extends VBox {
 
 
     ArrayList<VBox> presetWindows;
-    NonePreset nonePreset;
-    RainbowPreset rainbowPreset;
-    FlashPreset flashPreset;
-    TrailPreset trailPreset;
-    TwinklePreset twinklePreset;
-    MultiPreset multiPreset;
+    NonePresetWindow nonePresetWindow;
+    RainbowPresetWindow rainbowPresetWindow;
+    FlashPresetWindow flashPresetWindow;
+    TrailPresetWindow trailPresetWindow;
+    TwinklePresetWindow twinklePresetWindow;
+    MultiPresetWindow multiPresetWindow;
 
     SimpleStringProperty lastChangedPresetProperty;
     SimpleStringProperty lastSelectedPreset;
@@ -45,26 +45,26 @@ public class PresetWindow extends VBox {
 
         presetWindows = new ArrayList<>();
 
-        nonePreset = new NonePreset(presets[0]);
-        rainbowPreset = new RainbowPreset(presets[1]);
-        flashPreset = new FlashPreset(presets[2]);
-        trailPreset = new TrailPreset(presets[3]);
-        twinklePreset = new TwinklePreset(presets[4]);
-        multiPreset = new MultiPreset(presets[5]);
+        nonePresetWindow = new NonePresetWindow(presets[0]);
+        rainbowPresetWindow = new RainbowPresetWindow(presets[1]);
+        flashPresetWindow = new FlashPresetWindow(presets[2]);
+        trailPresetWindow = new TrailPresetWindow(presets[3]);
+        twinklePresetWindow = new TwinklePresetWindow(presets[4]);
+        multiPresetWindow = new MultiPresetWindow(presets[5]);
 
         lastChangedPresetProperty.set("A");
-        rainbowPreset.changedProperty().addListener(event -> changedPresetProperty(rainbowPreset.changedProperty().get()));
-        flashPreset.changedProperty().addListener(event -> changedPresetProperty(flashPreset.changedProperty().get()));
-        trailPreset.changedProperty().addListener(event -> changedPresetProperty(trailPreset.changedProperty().get()));
-        twinklePreset.changedProperty().addListener(event -> changedPresetProperty(twinklePreset.changedProperty().get()));
-        multiPreset.changedProperty().addListener(event ->changedPresetProperty(multiPreset.changedProperty().get()));
+        rainbowPresetWindow.changedProperty().addListener(event -> changedPresetProperty(rainbowPresetWindow.changedProperty().get()));
+        flashPresetWindow.changedProperty().addListener(event -> changedPresetProperty(flashPresetWindow.changedProperty().get()));
+        trailPresetWindow.changedProperty().addListener(event -> changedPresetProperty(trailPresetWindow.changedProperty().get()));
+        twinklePresetWindow.changedProperty().addListener(event -> changedPresetProperty(twinklePresetWindow.changedProperty().get()));
+        multiPresetWindow.changedProperty().addListener(event ->changedPresetProperty(multiPresetWindow.changedProperty().get()));
 
-        presetWindows.add(nonePreset);
-        presetWindows.add(rainbowPreset);
-        presetWindows.add(flashPreset);
-        presetWindows.add(trailPreset);
-        presetWindows.add(twinklePreset);
-        presetWindows.add(multiPreset);
+        presetWindows.add(nonePresetWindow);
+        presetWindows.add(rainbowPresetWindow);
+        presetWindows.add(flashPresetWindow);
+        presetWindows.add(trailPresetWindow);
+        presetWindows.add(twinklePresetWindow);
+        presetWindows.add(multiPresetWindow);
 
         for (int i = 0; i < presetWindows.size(); i++) {
             presetPane.getChildren().add(presetWindows.get(i));
@@ -103,11 +103,11 @@ public class PresetWindow extends VBox {
 
     public void setPresetDisplay(ArrayList<String> pText, String curPreset) {
         switchPreset(curPreset);
-        rainbowPreset.resetFields();
-        flashPreset.resetFields();
-        trailPreset.resetFields();
-        twinklePreset.resetFields();
-        multiPreset.resetFields();
+        rainbowPresetWindow.resetFields();
+        flashPresetWindow.resetFields();
+        trailPresetWindow.resetFields();
+        twinklePresetWindow.resetFields();
+        multiPresetWindow.resetFields();
 
 
         //lol don't mess with this mess
@@ -116,19 +116,19 @@ public class PresetWindow extends VBox {
             String[] splitted = s[i].split(";");
 
             if (splitted[0].equals(presets[1])) { //If Rainbow
-                rainbowPreset.setPresetField(splitted[1], splitted[2]);
+                rainbowPresetWindow.setPresetField(splitted[1], splitted[2]);
             }
             else if (splitted[0].equals(presets[2])) { //If Flash
-                flashPreset.setPresetField(splitted[1], splitted[2]);
+                flashPresetWindow.setPresetField(splitted[1], splitted[2]);
             }
             else if (splitted[0].equals(presets[3])) { //If Trail
-                trailPreset.setPresetField(splitted[1], splitted[2]);
+                trailPresetWindow.setPresetField(splitted[1], splitted[2]);
             }
             else if (splitted[0].equals(presets[4])) { // If Twinkle
-                twinklePreset.setPresetField(splitted[1], splitted[2]);
+                twinklePresetWindow.setPresetField(splitted[1], splitted[2]);
             }
             else if (splitted[0].equals(presets[5])) { //If Multi
-                multiPreset.setPresetField(splitted[1], splitted[2]);
+                multiPresetWindow.setPresetField(splitted[1], splitted[2]);
             }
         }
     }

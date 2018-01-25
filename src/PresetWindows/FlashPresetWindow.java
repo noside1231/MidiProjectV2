@@ -7,14 +7,14 @@ import javafx.scene.layout.VBox;
 /**
  * Created by edisongrauman on 1/18/18.
  */
-public class FlashPreset extends VBox {
+public class FlashPresetWindow extends VBox {
 
     SliderTextField FlashDurationField;
     SliderTextField FlashRateField;
     SimpleStringProperty lastChanged;
     String presetName;
 
-    public FlashPreset(String p) {
+    public FlashPresetWindow(String p) {
         presetName = p;
 
         lastChanged = new SimpleStringProperty();
