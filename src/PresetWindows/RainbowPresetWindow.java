@@ -67,6 +67,7 @@ public class RainbowPresetWindow extends VBox {
 
     }
 
+
     public void resetFields() {
         speedField.setValue(0);
         spreadField.setValue(0);

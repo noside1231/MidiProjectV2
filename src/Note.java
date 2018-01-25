@@ -202,4 +202,15 @@ public class Note {
     public LEDMatrix getMatrix() {
         return matrix;
     }
+
+    public int getPresetParameter(String preset, String parameter) {
+        for (int i = 0; i < presetContainer.size(); i++) {
+            String[] temp = presetContainer.get(i).split(";");
+
+            if (temp[0].equals(preset) && temp[1].equals(parameter)) {
+                return Integer.parseInt(temp[2]);
+            }
+        }
+        return 0;
+    }
 }

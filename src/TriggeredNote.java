@@ -5,18 +5,20 @@ import javafx.scene.paint.Color;
  */
 public class TriggeredNote {
 
-    long timeTriggered;
+    long timeStatus;
     Note note;
+    long originalTriggerTime;
 
     int status; //0 fade in, 1 hold, 2 fade out
 
     public TriggeredNote(Note n, long t) {
         note = n;
-        timeTriggered = t;
+        timeStatus = t;
+        originalTriggerTime = t;
     }
 
-    long getTimeTriggered() {
-        return timeTriggered;
+    long getTimeStatus() {
+        return timeStatus;
     }
 
     Note getNote() {
@@ -28,12 +30,13 @@ public class TriggeredNote {
     }
 
     public void resetTrigger(long t) {
-        timeTriggered = t;
+        originalTriggerTime = t;
+        timeStatus = t;
         status = 0;
     }
 
     public void incrementStatus(long t) {
-        timeTriggered = t;
+        timeStatus = t;
         status++;
     }
 
@@ -43,38 +46,51 @@ public class TriggeredNote {
 
         for (int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
-                    tColors[x][y] = note.getLED(x, y);
+                tColors[x][y] = note.getLED(x, y);
             }
+        }
+
+        //apply preset
+        switch (note.getCurrentPreset()) {
+            case "None":
+                System.out.println("NONE");
+                break;
+            case "Rainbow":
+                tColors = applyRainbowPreset(tColors, t);
+                break;
+            case "Flash":
+                System.out.println("NONE");
+                break;
+            case "Trail":
+                System.out.println("NONE");
+                break;
+            case "Twinkle":
+                System.out.println("NONE");
+                break;
+            case "Multi":
+                System.out.println("NONE");
+                break;
         }
 
         switch (status) {
             case 0:
-                if ((t - getTimeTriggered()) / 1000000000.0 >= note.getFadeIn() || note.getFadeIn() == 0) {
+                if ((t - getTimeStatus()) / 1000000000.0 >= note.getFadeIn() || note.getFadeIn() == 0) {
                     incrementStatus(t);
                     break;
                 }
-                //apply preset
-
-
                 tColors = applyFadeIn(tColors, t);
                 break;
             case 1:
-                if ((t - getTimeTriggered()) / 1000000000.0 >= note.getHold() || note.getHold() == 0) {
+                if ((t - getTimeStatus()) / 1000000000.0 >= note.getHold() || note.getHold() == 0) {
                     incrementStatus(t);
                     break;
                 }
-                //apply preset
-
-
                 break;
             case 2:
-                if ((t - getTimeTriggered()) / 1000000000.0 >= note.getFadeOut() || note.getFadeOut() == 0) {
+                if ((t - getTimeStatus()) / 1000000000.0 >= note.getFadeOut() || note.getFadeOut() == 0) {
                     incrementStatus(t);
                     break;
                 }
-                //apply preset
-
-
                 tColors = applyFadeOut(tColors, t);
                 break;
         }
@@ -90,7 +106,7 @@ public class TriggeredNote {
 
     Color[][] applyFadeIn(Color[][] cols, long t) {
         double opacity;
-        opacity = (t - timeTriggered) / (1000000000.0 * note.getFadeIn());
+        opacity = (t - timeStatus) / (1000000000.0 * note.getFadeIn());
 
         for (int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
@@ -102,7 +118,7 @@ public class TriggeredNote {
 
     Color[][] applyFadeOut(Color[][] cols, long t) {
         double opacity;
-        opacity = 1 - ((t - timeTriggered) / (1000000000.0 * note.getFadeOut()));
+        opacity = 1 - ((t - timeStatus) / (1000000000.0 * note.getFadeOut()));
 
         for (int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
@@ -118,6 +134,48 @@ public class TriggeredNote {
                 cols[x][y] = Color.BLACK;
             }
         }
+        return cols;
+    }
+
+    Color[][] applyRainbowPreset(Color[][] cols, long t) {
+        double curT = (t-originalTriggerTime)/1000000000.0;
+        System.out.println(curT);
+
+        double speed = curT*note.getPresetParameter("Rainbow", "Speed");
+        double spread = note.getPresetParameter("Rainbow", "Spread");
+        double offset = note.getPresetParameter("Rainbow", "Offset");
+        double skip = note.getPresetParameter("Rainbow", "Skip");
+
+        for (int y = 0; y < note.getMatrix().getStrips(); y++) {
+            for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
+                cols[x][y] = Color.hsb((speed+(spread*x)+(y*offset))%360, 1, 1);
+            }
+        }
+        return cols;
+    }
+
+    Color[][] applyFlashPreset(Color[][] cols, long t) {
+
+        double curT = (t-originalTriggerTime)/1000000000.0;
+
+        double frequency = note.getPresetParameter("Flash", "Speed");
+        double length = note.getPresetParameter("Flash", "Spread");
+
+        double period = 1/frequency;
+
+
+
+
+        for (int y = 0; y < note.getMatrix().getStrips(); y++) {
+            for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
+
+
+//                cols[x][y]
+
+            }
+        }
+
+
         return cols;
     }
 
