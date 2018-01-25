@@ -64,9 +64,9 @@ public class TrailPresetWindow extends VBox {
         } else if (name.equals(skipField.getName())) {
             skipField.setValue(f);
         } else if (name.equals(bounceField.getName())) {
-            bounceField.setChecked(f == 1 ? true : false);
+            bounceField.setChecked(f == 1);
         } else if (name.equals(halfField.getName())) {
-            halfField.setChecked(f == 1 ? true : false);
+            halfField.setChecked(f == 1);
         }
 
 

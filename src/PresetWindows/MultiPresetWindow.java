@@ -1,12 +1,9 @@
 package PresetWindows;
 
 import Utilities.LabelCheckBox;
-import Utilities.SliderTextField;
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;

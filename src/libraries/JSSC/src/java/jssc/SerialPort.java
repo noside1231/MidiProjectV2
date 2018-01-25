@@ -26,7 +26,6 @@ package libraries.JSSC.src.java.jssc;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
-import java.nio.charset.Charset;
 
 /**
  *

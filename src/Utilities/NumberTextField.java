@@ -10,9 +10,9 @@ import javafx.scene.control.TextField;
  * Created by Edison on 1/14/18.
  */
 public class NumberTextField extends TextField{
-    IntegerProperty value = new SimpleIntegerProperty(this, "value", 0);
-    int minVal;
-    int maxVal;
+    private IntegerProperty value = new SimpleIntegerProperty(this, "value", 0);
+    private int minVal;
+    private int maxVal;
 
 
     public NumberTextField() {
@@ -34,7 +34,7 @@ public class NumberTextField extends TextField{
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 
-                if (!newValue.matches("\\d{0,4}?")) {
+                if (!newValue.matches("-?\\d{0,4}?")) {//allowing negative integers
                     setText(oldValue);
                 } else {
                     if (newValue.isEmpty()) {
@@ -46,6 +46,7 @@ public class NumberTextField extends TextField{
                         } else if (newVal < minVal) {
                             newVal = minVal;
                         }
+                        System.out.println(newVal);
                         setValue(newVal);
                     }
                 }

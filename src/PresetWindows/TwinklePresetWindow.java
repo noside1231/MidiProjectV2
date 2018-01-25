@@ -1,9 +1,7 @@
 package PresetWindows;
 
-import Utilities.LabelCheckBox;
 import Utilities.SliderTextField;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
 
 /**

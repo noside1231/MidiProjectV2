@@ -59,7 +59,7 @@ public class TriggeredNote {
                 tColors = applyRainbowPreset(tColors, t);
                 break;
             case "Flash":
-                System.out.println("NONE");
+                tColors = applyFlashPreset(tColors, t);
                 break;
             case "Trail":
                 System.out.println("NONE");
@@ -159,23 +159,20 @@ public class TriggeredNote {
     Color[][] applyFlashPreset(Color[][] cols, long t) {
 
         double curT = (t - originalTriggerTime) / 1000000000.0;
+        double origTimeSec = originalTriggerTime / 1000000000.0;
 
         double frequency = note.getPresetParameter("Flash", "Speed");
         double length = note.getPresetParameter("Flash", "Spread");
 
-        double period = 1 / frequency;
-
+        boolean on = (curT*frequency- Math.floor(curT*frequency)) < length/100;
 
         for (int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
-
-
-//                cols[x][y]
-
+                if (!on) {
+                    cols[x][y] = Color.BLACK;
+                }
             }
         }
-
-
         return cols;
     }
 

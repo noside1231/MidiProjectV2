@@ -23,6 +23,8 @@ public class DisplayMatrixWindow extends HBox {
     int strips;
     int ledsPerStrip;
 
+    boolean editMode;
+
     Rectangle[][] displayRects;
     VBox displayRectRows;
     HBox[] displayMatrixCols;
@@ -150,7 +152,9 @@ public class DisplayMatrixWindow extends HBox {
     }
 
     void rightClick(ContextMenuEvent event) {
-        rightClickOptionMenu.show(this, event.getScreenX(), event.getScreenY());
+        if (editMode) {
+            rightClickOptionMenu.show(this, event.getScreenX(), event.getScreenY());
+        }
     }
 
     void selectAll(boolean t) {
@@ -166,6 +170,10 @@ public class DisplayMatrixWindow extends HBox {
     }
     void selectCol(int i) {
         selectColInt.set(i);
+    }
+
+    public void setEditMode(boolean t) {
+        editMode = t;
     }
 
     SimpleIntegerProperty getSelectAll() {

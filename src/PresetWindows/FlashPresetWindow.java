@@ -21,7 +21,7 @@ public class FlashPresetWindow extends VBox {
         presetChanged("",0);
 
         FlashDurationField = new SliderTextField(0,0, 100, "Speed");
-        FlashRateField = new SliderTextField(0, 0, 100, "Spread");
+        FlashRateField = new SliderTextField(50, 0, 100, "Spread");
 
         FlashDurationField.getValue().addListener(event -> presetChanged(FlashDurationField.getName(), FlashDurationField.getValue().get()));
         FlashRateField.getValue().addListener(event -> presetChanged(FlashRateField.getName(), FlashRateField.getValue().get()));

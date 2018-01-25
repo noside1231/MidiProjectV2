@@ -1,9 +1,6 @@
-import javafx.scene.paint.Color;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Stack;
 
 /**
  * Created by Edison on 1/17/18.

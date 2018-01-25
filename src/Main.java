@@ -227,7 +227,6 @@ public class Main extends Application {
                 }
 
 
-
             }
         }.start();
 
@@ -305,7 +304,9 @@ public class Main extends Application {
     }
 
     void displayMatrixRectanglesPressed(Integer[] pair) {
-        notes[currentNote].toggleSelected(pair[0], pair[1]);
+        if (editMode) {
+            notes[currentNote].toggleSelected(pair[0], pair[1]);
+        }
         setDisplay();
     }
 
@@ -381,8 +382,8 @@ public class Main extends Application {
         }
 
         //save palette
-            JSONObject tPaletteObj = colorPickerWindow.saveData();
-            currentFile.put("Palette", tPaletteObj);
+        JSONObject tPaletteObj = colorPickerWindow.saveData();
+        currentFile.put("Palette", tPaletteObj);
 
 
     }
@@ -399,26 +400,32 @@ public class Main extends Application {
     }
 
     void selectAll(int t) {
-        for (int y = 0; y < strips; y++) {
-            for (int x = 0; x < ledsPerStrip; x++) {
-                notes[currentNote].setSelected(x, y, t > 0 ? true : false);
+        if (editMode) {
+            for (int y = 0; y < strips; y++) {
+                for (int x = 0; x < ledsPerStrip; x++) {
+                    notes[currentNote].setSelected(x, y, t > 0);
+                }
             }
+            setDisplay();
         }
-        setDisplay();
     }
 
     void selectRow(int i) {
-        for (int j = 0; j < ledsPerStrip; j++) {
-            notes[currentNote].setSelected(j, i, true);
+        if (editMode) {
+            for (int j = 0; j < ledsPerStrip; j++) {
+                notes[currentNote].setSelected(j, i, true);
+            }
+            setDisplay();
         }
-        setDisplay();
     }
 
     void selectCol(int i) {
-        for (int j = 0; j < strips; j++) {
-            notes[currentNote].setSelected(i, j, true);
+        if (editMode) {
+            for (int j = 0; j < strips; j++) {
+                notes[currentNote].setSelected(i, j, true);
+            }
+            setDisplay();
         }
-        setDisplay();
     }
 
     void setEditMode(boolean t) {

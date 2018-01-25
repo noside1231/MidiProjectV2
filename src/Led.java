@@ -1,7 +1,5 @@
 import javafx.scene.paint.Color;
 
-import static jdk.nashorn.internal.objects.NativeMath.min;
-
 /**
  * Created by edisongrauman on 12/20/17.
  */

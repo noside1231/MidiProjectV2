@@ -1,5 +1,4 @@
 import Utilities.LabelCheckBox;
-import Utilities.NumberTextField;
 import Utilities.NumberTextFieldDecimal;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -13,29 +12,29 @@ import javafx.scene.layout.VBox;
  */
 public class LightSelectionWindow extends VBox {
 
-    TabPane lightTab;
-    Tab ledDisplayTab;
-    Tab dmxTab;
+    private TabPane lightTab;
+    private Tab ledDisplayTab;
+    private Tab dmxTab;
 
-    HBox setTriggerTimeBar;
-    Button triggerButton;
-    NumberTextFieldDecimal fadeInField;
-    NumberTextFieldDecimal holdField;
-    NumberTextFieldDecimal fadeOutField;
-    SimpleIntegerProperty triggerInt;
-    LabelCheckBox editMode;
+    private HBox setTriggerTimeBar;
+    private Button triggerButton;
+    private NumberTextFieldDecimal fadeInField;
+    private NumberTextFieldDecimal holdField;
+    private NumberTextFieldDecimal fadeOutField;
+    private SimpleIntegerProperty triggerInt;
+    private LabelCheckBox editMode;
 
-    DisplayMatrixWindow displayMatrixWindow;
+    private DisplayMatrixWindow displayMatrixWindow;
 
-    SimpleObjectProperty<Float[]> times;
+    private SimpleObjectProperty<Float[]> times;
 
-    SimpleObjectProperty<Integer[]> lastMatrixRectSelected;
+    private SimpleObjectProperty<Integer[]> lastMatrixRectSelected;
 
-    SimpleIntegerProperty selectAllInt;
-    SimpleIntegerProperty selectRowInt;
-    SimpleIntegerProperty selectColInt;
+    private SimpleIntegerProperty selectAllInt;
+    private SimpleIntegerProperty selectRowInt;
+    private SimpleIntegerProperty selectColInt;
 
-    SimpleBooleanProperty lastEditToggle;
+    private SimpleBooleanProperty lastEditToggle;
 
     public LightSelectionWindow(int ledsPerStrip, int strips) {
         setPrefWidth(super.getWidth());
@@ -59,6 +58,7 @@ public class LightSelectionWindow extends VBox {
         lastEditToggle = new SimpleBooleanProperty();
         lastEditToggle.set(true);
 
+
         triggerButton.setOnAction(event -> triggerPressed());
         editMode.getChecked().addListener(event -> editToggled(editMode.getChecked().get()));
 
@@ -68,8 +68,6 @@ public class LightSelectionWindow extends VBox {
         fadeInField.getValue().addListener(event -> setTime(new Float[] {fadeInField.getValue().get(),  holdField.getValue().get(), fadeOutField.getValue().get()}));
         holdField.getValue().addListener(event -> setTime(new Float[] {fadeInField.getValue().get(),  holdField.getValue().get(), fadeOutField.getValue().get()}));
         fadeOutField.getValue().addListener(event -> setTime(new Float[] {fadeInField.getValue().get(),  holdField.getValue().get(), fadeOutField.getValue().get()}));
-
-
 
         setTriggerTimeBar.getChildren().addAll(fadeInField, holdField, fadeOutField, triggerButton, editMode);
 
@@ -82,7 +80,7 @@ public class LightSelectionWindow extends VBox {
         lightTab.getTabs().addAll(ledDisplayTab, dmxTab);
 
         displayMatrixWindow = new DisplayMatrixWindow(ledsPerStrip, strips);
-
+        displayMatrixWindow.setEditMode(true);
         displayMatrixWindow.getPressed().addListener(event -> setLastPressed(displayMatrixWindow.getPressed().get()));
         displayMatrixWindow.getSelectAll().addListener(selectAllInt -> selectAllSelected(displayMatrixWindow.getSelectAll().get()));
         displayMatrixWindow.getSelectRow().addListener(selectRowInt -> selectRowSelected(displayMatrixWindow.getSelectRow().get()));
@@ -104,7 +102,7 @@ public class LightSelectionWindow extends VBox {
         displayMatrixWindow.setScale();
     }
 
-    void setLastPressed(Integer[] p) {
+    private void setLastPressed(Integer[] p) {
         lastMatrixRectSelected.set(p);
     }
 
@@ -125,6 +123,7 @@ public class LightSelectionWindow extends VBox {
 
     void editToggled(boolean t) {
         lastEditToggle.set(t);
+        displayMatrixWindow.setEditMode(t);
         editMode.setChecked(lastEditToggle.get());
     }
 
@@ -136,41 +135,39 @@ public class LightSelectionWindow extends VBox {
         return triggerInt;
     }
 
-    void setTime(Float[] f) {
+    private void setTime(Float[] f) {
         times.set(f);
         System.out.println(times.get()[0]);
 
     }
-
-    SimpleObjectProperty<Float[]> getTimeChanged() {
-       return times;
-    }
-
-    void selectAllSelected(int s) {
+    private void selectAllSelected(int s) {
         if (s > 0) {
             selectAllInt.set(Math.abs(selectAllInt.get())+1);
         } else {
             selectAllInt.set(-Math.abs(selectAllInt.get())-1);
         }
     }
-
-    SimpleIntegerProperty getSelectAll() {
-        return selectAllInt;
-    }
-
-    void selectRowSelected(int i) {
+    private void selectRowSelected(int i) {
         selectRowInt.set(i);
     }
-    void selectColSelected(int i) {
+    private void selectColSelected(int i) {
         selectColInt.set(i);
     }
 
-    SimpleIntegerProperty getSelectRow() {
+    public SimpleIntegerProperty getSelectRow() {
         return selectRowInt;
     }
-    SimpleIntegerProperty getSelectCol() {
+    public SimpleIntegerProperty getSelectCol() {
         return selectColInt;
     }
+    public SimpleIntegerProperty getSelectAll() {
+        return selectAllInt;
+    }
+    public SimpleObjectProperty<Float[]> getTimeChanged() {
+        return times;
+    }
+
+
 
 
 }
