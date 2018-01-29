@@ -7,6 +7,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.ArrayList;
+
 /**
  * Created by Edison on 1/16/18.
  */
@@ -66,9 +68,9 @@ public class DisplayNoteWindow extends VBox {
 
     public void rectanglePressed(int i) {
         if (i >= 0 && i < noteAmount) {
-            noteRects[notePressed.get()].setFill(Color.BLACK);
+//            noteRects[notePressed.get()].setFill(Color.BLACK);
             notePressed.set(i);
-            noteRects[notePressed.get()].setFill(Color.WHITE);
+//            noteRects[notePressed.get()].setFill(Color.WHITE);
 
             currentNoteLabel.setText(getPianoNote());
             noteSelectionField.setValue(notePressed.get() + 1);
@@ -90,6 +92,21 @@ public class DisplayNoteWindow extends VBox {
 //            noteRects[i].setWidth(screenX/noteAmount);
             noteRects[i].setHeight(noteRectScaleY);
         }
+
+    }
+
+    public void update(ArrayList<Integer> currentlyTriggeredNotes, int currentNote) {
+
+        for (int i  = 0; i < noteAmount; i++) {
+            noteRects[i].setFill(Color.BLACK);
+        }
+        noteRects[currentNote].setFill(Color.WHITE);
+
+
+        for (int i = 0; i < currentlyTriggeredNotes.size(); i++) {
+            noteRects[currentlyTriggeredNotes.get(i)].setFill(Color.GOLD);
+        }
+
 
     }
 

@@ -53,7 +53,7 @@ public class TriggeredNote {
         //apply preset
         switch (note.getCurrentPreset()) {
             case "None":
-                System.out.println("NONE");
+//                System.out.println("NONE");
                 break;
             case "Rainbow":
                 tColors = applyRainbowPreset(tColors, t);
@@ -62,13 +62,13 @@ public class TriggeredNote {
                 tColors = applyFlashPreset(tColors, t);
                 break;
             case "Trail":
-                System.out.println("NONE");
+//                System.out.println("NONE");
                 break;
             case "Twinkle":
-                System.out.println("NONE");
+//                System.out.println("NONE");
                 break;
             case "Multi":
-                System.out.println("NONE");
+//                System.out.println("NONE");
                 break;
         }
 
@@ -159,7 +159,6 @@ public class TriggeredNote {
     Color[][] applyFlashPreset(Color[][] cols, long t) {
 
         double curT = (t - originalTriggerTime) / 1000000000.0;
-        double origTimeSec = originalTriggerTime / 1000000000.0;
 
         double frequency = note.getPresetParameter("Flash", "Speed");
         double length = note.getPresetParameter("Flash", "Spread");

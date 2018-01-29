@@ -1,3 +1,4 @@
+import Utilities.MidiHandler;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -13,7 +14,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
+import javax.sound.midi.*;
+
 import java.io.*;
+import java.util.List;
 
 public class Main extends Application {
 
@@ -48,6 +52,7 @@ public class Main extends Application {
     MenuItem frameRateItem;
     MenuButton optionMenu;
     Menu serialPortMenu;
+    Menu midiMenu;
     Label fileOpenLabel;
 
     //Note Key Selection
@@ -87,6 +92,11 @@ public class Main extends Application {
         exteriorPane = new BorderPane();
         exteriorPane.setStyle("-fx-background-color: #FFFFFF;");
         mainScene = new Scene(exteriorPane, screenWidth, screenHeight);
+
+        //Midi Hanlder
+        MidiHandler midiHandler = new MidiHandler();
+        midiHandler.getLastMessage().addListener(event -> triggerNote(midiHandler.getLastMessage().get()));
+
 
         //Initialize File
         currentFile = new JSONObject();
@@ -134,13 +144,17 @@ public class Main extends Application {
         optionMenu = new MenuButton("Options");
         frameRateItem = new MenuItem("FrameRate: ");
         serialPortMenu = new Menu("Select Port:");
+        midiMenu = new Menu("Midi Devices: ");
+        for (int i = 0; i < midiHandler.getMidiDevices().size(); i++) {
+            midiMenu.getItems().add(new MenuItem(midiHandler.getMidiDevices().get(i).toString()));
+        }
 //        for (int i = 0; i < SerialPortList.getPortNames("/dev", Pattern.compile("tty.")).length; i++) {
 //            serialPortMenu.getItems().add(new MenuItem(SerialPortList.getPortNames("/dev", Pattern.compile("tty."))[i]));
 //        }
         //File Open Label
         fileOpenLabel = new Label();
         //Add To Menu
-        optionMenu.getItems().addAll(frameRateItem, serialPortMenu);
+        optionMenu.getItems().addAll(frameRateItem, midiMenu, serialPortMenu);
         //Add Items To Toolbar
         toolbar.getItems().addAll(fileMenu, editMenu, optionMenu, fileOpenLabel);
 
@@ -225,6 +239,9 @@ public class Main extends Application {
                 if (!editMode) {
                     lightSelectionWindow.setLEDDisplay(lastUpdatedMixer);
                 }
+
+                //update note display
+                displayNoteWindow.update(mixer.getCurrentlyTriggeredNotes(), currentNote);
 
 
             }
@@ -393,6 +410,14 @@ public class Main extends Application {
         mixer.setTriggered(notes[currentNote]);
     }
 
+    void triggerNote(int n) {
+        if (n != -1) {
+            System.out.println("Triggered");
+            mixer.setTriggered(notes[n]);
+        }
+
+    }
+
     void timesEntered(Float[] t) {
         notes[currentNote].setFadeIn(t[0]);
         notes[currentNote].setHold(t[1]);
@@ -437,3 +462,4 @@ public class Main extends Application {
 
 
 }
+
