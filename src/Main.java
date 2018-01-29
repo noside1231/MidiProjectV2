@@ -1,6 +1,7 @@
 import Utilities.MidiHandler;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -53,6 +54,7 @@ public class Main extends Application {
     MenuButton optionMenu;
     Menu serialPortMenu;
     Menu midiMenu;
+    CheckMenuItem[] midiHandlerItems;
     Label fileOpenLabel;
 
     //Note Key Selection
@@ -79,6 +81,9 @@ public class Main extends Application {
     //Mixer
     Mixer mixer;
 
+    //Midi
+    MidiHandler midiHandler;
+
 
     public static void main(String[] args) {
         launch(args);
@@ -94,7 +99,7 @@ public class Main extends Application {
         mainScene = new Scene(exteriorPane, screenWidth, screenHeight);
 
         //Midi Hanlder
-        MidiHandler midiHandler = new MidiHandler();
+        midiHandler = new MidiHandler();
         midiHandler.getLastMessage().addListener(event -> triggerNote(midiHandler.getLastMessage().get()));
 
 
@@ -145,9 +150,16 @@ public class Main extends Application {
         frameRateItem = new MenuItem("FrameRate: ");
         serialPortMenu = new Menu("Select Port:");
         midiMenu = new Menu("Midi Devices: ");
+
+        midiHandlerItems = new CheckMenuItem[midiHandler.getMidiDevices().size()];
         for (int i = 0; i < midiHandler.getMidiDevices().size(); i++) {
-            midiMenu.getItems().add(new MenuItem(midiHandler.getMidiDevices().get(i).toString()));
+            int tempI = i;
+            midiHandlerItems[i] = new CheckMenuItem(midiHandler.getMidiDevices().get(i).toString());
+            midiHandlerItems[i].selectedProperty().addListener(event -> selectMidiDevice(midiHandlerItems[tempI].getText(), midiHandlerItems[tempI].isSelected(), tempI));
         }
+        midiMenu.getItems().addAll(midiHandlerItems);
+
+
 //        for (int i = 0; i < SerialPortList.getPortNames("/dev", Pattern.compile("tty.")).length; i++) {
 //            serialPortMenu.getItems().add(new MenuItem(SerialPortList.getPortNames("/dev", Pattern.compile("tty."))[i]));
 //        }
@@ -457,6 +469,19 @@ public class Main extends Application {
         editMode = t;
         if (t) {
             setDisplay();
+        }
+    }
+
+    void selectMidiDevice(String n, boolean val, int ind) {
+        System.out.println(n + val);
+        if (val) {
+            if (!midiHandler.openMidiDevice(n)) {
+                midiHandlerItems[ind].selectedProperty().set(false);
+            }
+        } else {
+            if (!midiHandler.closeMidiDevice(n)) {
+                midiHandlerItems[ind].selectedProperty().set(true);
+            }
         }
     }
 
