@@ -1,4 +1,9 @@
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
+
+import java.util.ArrayList;
+
+import static java.lang.Math.abs;
 
 /**
  * Created by Edison on 1/19/18.
@@ -9,12 +14,15 @@ public class TriggeredNote {
     Note note;
     long originalTriggerTime;
 
+//    SimpleObjectProperty<ArrayList<Integer>> triggeredMulti;
+
     int status; //0 fade in, 1 hold, 2 fade out
 
     public TriggeredNote(Note n, long t) {
         note = n;
         timeStatus = t;
         originalTriggerTime = t;
+//        triggeredMulti = new SimpleObjectProperty<>();
     }
 
     long getTimeStatus() {
@@ -39,6 +47,9 @@ public class TriggeredNote {
         timeStatus = t;
         status++;
     }
+    void setStatus(int t) {
+        status = t;
+    }
 
     public Color[][] update(long t) {
 
@@ -62,13 +73,14 @@ public class TriggeredNote {
                 tColors = applyFlashPreset(tColors, t);
                 break;
             case "Trail":
-//                System.out.println("NONE");
+                tColors = applyTrailPreset(tColors, t);
                 break;
             case "Twinkle":
 //                System.out.println("NONE");
                 break;
             case "Multi":
-//                System.out.println("NONE");
+//                applyMultiPreset();
+                setStatus(3);
                 break;
         }
 
@@ -174,6 +186,66 @@ public class TriggeredNote {
         }
         return cols;
     }
+
+    Color[][] applyTrailPreset(Color[][] cols, long t) {
+        double curT = (t - originalTriggerTime) / 1000000000.0;
+
+        int speedX = note.getPresetParameter("Trail", "SpeedX");
+        int speedY = note.getPresetParameter("Trail", "SpeedY");
+        int lengthX = note.getPresetParameter("Trail", "LengthX");
+        int lengthY = note.getPresetParameter("Trail", "LengthY");
+        double skipX = note.getPresetParameter("Trail", "SkipX");
+        double skipd = note.getPresetParameter("Trail", "SkipY");
+
+        int trailIndexX, trailIndexY;
+        if (speedX < 0) {
+            trailIndexX =  note.getMatrix().getLedsPerStrip() - (int)(-curT*speedX)%(note.getMatrix().getLedsPerStrip()+lengthX);
+        } else if (speedX > 0){
+            trailIndexX = -lengthX+(int)((curT*speedX))%(note.getMatrix().getLedsPerStrip()+lengthX);
+        } else {
+            trailIndexX = 0;
+        }
+        if (speedY < 0) {
+            trailIndexY =  note.getMatrix().getStrips() - (int)(-curT*speedY)%(note.getMatrix().getStrips() +lengthY);
+        } else if (speedY > 0){
+            trailIndexY = -lengthY+(int)((curT*speedY))%(note.getMatrix().getStrips()+lengthY);
+        } else {
+            trailIndexY = 0;
+        }
+
+
+        Color[][] tCols = new Color[note.getMatrix().getLedsPerStrip()][note.getMatrix().getStrips()];
+
+        System.out.println(trailIndexY);
+//        System.out.println(trailIndex+lengthY);
+        for(int y = 0; y < note.getMatrix().getStrips(); y++) {
+            for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
+
+                if (x >= 0 && x < note.getMatrix().getLedsPerStrip()) {
+                    tCols[x][y] = Color.BLACK;
+                }
+
+                if (x >= trailIndexX && x < trailIndexX+lengthX && y >= trailIndexY && y < trailIndexY+lengthY) {
+                    tCols[x][y] = cols[x][y];
+                }
+
+
+
+            }
+        }
+
+
+        return tCols;
+    }
+
+//    void applyMultiPreset() {
+//        triggeredMulti.set(note.getMultiPreset());
+//        triggeredMulti.set(new ArrayList<Integer>());
+//    }
+//
+//    SimpleObjectProperty<ArrayList<Integer>> getTriggeredMulti() {
+//        return triggeredMulti;
+//    }
 
 
 }

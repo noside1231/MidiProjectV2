@@ -262,6 +262,10 @@ public class Main extends Application {
 
     }
 
+    public void stop() {
+        System.exit(0);
+    }
+
 
     //Menu Item Handle Response
     void newFile() {
@@ -308,7 +312,7 @@ public class Main extends Application {
 
     void quit() {
         System.out.println("QUIT");
-        System.exit(0);
+        stop();
     }
 
     void copy() {

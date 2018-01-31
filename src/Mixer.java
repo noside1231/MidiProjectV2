@@ -59,12 +59,15 @@ public class Mixer {
         return a;
     }
 
+
     void resetNote(int i) {
         for (int j = 0; j < currentlyTriggeredNotes.size(); j++) {
             if (i == currentlyTriggeredNotes.get(i).getNote().getID()) {
                 currentlyTriggeredNotes.get(i).resetTrigger(currentTime);
+                return;
             }
         }
     }
+
 
 }

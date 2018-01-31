@@ -213,4 +213,17 @@ public class Note {
         }
         return 0;
     }
+
+//    public ArrayList<Integer> getMultiPreset() {
+//        ArrayList<Integer> tList = new ArrayList<>();
+//
+//        for (int i = 0; i < presetContainer.size(); i++) {
+//
+//            String[] temp = presetContainer.get(i).split(";");
+//            if (temp[0].equals("Multi") && temp[2].equals("1")) {
+//                    tList.add(Integer.parseInt(temp[1]));
+//            }
+//        }
+//        return tList;
+//    }
 }
