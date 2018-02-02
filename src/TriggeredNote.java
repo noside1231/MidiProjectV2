@@ -14,7 +14,7 @@ public class TriggeredNote {
     Note note;
     long originalTriggerTime;
 
-//    SimpleObjectProperty<ArrayList<Integer>> triggeredMulti;
+    SimpleObjectProperty<ArrayList<Integer>> triggeredMulti;
 
     int status; //0 fade in, 1 hold, 2 fade out
 
@@ -22,7 +22,7 @@ public class TriggeredNote {
         note = n;
         timeStatus = t;
         originalTriggerTime = t;
-//        triggeredMulti = new SimpleObjectProperty<>();
+        triggeredMulti = new SimpleObjectProperty<>();
     }
 
     long getTimeStatus() {
@@ -79,7 +79,7 @@ public class TriggeredNote {
 //                System.out.println("NONE");
                 break;
             case "Multi":
-//                applyMultiPreset();
+                applyMultiPreset();
                 setStatus(3);
                 break;
         }
@@ -216,8 +216,6 @@ public class TriggeredNote {
 
         Color[][] tCols = new Color[note.getMatrix().getLedsPerStrip()][note.getMatrix().getStrips()];
 
-        System.out.println(trailIndexY);
-//        System.out.println(trailIndex+lengthY);
         for(int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
 
@@ -238,14 +236,14 @@ public class TriggeredNote {
         return tCols;
     }
 
-//    void applyMultiPreset() {
-//        triggeredMulti.set(note.getMultiPreset());
-//        triggeredMulti.set(new ArrayList<Integer>());
-//    }
-//
-//    SimpleObjectProperty<ArrayList<Integer>> getTriggeredMulti() {
-//        return triggeredMulti;
-//    }
+    void applyMultiPreset() {
+        triggeredMulti.set(note.getMultiPreset());
+        triggeredMulti.set(new ArrayList<>());
+    }
+
+    SimpleObjectProperty<ArrayList<Integer>> getTriggeredMulti() {
+        return triggeredMulti;
+    }
 
 
 }

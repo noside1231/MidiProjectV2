@@ -21,7 +21,7 @@ public class TrailPresetWindow extends VBox {
     SimpleStringProperty lastChanged;
     String presetName;
 
-    public TrailPresetWindow(String p) {
+    public TrailPresetWindow(String p, int ledsPerStrip, int strips) {
         presetName = p;
 
         lastChanged = new SimpleStringProperty();
@@ -29,12 +29,13 @@ public class TrailPresetWindow extends VBox {
 
         speedXField = new SliderTextField(0,-100, 100, "SpeedX");
         speedYField = new SliderTextField(0,-100, 100, "SpeedY");
-        lengthXField = new SliderTextField(0, 0, 100, "LengthX");
-        lengthYField = new SliderTextField(0,0, 100, "LengthY");
+        lengthXField = new SliderTextField(ledsPerStrip, 0, 100, "LengthX");
+        lengthYField = new SliderTextField(strips,0, 100, "LengthY");
         skipXField = new SliderTextField(0,0, 100, "SkipX");
         skipYField = new SliderTextField(0,0, 100, "SkipY");
         bounceField = new LabelCheckBox("Bounce");
         halfField = new LabelCheckBox("Half");
+
 
         speedXField.getValue().addListener(event -> presetChanged(speedXField.getName(), speedXField.getValue().get()));
         speedYField.getValue().addListener(event -> presetChanged(speedYField.getName(), speedYField.getValue().get()));

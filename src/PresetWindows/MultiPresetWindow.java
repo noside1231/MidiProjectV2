@@ -65,10 +65,12 @@ public class MultiPresetWindow extends VBox {
         labelCheckBoxes.get(f).setChecked(v.equals("1"));
     }
 
-    public void resetFields() {
+    public void resetFields(int currentNote) {
         for (int i = 0; i < labelCheckBoxes.size(); i++) {
             labelCheckBoxes.get(i).setChecked(false);
+            labelCheckBoxes.get(i).setDisable(false);
         }
+        labelCheckBoxes.get(currentNote).setDisable(true);
     }
 
     void setSelected(String i, int b) {

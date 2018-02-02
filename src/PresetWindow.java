@@ -31,7 +31,7 @@ public class PresetWindow extends VBox {
     int currentlyDisplayingNote = 0;
 
 
-    public PresetWindow() {
+    public PresetWindow(int ledsPerStrip, int strips) {
 
         lastChangedPresetProperty = new SimpleStringProperty();
         lastSelectedPreset = new SimpleStringProperty();
@@ -48,7 +48,7 @@ public class PresetWindow extends VBox {
         nonePresetWindow = new NonePresetWindow(presets[0]);
         rainbowPresetWindow = new RainbowPresetWindow(presets[1]);
         flashPresetWindow = new FlashPresetWindow(presets[2]);
-        trailPresetWindow = new TrailPresetWindow(presets[3]);
+        trailPresetWindow = new TrailPresetWindow(presets[3], ledsPerStrip, strips);
         twinklePresetWindow = new TwinklePresetWindow(presets[4]);
         multiPresetWindow = new MultiPresetWindow(presets[5]);
 
@@ -101,13 +101,13 @@ public class PresetWindow extends VBox {
         return lastSelectedPreset;
     }
 
-    public void setPresetDisplay(ArrayList<String> pText, String curPreset) {
+    public void setPresetDisplay(ArrayList<String> pText, String curPreset, int curNote) {
         switchPreset(curPreset);
         rainbowPresetWindow.resetFields();
         flashPresetWindow.resetFields();
         trailPresetWindow.resetFields();
         twinklePresetWindow.resetFields();
-        multiPresetWindow.resetFields();
+        multiPresetWindow.resetFields(curNote);
 
 
         //lol don't mess with this mess

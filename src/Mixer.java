@@ -1,3 +1,5 @@
+import javafx.beans.property.SimpleObjectProperty;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -12,10 +14,14 @@ public class Mixer {
     ListIterator<TriggeredNote> iterator;
     long currentTime;
 
+    SimpleObjectProperty<ArrayList<Integer>> triggerMultiList;
+
     public Mixer(int strips, int ledsPerStrip) {
 
         mixerMatrix = new LEDMatrix(strips, ledsPerStrip);
         currentlyTriggeredNotes = new LinkedList<>();
+        triggerMultiList = new SimpleObjectProperty<>();
+        triggerMultiList.set(new ArrayList<>());
     }
 
     public Led[][] update(long curTime) {
@@ -48,7 +54,10 @@ public class Mixer {
                 return;
             }
         }
-        currentlyTriggeredNotes.add(new TriggeredNote(n, currentTime));
+        TriggeredNote t = new TriggeredNote(n, currentTime);
+        t.getTriggeredMulti().addListener(event -> triggerMulti(t.getTriggeredMulti().get()));
+//        currentlyTriggeredNotes.add(new TriggeredNote(n, currentTime));
+        currentlyTriggeredNotes.add(t);
     }
 
     ArrayList<Integer> getCurrentlyTriggeredNotes() {
@@ -57,6 +66,14 @@ public class Mixer {
             a.add(currentlyTriggeredNotes.get(i).getNote().getID());
         }
         return a;
+    }
+
+    void triggerMulti(ArrayList<Integer> t) {
+        triggerMultiList.set(t);
+    }
+
+    public SimpleObjectProperty<ArrayList<Integer>> getTriggerMultiList() {
+        return triggerMultiList;
     }
 
 

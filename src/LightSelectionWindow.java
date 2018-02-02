@@ -36,6 +36,8 @@ public class LightSelectionWindow extends VBox {
 
     private SimpleBooleanProperty lastEditToggle;
 
+    private SimpleIntegerProperty setSelected;
+
     public LightSelectionWindow(int ledsPerStrip, int strips) {
         setPrefWidth(super.getWidth());
 
@@ -47,6 +49,8 @@ public class LightSelectionWindow extends VBox {
         selectRowInt.set(0);
         selectColInt = new SimpleIntegerProperty();
         selectColInt.set(0);
+        setSelected = new SimpleIntegerProperty();
+        setSelected.set(0);
 
         setTriggerTimeBar = new HBox();
         triggerButton = new Button("Trigger");
@@ -85,6 +89,7 @@ public class LightSelectionWindow extends VBox {
         displayMatrixWindow.getSelectAll().addListener(selectAllInt -> selectAllSelected(displayMatrixWindow.getSelectAll().get()));
         displayMatrixWindow.getSelectRow().addListener(selectRowInt -> selectRowSelected(displayMatrixWindow.getSelectRow().get()));
         displayMatrixWindow.getSelectCol().addListener(selectColInt -> selectColSelected(displayMatrixWindow.getSelectCol().get()));
+        displayMatrixWindow.getsetSelected().addListener(event -> setPressed());
 
         ledDisplayTab.setContent(displayMatrixWindow);
         dmxTab.setContent(new Label("DMX LATER :)"));
@@ -121,6 +126,10 @@ public class LightSelectionWindow extends VBox {
         editToggled(false);
     }
 
+    private void setPressed() {
+        setSelected.set((setSelected.get()+1)%2);
+    }
+
     void editToggled(boolean t) {
         lastEditToggle.set(t);
         displayMatrixWindow.setEditMode(t);
@@ -154,6 +163,7 @@ public class LightSelectionWindow extends VBox {
         selectColInt.set(i);
     }
 
+
     public SimpleIntegerProperty getSelectRow() {
         return selectRowInt;
     }
@@ -166,6 +176,7 @@ public class LightSelectionWindow extends VBox {
     public SimpleObjectProperty<Float[]> getTimeChanged() {
         return times;
     }
+    public SimpleIntegerProperty getSetSelected() { return setSelected; }
 
 
 

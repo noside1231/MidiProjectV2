@@ -36,12 +36,14 @@ public class DisplayMatrixWindow extends HBox {
     Menu selectColMenu;
     MenuItem[] selectRowItem;
     MenuItem[] selectColItem;
+    MenuItem set;
 
     SimpleObjectProperty<Integer[]> lastClicked;
 
     SimpleIntegerProperty selectAllInt;
     SimpleIntegerProperty selectRowInt;
     SimpleIntegerProperty selectColInt;
+    SimpleIntegerProperty selectSet;
 
     public DisplayMatrixWindow(int lPS, int s) {
         setPrefHeight(200);
@@ -54,6 +56,8 @@ public class DisplayMatrixWindow extends HBox {
         selectRowInt.set(0);
         selectColInt = new SimpleIntegerProperty();
         selectColInt.set(0);
+        selectSet = new SimpleIntegerProperty();
+        selectSet.set(0);
 
         lastClicked = new SimpleObjectProperty<>();
 
@@ -91,6 +95,8 @@ public class DisplayMatrixWindow extends HBox {
         deselectAllItem.setOnAction(event -> selectAll(false));
         selectRowMenu = new Menu("Select Row:");
         selectColMenu = new Menu("Select Column:");
+        set = new MenuItem("Set");
+        set.setOnAction(event -> setPressed());
 
         selectRowItem = new MenuItem[strips];
         for (int i = 0; i < strips; i++) {
@@ -109,7 +115,7 @@ public class DisplayMatrixWindow extends HBox {
         }
         selectColMenu.getItems().addAll(selectColItem);
 
-        rightClickOptionMenu.getItems().addAll(selectAllItem, deselectAllItem, new SeparatorMenuItem(), selectRowMenu, selectColMenu);
+        rightClickOptionMenu.getItems().addAll(set, selectAllItem, deselectAllItem, new SeparatorMenuItem(), selectRowMenu, selectColMenu);
 
 
     }
@@ -171,6 +177,9 @@ public class DisplayMatrixWindow extends HBox {
     void selectCol(int i) {
         selectColInt.set(i);
     }
+    void setPressed() {
+        selectSet.set((selectSet.get()+1)%2);
+    }
 
     public void setEditMode(boolean t) {
         editMode = t;
@@ -185,5 +194,6 @@ public class DisplayMatrixWindow extends HBox {
     SimpleIntegerProperty getSelectCol() {
         return selectColInt;
     }
+    SimpleIntegerProperty getsetSelected() { return selectSet; }
 
 }
