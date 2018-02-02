@@ -23,9 +23,10 @@ public class Preferences extends Stage {
 
     int defaultStrips = 5;
     int defaultLedsPerStrip = 30;
-    int defaultScreenX = 1000;
+    int defaultScreenX = 1200;
     int defaultScreenY = 800;
     int defaultFullscreen = 0;
+    String defaultTitle = "untitled";
 
     private SliderTextField stripsField;
     private SliderTextField ledsPerStripField;
@@ -99,6 +100,8 @@ public class Preferences extends Stage {
     }
 
     public void showPreferences() {
+
+        System.out.println("SHOW");
         show();
     }
 
@@ -112,6 +115,7 @@ public class Preferences extends Stage {
         preferencesObject.put("screenX", Integer.toString(defaultScreenX));
         preferencesObject.put("screenY", Integer.toString(defaultScreenY));
         preferencesObject.put("fullscreen", Integer.toString(defaultFullscreen));
+        preferencesObject.put("title", defaultTitle);
 
     }
 
@@ -121,6 +125,7 @@ public class Preferences extends Stage {
         screenX.setValue(Integer.parseInt(d.getString("screenX")));
         screenY.setValue(Integer.parseInt(d.getString("screenY")));
         fullscreen.setChecked(Integer.parseInt(d.getString("fullscreen")) == 1);
+
 
     }
 

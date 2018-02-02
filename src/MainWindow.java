@@ -69,7 +69,7 @@ public class MainWindow extends Parent {
     PresetWindow presetWindow;
 
     //Loaded File
-    JSONObject currentFile;
+//    JSONObject currentFile;
 
     //Color Picker
     ColorPickerWindow colorPickerWindow;
@@ -91,9 +91,17 @@ public class MainWindow extends Parent {
     SimpleBooleanProperty saveFileAsItemPressed;
     SimpleBooleanProperty preferenceItemPressed;
 
-    public MainWindow(Stage mainWindow, int x, int y) {
-        screenX = x;
-        screenY = y;
+    public MainWindow(Stage mainWindow, JSONObject preferences) {
+
+
+        if (Integer.parseInt(preferences.getString("fullscreen")) == 1) {
+            mainWindow.setFullScreen(true);
+        }
+        screenX = Integer.parseInt(preferences.getString("screenX"));
+        screenY = Integer.parseInt(preferences.getString("screenY"));
+        strips = Integer.parseInt(preferences.getString("strips"));
+        ledsPerStrip = Integer.parseInt(preferences.getString("ledsperstrip"));
+
 
         exteriorPane = new BorderPane();
         exteriorPane.setStyle("-fx-background-color: #FFFFFF;");
@@ -125,8 +133,8 @@ public class MainWindow extends Parent {
 
 
         //Initialize File
-        currentFile = new JSONObject();
-//
+//        currentFile = new JSONObject();
+
 
         //Initialize Clipboard
         noteClipboard = new Note(-1, strips, ledsPerStrip);
@@ -302,6 +310,7 @@ public class MainWindow extends Parent {
     }
 
     void setPreferenceItemPressed() {
+        System.out.println("SHOWW");
         preferenceItemPressed.set(true);
         preferenceItemPressed.set(false);
     }
@@ -383,25 +392,21 @@ public class MainWindow extends Parent {
 
     public JSONObject saveData() {
 
+        JSONObject tFile = new JSONObject();
         //save each notes data
         for (int i = 0; i < noteAmount; i++) {
             JSONObject currentObj = notes[i].saveData();
-            currentFile.put(Integer.toString(i), currentObj);
+            tFile.put(Integer.toString(i), currentObj);
         }
 
         //save palette
         JSONObject tPaletteObj = colorPickerWindow.saveData();
-        currentFile.put("Palette", tPaletteObj);
+        tFile.put("Palette", tPaletteObj);
 
-        return currentFile;
+        return tFile;
 
     }
 
-//    void savePreferences(boolean t) {
-//        if (t) {
-//            currentFile.put("Preferences", preferencesWindow.saveData());
-//        }
-//    }
 
     void triggerNote() {
         System.out.println("Triggered");

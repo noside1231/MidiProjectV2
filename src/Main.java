@@ -44,15 +44,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage window) throws Exception {
-
+        currentFile = new JSONObject();
         preferencesWindow = new Preferences();
         preferencesWindow.initializePreferencesObject();
         preferencesWindow.getSaveButtonPressed().addListener(event -> savePreferences(preferencesWindow.getSaveButtonPressed().get()));
         w = window;
-
-        currentFile = new JSONObject();
         savePreferences(true);
-
         resetWindow();
 
 
@@ -93,15 +90,17 @@ public class Main extends Application {
             return;
         }
         currentFile.put("Preferences", preferencesWindow.saveData());
+        resetWindow();
+
     }
 
     void resetWindow() {
-        mainWindow = new MainWindow(w, screenWidth, screenHeight);
-        savePreferences(true);
+        mainWindow = new MainWindow(w, currentFile.getJSONObject("Preferences"));
         mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferences());
         mainWindow.getOpenItemPressed().addListener(event -> openFile(mainWindow.getOpenItemPressed().get()));
         mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
         mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(mainWindow.getSaveFileAsItemPressed().get()));
+
     }
 
     private void saveFile(boolean t) {
@@ -122,7 +121,7 @@ public class Main extends Application {
             return;
         }
         System.out.println("SAVE FILE AS backend");
-        currentFile = mainWindow.saveData();
+        currentFile.put("WindowData", mainWindow.saveData());
         FileChooser fc = new FileChooser();
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project File: .mpv2", "*.mpv2"));
         File selectedFile = fc.showSaveDialog(new Stage());
@@ -184,9 +183,13 @@ public class Main extends Application {
     }
 
     private void loadData() {
-        resetWindow();
+        screenWidth = Integer.parseInt((currentFile.getJSONObject("Preferences").getString("screenX")));
+        screenHeight = Integer.parseInt((currentFile.getJSONObject("Preferences").getString("screenY")));
         preferencesWindow.loadData(currentFile.getJSONObject("Preferences"));
-        mainWindow.loadData(currentFile);
+        resetWindow();
+        mainWindow.loadData(currentFile.getJSONObject("WindowData"));
+
+
     }
 
 
