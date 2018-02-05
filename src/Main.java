@@ -1,4 +1,5 @@
 import Utilities.MidiHandler;
+import Utilities.Serial;
 import com.sun.org.apache.xml.internal.utils.PrefixResolver;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -50,6 +51,17 @@ public class Main extends Application {
         preferencesWindow.getSaveButtonPressed().addListener(event -> savePreferences(preferencesWindow.getSaveButtonPressed().get()));
         w = window;
         savePreferences(true);
+
+
+        Serial s = new Serial();
+        ArrayList<String> a = s.getPorts();
+
+        for (int i = 0; i < a.size(); i++) {
+            System.out.println(a.get(i));
+        }
+
+        s.connect("/dev/cu.wchusbserial14510");
+
         resetWindow();
 
 
