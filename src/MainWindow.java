@@ -1,4 +1,8 @@
 import Utilities.MidiHandler;
+import gnu.io.CommPort;
+import gnu.io.CommPortIdentifier;
+import gnu.io.PortInUseException;
+import gnu.io.SerialPort;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,7 +19,10 @@ import javafx.stage.Stage;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.regex.Pattern;
 
 /**
  * Created by Edison on 2/1/18.
@@ -195,9 +202,26 @@ public class MainWindow extends Parent {
         midiMenu.getItems().addAll(midiHandlerItems);
 
 
-//        for (int i = 0; i < SerialPortList.getPortNames("/dev", Pattern.compile("tty.")).length; i++) {
-//            serialPortMenu.getItems().add(new MenuItem(SerialPortList.getPortNames("/dev", Pattern.compile("tty."))[i]));
-//        }
+
+        Enumeration thePorts = CommPortIdentifier.getPortIdentifiers();
+        while (thePorts.hasMoreElements()) {
+            CommPortIdentifier com = (CommPortIdentifier) thePorts.nextElement();
+            switch (com.getPortType()) {
+                case CommPortIdentifier.PORT_SERIAL:
+                    try {
+                        CommPort thePort = com.open("CommUtil", 50);
+                        thePort.close();
+                    } catch (PortInUseException e) {
+                        System.out.println("Port, "  + com.getName() +  ", is in use.");
+                    } catch (Exception e) {
+                        System.err.println("Failed to open port " + com.getName());
+                        e.printStackTrace();
+                    }
+            }
+        }
+
+
+
         //File Open Label
         fileOpenLabel = new Label();
         //Add To Menu
@@ -310,6 +334,7 @@ public class MainWindow extends Parent {
     }
 
     void setPreferenceItemPressed() {
+
         System.out.println("SHOWW");
         preferenceItemPressed.set(true);
         preferenceItemPressed.set(false);

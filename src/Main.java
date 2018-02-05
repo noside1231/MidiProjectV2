@@ -96,10 +96,10 @@ public class Main extends Application {
 
     void resetWindow() {
         mainWindow = new MainWindow(w, currentFile.getJSONObject("Preferences"));
-        mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferences());
-        mainWindow.getOpenItemPressed().addListener(event -> openFile(mainWindow.getOpenItemPressed().get()));
-        mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
-        mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(mainWindow.getSaveFileAsItemPressed().get()));
+        mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferences(mainWindow.getPreferenceItemPressed().get()));
+        mainWindow.getOpenItemPressed().addListener(event -> openFile(false));
+        mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(false));
+        mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(false));
 
     }
 

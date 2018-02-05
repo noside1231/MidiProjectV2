@@ -99,8 +99,10 @@ public class Preferences extends Stage {
         return saveButtonPressed;
     }
 
-    public void showPreferences() {
-
+    public void showPreferences(boolean t) {
+        if (!t) {
+            return;
+        }
         System.out.println("SHOW");
         show();
     }
