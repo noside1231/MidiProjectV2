@@ -1,8 +1,8 @@
 import Utilities.MidiHandler;
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
+//import gnu.io.CommPort;
+//import gnu.io.CommPortIdentifier;
+//import gnu.io.PortInUseException;
+//import gnu.io.SerialPort;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -58,6 +58,7 @@ public class MainWindow extends Parent {
     Menu serialPortMenu;
     Menu midiMenu;
     CheckMenuItem[] midiHandlerItems;
+    CheckMenuItem[] serialPortItems;
     Label fileOpenLabel;
 
     //Note Key Selection
@@ -86,6 +87,8 @@ public class MainWindow extends Parent {
 
     //Midi
     MidiHandler midiHandler;
+
+//    Serial serialPort = new Serial();
 
     //preferences
     int noteAmount = 128;
@@ -201,6 +204,18 @@ public class MainWindow extends Parent {
         }
         midiMenu.getItems().addAll(midiHandlerItems);
 
+        serialPortItems = new CheckMenuItem[10];
+
+        for (int i = 0; i < 10; i++) {
+            int tempI = i;
+            serialPortItems[i] = new CheckMenuItem(String.valueOf(i));
+            serialPortItems[i].selectedProperty().addListener(event -> selectSerialPort(serialPortItems[tempI].getText(), serialPortItems[tempI].isSelected(), tempI));
+        }
+        serialPortMenu.getItems().addAll(serialPortItems);
+
+
+        //Connect to serial
+//        s.connect("/dev/cu.wchusbserial14510");
 
 
 
@@ -278,8 +293,12 @@ public class MainWindow extends Parent {
             lightSelectionWindow.setLEDDisplay(lastUpdatedMixer);
         }
 
+        //serialPort.sendMatrixData(mainWindow.getMixerMatrix());
+
+
         //update note display
         displayNoteWindow.update(mixer.getCurrentlyTriggeredNotes(), currentNote);
+        frameRateItem.setText("Framerate: " + String.valueOf((int)frameRate));
 
     }
 
@@ -487,6 +506,15 @@ public class MainWindow extends Parent {
                 midiHandlerItems[ind].selectedProperty().set(true);
             }
         }
+    }
+
+    void selectSerialPort(String n, boolean val, int ind) {
+        System.out.println(n + val);
+
+    }
+
+    LEDMatrix getMixerMatrix() {
+        return mixer.getMixerMatrix();
     }
 
 

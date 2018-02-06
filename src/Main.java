@@ -1,29 +1,11 @@
-import Utilities.MidiHandler;
-import Utilities.Serial;
-import com.sun.org.apache.xml.internal.utils.PrefixResolver;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.Event;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
-import javax.sound.midi.*;
-
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
 
@@ -51,16 +33,6 @@ public class Main extends Application {
         preferencesWindow.getSaveButtonPressed().addListener(event -> savePreferences(preferencesWindow.getSaveButtonPressed().get()));
         w = window;
         savePreferences(true);
-
-
-        Serial s = new Serial();
-        ArrayList<String> a = s.getPorts();
-
-        for (int i = 0; i < a.size(); i++) {
-            System.out.println(a.get(i));
-        }
-
-        s.connect("/dev/cu.wchusbserial14510");
 
         resetWindow();
 
@@ -91,6 +63,9 @@ public class Main extends Application {
 //                    frameRateItem.setText(String.format("Frame Rate: %.3f", frameRate));
                 }
                 mainWindow.update(now, frameRate);
+
+//                s.sendMatrixData(mainWindow.getMixerMatrix());
+
 
             }
         }.start();
