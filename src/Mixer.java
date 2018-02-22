@@ -10,15 +10,17 @@ import java.util.ListIterator;
 public class Mixer {
 
     LEDMatrix mixerMatrix;
+    int dmxChannels[];
     LinkedList<TriggeredNote> currentlyTriggeredNotes;
     ListIterator<TriggeredNote> iterator;
     long currentTime;
 
     SimpleObjectProperty<ArrayList<Integer>> triggerMultiList;
 
-    public Mixer(int strips, int ledsPerStrip) {
+    public Mixer(int strips, int ledsPerStrip, int ch) {
 
         mixerMatrix = new LEDMatrix(strips, ledsPerStrip);
+        dmxChannels = new int[ch];
         currentlyTriggeredNotes = new LinkedList<>();
         triggerMultiList = new SimpleObjectProperty<>();
         triggerMultiList.set(new ArrayList<>());
@@ -40,6 +42,14 @@ public class Mixer {
             }
         }
         return mixerMatrix.getLEDS();
+    }
+
+    public int[] updateDMX() {
+
+        for (int i = 0; i < dmxChannels.length; i++) {
+            dmxChannels[i] = 0;
+        }
+        return dmxChannels;
     }
 
     public LEDMatrix getMixerMatrix() {

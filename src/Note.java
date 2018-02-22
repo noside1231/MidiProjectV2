@@ -1,3 +1,4 @@
+import javafx.beans.property.IntegerProperty;
 import javafx.scene.paint.Color;
 import org.json.JSONObject;
 
@@ -6,6 +7,8 @@ import java.util.ArrayList;
 public class Note {
 
     LEDMatrix matrix;
+
+    int[] dmxVals;
 
     ArrayList<String> presetContainer;
     String currentPreset;
@@ -16,15 +19,20 @@ public class Note {
     float hold;
     int id;
 
-    public Note(int j, int strips, int ledsPerStrip) {
+    public Note(int j, int strips, int ledsPerStrip, int dmxChannels) {
         id = j;
         matrix = new LEDMatrix(strips, ledsPerStrip);
+        dmxVals = new int[dmxChannels];
         fadeIn = 0;
         fadeOut = 0;
         hold = 0;
 
         currentPreset = "None";
         presetContainer = new ArrayList<>();
+
+        for (int i  = 0; i < dmxVals.length; i++) {
+            dmxVals[i] = 0;
+        }
 
 
     }
@@ -201,6 +209,21 @@ public class Note {
 
     public LEDMatrix getMatrix() {
         return matrix;
+    }
+
+    public int[] getDmxVals() {return dmxVals;}
+
+    public void setDMXVal(int channel, int value) {
+        dmxVals[channel] = value;
+    }
+
+    public void setDMXValFromString(String s) {
+        String[] a = s.split(";");
+        setDMXVal(Integer.parseInt(a[0]), Integer.parseInt(a[1]));
+
+    }
+    public int getDMXVal(int channel) {
+        return dmxVals[channel];
     }
 
     public int getPresetParameter(String preset, String parameter) {

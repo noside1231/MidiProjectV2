@@ -1,4 +1,4 @@
-/*
+
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
@@ -159,4 +159,3 @@ public class Serial
 
 }
 
-*/

@@ -84,9 +84,9 @@ public class Main extends Application {
     void resetWindow() {
         mainWindow = new MainWindow(w, currentFile.getJSONObject("Preferences"));
         mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferences(mainWindow.getPreferenceItemPressed().get()));
-        mainWindow.getOpenItemPressed().addListener(event -> openFile(false));
-        mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(false));
-        mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(false));
+        mainWindow.getOpenItemPressed().addListener(event -> openFile(mainWindow.getOpenItemPressed().get()));
+        mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
+        mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(mainWindow.getSaveFileAsItemPressed().get()));
 
     }
 
@@ -114,9 +114,10 @@ public class Main extends Application {
         File selectedFile = fc.showSaveDialog(new Stage());
         if (selectedFile != null) {
             fileOpen = selectedFile;
-//            fileOpenLabel.setText(fileOpen.getName());
+            preferencesWindow.setFileName(fileOpen.getName());
             writeFile(selectedFile);
         }
+        resetWindow();
     }
 
     void writeFile(File f) {
@@ -131,7 +132,7 @@ public class Main extends Application {
 
     private void openFile(boolean t) {
 
-        System.out.println(t);
+        System.out.println("OPEN" + t);
         if (!t) {
             return;
         }
@@ -143,7 +144,6 @@ public class Main extends Application {
 
         if (selectedFile != null) {
             fileOpen = selectedFile;
-//            fileOpenLabel.setText(fileOpen.getName());
             readFile(selectedFile);
             loadData();
         }

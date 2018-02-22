@@ -47,6 +47,7 @@ public class TriggeredNote {
         timeStatus = t;
         status++;
     }
+
     void setStatus(int t) {
         status = t;
     }
@@ -76,7 +77,7 @@ public class TriggeredNote {
                 tColors = applyTrailPreset(tColors, t);
                 break;
             case "Twinkle":
-//                System.out.println("NONE");
+                tColors = applyTwinklePreset(tColors, t);
                 break;
             case "Multi":
                 applyMultiPreset();
@@ -175,7 +176,7 @@ public class TriggeredNote {
         double frequency = note.getPresetParameter("Flash", "Speed");
         double length = note.getPresetParameter("Flash", "Spread");
 
-        boolean on = (curT*frequency- Math.floor(curT*frequency)) < length/100;
+        boolean on = (curT * frequency - Math.floor(curT * frequency)) < length / 100;
 
         for (int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
@@ -199,16 +200,16 @@ public class TriggeredNote {
 
         int trailIndexX, trailIndexY;
         if (speedX < 0) {
-            trailIndexX =  note.getMatrix().getLedsPerStrip() - (int)(-curT*speedX)%(note.getMatrix().getLedsPerStrip()+lengthX);
-        } else if (speedX > 0){
-            trailIndexX = -lengthX+(int)((curT*speedX))%(note.getMatrix().getLedsPerStrip()+lengthX);
+            trailIndexX = note.getMatrix().getLedsPerStrip() - (int) (-curT * speedX) % (note.getMatrix().getLedsPerStrip() + lengthX);
+        } else if (speedX > 0) {
+            trailIndexX = -lengthX + (int) ((curT * speedX)) % (note.getMatrix().getLedsPerStrip() + lengthX);
         } else {
             trailIndexX = 0;
         }
         if (speedY < 0) {
-            trailIndexY =  note.getMatrix().getStrips() - (int)(-curT*speedY)%(note.getMatrix().getStrips() +lengthY);
-        } else if (speedY > 0){
-            trailIndexY = -lengthY+(int)((curT*speedY))%(note.getMatrix().getStrips()+lengthY);
+            trailIndexY = note.getMatrix().getStrips() - (int) (-curT * speedY) % (note.getMatrix().getStrips() + lengthY);
+        } else if (speedY > 0) {
+            trailIndexY = -lengthY + (int) ((curT * speedY)) % (note.getMatrix().getStrips() + lengthY);
         } else {
             trailIndexY = 0;
         }
@@ -216,17 +217,16 @@ public class TriggeredNote {
 
         Color[][] tCols = new Color[note.getMatrix().getLedsPerStrip()][note.getMatrix().getStrips()];
 
-        for(int y = 0; y < note.getMatrix().getStrips(); y++) {
+        for (int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
 
                 if (x >= 0 && x < note.getMatrix().getLedsPerStrip()) {
                     tCols[x][y] = Color.BLACK;
                 }
 
-                if (x >= trailIndexX && x < trailIndexX+lengthX && y >= trailIndexY && y < trailIndexY+lengthY) {
+                if (x >= trailIndexX && x < trailIndexX + lengthX && y >= trailIndexY && y < trailIndexY + lengthY) {
                     tCols[x][y] = cols[x][y];
                 }
-
 
 
             }
@@ -243,6 +243,17 @@ public class TriggeredNote {
 
     SimpleObjectProperty<ArrayList<Integer>> getTriggeredMulti() {
         return triggeredMulti;
+    }
+
+    Color[][] applyTwinklePreset(Color[][] cols, long t) {
+
+        int twinkleAmount = note.getPresetParameter("Twinkle", "Amount");
+        int variance = note.getPresetParameter("Twinkle", "Variance");
+        int fadeIn = note.getPresetParameter("Twinkle", "Fade In");
+        int hold = note.getPresetParameter("Twinkle", "Hold");
+        int fadeOut = note.getPresetParameter("Twinkle", "Fade Out");
+
+        return cols;
     }
 
 

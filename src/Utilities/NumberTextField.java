@@ -46,7 +46,6 @@ public class NumberTextField extends TextField{
                         } else if (newVal < minVal) {
                             newVal = minVal;
                         }
-                        System.out.println(newVal);
                         setValue(newVal);
                     }
                 }

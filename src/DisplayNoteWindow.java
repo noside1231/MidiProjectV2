@@ -6,6 +6,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 import java.util.ArrayList;
 
@@ -26,6 +27,7 @@ public class DisplayNoteWindow extends VBox {
     SimpleIntegerProperty notePressed;
 
     int noteRectScaleY = 100;
+    int noteXSpacing = 1;
 
     String noteLetters[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
@@ -43,11 +45,15 @@ public class DisplayNoteWindow extends VBox {
         for (int i = 0; i < noteAmount; i++) {
             noteRects[i] = new Rectangle();
             noteRects[i].setFill(Color.BLACK);
+            noteRects[i].setStrokeType(StrokeType.INSIDE);
+            noteRects[i].setStrokeWidth(.5);
             noteRects[i].setStroke(Color.WHITE);
             int tempInd = i;
             noteRects[i].setOnMouseClicked(event -> rectanglePressed(tempInd));
         }
         noteContainer.getChildren().addAll(noteRects);
+        noteContainer.setSpacing(noteXSpacing);
+
 
         noteInfoDisplay = new HBox();
         noteSelectionField = new NumberTextField(1, 1, 128);
@@ -68,10 +74,7 @@ public class DisplayNoteWindow extends VBox {
 
     public void rectanglePressed(int i) {
         if (i >= 0 && i < noteAmount) {
-//            noteRects[notePressed.get()].setFill(Color.BLACK);
             notePressed.set(i);
-//            noteRects[notePressed.get()].setFill(Color.WHITE);
-
             currentNoteLabel.setText(getPianoNote());
             noteSelectionField.setValue(notePressed.get() + 1);
         }
@@ -86,23 +89,20 @@ public class DisplayNoteWindow extends VBox {
     }
 
     public void setScale() {
-        double noteRectScaleX = noteContainer.getWidth() / noteAmount;
+        double noteSpacingXTotal = (noteAmount-1)*noteXSpacing;
+        double noteRectScaleX = ( Math.floor(noteContainer.getWidth()) - noteSpacingXTotal) / noteAmount;
         for (int i = 0; i < noteAmount; i++) {
             noteRects[i].setWidth(noteRectScaleX);
-//            noteRects[i].setWidth(screenX/noteAmount);
             noteRects[i].setHeight(noteRectScaleY);
         }
 
     }
 
     public void update(ArrayList<Integer> currentlyTriggeredNotes, int currentNote) {
-
         for (int i  = 0; i < noteAmount; i++) {
             noteRects[i].setFill(Color.BLACK);
         }
         noteRects[currentNote].setFill(Color.WHITE);
-
-
         for (int i = 0; i < currentlyTriggeredNotes.size(); i++) {
             noteRects[currentlyTriggeredNotes.get(i)].setFill(Color.GOLD);
         }

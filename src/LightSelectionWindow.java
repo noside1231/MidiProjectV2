@@ -3,6 +3,7 @@ import Utilities.NumberTextFieldDecimal;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -25,6 +26,7 @@ public class LightSelectionWindow extends VBox {
     private LabelCheckBox editMode;
 
     private DisplayMatrixWindow displayMatrixWindow;
+    private DMXWindow dmxWindow;
 
     private SimpleObjectProperty<Float[]> times;
 
@@ -38,7 +40,9 @@ public class LightSelectionWindow extends VBox {
 
     private SimpleIntegerProperty setSelected;
 
-    public LightSelectionWindow(int ledsPerStrip, int strips) {
+    private SimpleStringProperty dmxChangedVal;
+
+    public LightSelectionWindow(int ledsPerStrip, int strips, int dmxChannels) {
         setPrefWidth(super.getWidth());
 
         triggerInt = new SimpleIntegerProperty();
@@ -51,6 +55,7 @@ public class LightSelectionWindow extends VBox {
         selectColInt.set(0);
         setSelected = new SimpleIntegerProperty();
         setSelected.set(0);
+        dmxChangedVal = new SimpleStringProperty("");
 
         setTriggerTimeBar = new HBox();
         triggerButton = new Button("Trigger");
@@ -91,8 +96,13 @@ public class LightSelectionWindow extends VBox {
         displayMatrixWindow.getSelectCol().addListener(selectColInt -> selectColSelected(displayMatrixWindow.getSelectCol().get()));
         displayMatrixWindow.getsetSelected().addListener(event -> setPressed());
 
+        dmxWindow = new DMXWindow(dmxChannels);
+        dmxWindow.setEditMode(true);
+        dmxWindow.getChangedVal().addListener(event -> dmxValueChanged(dmxWindow.getChangedVal().get()));
+
         ledDisplayTab.setContent(displayMatrixWindow);
-        dmxTab.setContent(new Label("DMX LATER :)"));
+        dmxTab.setContent(dmxWindow);
+
 
         getChildren().addAll(lightTab, setTriggerTimeBar);
 
@@ -105,6 +115,19 @@ public class LightSelectionWindow extends VBox {
 
     public void setScale() {
         displayMatrixWindow.setScale();
+        dmxWindow.setScale();
+    }
+
+    private void dmxValueChanged(String s) {
+        dmxChangedVal.set(s);
+    }
+
+    public SimpleStringProperty getDmxChangedVal() {
+        return dmxChangedVal;
+    }
+
+    public void setDMXValues(int[] vals) {
+        dmxWindow.setDMXValues(vals);
     }
 
     private void setLastPressed(Integer[] p) {
@@ -133,6 +156,7 @@ public class LightSelectionWindow extends VBox {
     void editToggled(boolean t) {
         lastEditToggle.set(t);
         displayMatrixWindow.setEditMode(t);
+        dmxWindow.setEditMode(t);
         editMode.setChecked(lastEditToggle.get());
     }
 

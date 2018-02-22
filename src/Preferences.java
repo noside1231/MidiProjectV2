@@ -27,12 +27,14 @@ public class Preferences extends Stage {
     int defaultScreenY = 800;
     int defaultFullscreen = 0;
     String defaultTitle = "untitled";
+    int defaultSerialEnabled = 0;
 
     private SliderTextField stripsField;
     private SliderTextField ledsPerStripField;
     private SliderTextField screenX;
     private SliderTextField screenY;
     private LabelCheckBox fullscreen;
+    private LabelCheckBox serialEnabled;
     private VBox rootBox;
 
 
@@ -61,13 +63,16 @@ public class Preferences extends Stage {
         screenX = new SliderTextField(defaultScreenX, 500,2000, "Screen Width");
         screenY = new SliderTextField(defaultScreenY, 500, 2000, "Screen Height");
         fullscreen = new LabelCheckBox("Full Screen", false);
+        serialEnabled = new LabelCheckBox("Enable Serial", false);
+
         ledsPerStripField.getValue().addListener(event -> setChanged());
         stripsField.getValue().addListener(event -> setChanged());
         screenX.getValue().addListener(event -> setChanged());
         screenY.getValue().addListener(event -> setChanged());
         fullscreen.getChecked().addListener(event -> setChanged());
+        serialEnabled.getChecked().addListener(event -> setChanged());
 
-        rootBox.getChildren().addAll(screenX, screenY, ledsPerStripField, stripsField, fullscreen);
+        rootBox.getChildren().addAll(screenX, screenY, ledsPerStripField, stripsField, fullscreen, serialEnabled);
 
         setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
@@ -111,6 +116,10 @@ public class Preferences extends Stage {
         changed = true;
     }
 
+    public void setFileName(String fn) {
+        preferencesObject.put("title", fn);
+    }
+
     public void initializePreferencesObject() {
         preferencesObject.put("strips", Integer.toString(defaultStrips));
         preferencesObject.put("ledsperstrip", Integer.toString(defaultLedsPerStrip));
@@ -118,6 +127,7 @@ public class Preferences extends Stage {
         preferencesObject.put("screenY", Integer.toString(defaultScreenY));
         preferencesObject.put("fullscreen", Integer.toString(defaultFullscreen));
         preferencesObject.put("title", defaultTitle);
+        preferencesObject.put("serialenabled", defaultSerialEnabled);
 
     }
 
@@ -127,6 +137,7 @@ public class Preferences extends Stage {
         screenX.setValue(Integer.parseInt(d.getString("screenX")));
         screenY.setValue(Integer.parseInt(d.getString("screenY")));
         fullscreen.setChecked(Integer.parseInt(d.getString("fullscreen")) == 1);
+        serialEnabled.setChecked(Integer.parseInt(d.getString("serialenabled")) == 1);
 
 
     }
@@ -136,7 +147,8 @@ public class Preferences extends Stage {
         preferencesObject.put("ledsperstrip", Integer.toString(ledsPerStripField.getValue().get()));
         preferencesObject.put("screenX", Integer.toString(screenX.getValue().get()));
         preferencesObject.put("screenY", Integer.toString(screenY.getValue().get()));
-        preferencesObject.put("fullscreen", (fullscreen.getChecked().get() ? "1": "0"));
+        preferencesObject.put("fullscreen", (fullscreen.getChecked().get() ? "1" : "0"));
+        preferencesObject.put("serialenabled", (serialEnabled.getChecked().get() ? "1" : "0"));
         return preferencesObject;
     }
 }

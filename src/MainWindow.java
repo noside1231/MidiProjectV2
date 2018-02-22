@@ -1,8 +1,8 @@
 import Utilities.MidiHandler;
-//import gnu.io.CommPort;
-//import gnu.io.CommPortIdentifier;
-//import gnu.io.PortInUseException;
-//import gnu.io.SerialPort;
+import gnu.io.CommPort;
+import gnu.io.CommPortIdentifier;
+import gnu.io.PortInUseException;
+import gnu.io.SerialPort;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -88,7 +88,7 @@ public class MainWindow extends Parent {
     //Midi
     MidiHandler midiHandler;
 
-//    Serial serialPort = new Serial();
+    Serial serialPort = new Serial();
 
     //preferences
     int noteAmount = 128;
@@ -96,17 +96,17 @@ public class MainWindow extends Parent {
     int ledsPerStrip = 30;
     int strips = 5;
     boolean editMode = true;
+    int dmxChannels = 10;
     SimpleBooleanProperty openItemPressed;
     SimpleBooleanProperty saveFileItemPressed;
     SimpleBooleanProperty saveFileAsItemPressed;
     SimpleBooleanProperty preferenceItemPressed;
 
+    boolean serialPortEnabled;
     public MainWindow(Stage mainWindow, JSONObject preferences) {
 
+        setPreferences(mainWindow, preferences);
 
-        if (Integer.parseInt(preferences.getString("fullscreen")) == 1) {
-            mainWindow.setFullScreen(true);
-        }
         screenX = Integer.parseInt(preferences.getString("screenX"));
         screenY = Integer.parseInt(preferences.getString("screenY"));
         strips = Integer.parseInt(preferences.getString("strips"));
@@ -114,10 +114,13 @@ public class MainWindow extends Parent {
 
 
         exteriorPane = new BorderPane();
+        exteriorPane.setMaxHeight(screenY);
+        exteriorPane.setMaxWidth(screenX);
         exteriorPane.setStyle("-fx-background-color: #FFFFFF;");
 
 
         mainScene = new Scene(exteriorPane, screenX, screenY);
+//        mainWindow.setResizable(false);
 
         openItemPressed = new SimpleBooleanProperty();
         openItemPressed.set(false);
@@ -128,26 +131,14 @@ public class MainWindow extends Parent {
         preferenceItemPressed = new SimpleBooleanProperty();
         preferenceItemPressed.set(false);
 
-        mainWindow.setTitle("Midi Project V2 NEW WINDOW");
-
-
-        //Preferences Window
-//        preferencesWindow = new Preferences();
-//        preferencesWindow.initializePreferencesObject();
-//        preferencesWindow.getSaveButtonPressed().addListener(event -> savePreferences(preferencesWindow.getSaveButtonPressed().get()));
-
 
         //Midi Hanlder
         midiHandler = new MidiHandler();
         midiHandler.getLastMessage().addListener(event -> triggerNote(midiHandler.getLastMessage().get()));
 
 
-        //Initialize File
-//        currentFile = new JSONObject();
-
-
         //Initialize Clipboard
-        noteClipboard = new Note(-1, strips, ledsPerStrip);
+        noteClipboard = new Note(-1, strips, ledsPerStrip, dmxChannels);
 
         //Initialize Toolbar
         toolbar = new ToolBar();
@@ -204,18 +195,21 @@ public class MainWindow extends Parent {
         }
         midiMenu.getItems().addAll(midiHandlerItems);
 
-        serialPortItems = new CheckMenuItem[10];
 
-        for (int i = 0; i < 10; i++) {
-            int tempI = i;
-            serialPortItems[i] = new CheckMenuItem(String.valueOf(i));
-            serialPortItems[i].selectedProperty().addListener(event -> selectSerialPort(serialPortItems[tempI].getText(), serialPortItems[tempI].isSelected(), tempI));
+        if (serialPortEnabled) {
+            ArrayList<String> tSlist = serialPort.getPorts();
+
+            serialPortItems = new CheckMenuItem[tSlist.size()];
+            for (int i = 0; i < tSlist.size(); i++) {
+                int tempI = i;
+                serialPortItems[i] = new CheckMenuItem(tSlist.get(i));
+                serialPortItems[i].selectedProperty().addListener(event -> selectSerialPort(serialPortItems[tempI].getText(), serialPortItems[tempI].isSelected(), tempI));
+
+            }
+            serialPortMenu.getItems().addAll(serialPortItems);
+        } else {
+            serialPortMenu.getItems().add(new MenuItem("Serial Output Disabled"));
         }
-        serialPortMenu.getItems().addAll(serialPortItems);
-
-
-        //Connect to serial
-//        s.connect("/dev/cu.wchusbserial14510");
 
 
 
@@ -236,7 +230,7 @@ public class MainWindow extends Parent {
         exteriorPane.setLeft(colorPickerWindow);
 
         //Lights
-        lightSelectionWindow = new LightSelectionWindow(ledsPerStrip, strips);
+        lightSelectionWindow = new LightSelectionWindow(ledsPerStrip, strips, dmxChannels);
         lightSelectionWindow.getLastPressed().addListener(event -> displayMatrixRectanglesPressed(lightSelectionWindow.getLastPressed().get()));
         lightSelectionWindow.getTriggerPressed().addListener(event -> triggerNote());
         lightSelectionWindow.getTimeChanged().addListener(event -> timesEntered(lightSelectionWindow.getTimeChanged().get()));
@@ -244,13 +238,13 @@ public class MainWindow extends Parent {
         lightSelectionWindow.getSelectRow().addListener(event -> selectRow(lightSelectionWindow.getSelectRow().get()));
         lightSelectionWindow.getSelectCol().addListener(event -> selectCol(lightSelectionWindow.getSelectCol().get()));
         lightSelectionWindow.getLastEditToggle().addListener(event -> setEditMode(lightSelectionWindow.getLastEditToggle().get()));
-//        lightSelectionWindow.getSetSelected().addListener(event -> System.out.println(colorPickerWindow.getColor().get()));
         lightSelectionWindow.getSetSelected().addListener(event -> colorPickerWindow.setColor());
+        lightSelectionWindow.getDmxChangedVal().addListener(event -> notes[currentNote].setDMXValFromString(lightSelectionWindow.getDmxChangedVal().get()));
 
         //Notes
         notes = new Note[noteAmount];
         for (int i = 0; i < noteAmount; i++) {
-            notes[i] = new Note(i, strips, ledsPerStrip);
+            notes[i] = new Note(i, strips, ledsPerStrip, dmxChannels);
         }
 
         //Presets
@@ -259,7 +253,7 @@ public class MainWindow extends Parent {
         presetWindow.getLastSelectedPreset().addListener(event -> notes[currentNote].setCurrentPreset(presetWindow.getLastSelectedPreset().get()));
 
         //Mixer
-        mixer = new Mixer(strips, ledsPerStrip);
+        mixer = new Mixer(strips, ledsPerStrip, dmxChannels);
         mixer.getTriggerMultiList().addListener(event -> triggerNotes(mixer.getTriggerMultiList().get()));
 
 
@@ -267,9 +261,6 @@ public class MainWindow extends Parent {
         HBox horNoteC = new HBox();
         horNoteC.getChildren().addAll(colorPickerWindow, presetWindow);
         noteC.getChildren().addAll(displayNoteWindow, horNoteC);
-
-
-//        exteriorPane.setLeft(presetWindow);
 
 
         exteriorPane.setCenter(noteC);
@@ -291,10 +282,12 @@ public class MainWindow extends Parent {
         Led[][] lastUpdatedMixer = mixer.update(now);
         if (!editMode) {
             lightSelectionWindow.setLEDDisplay(lastUpdatedMixer);
+            lightSelectionWindow.setDMXValues(mixer.updateDMX());
         }
 
-        //serialPort.sendMatrixData(mainWindow.getMixerMatrix());
-
+        if (serialPortEnabled) {
+            serialPort.sendMatrixData(getMixerMatrix());
+        }
 
         //update note display
         displayNoteWindow.update(mixer.getCurrentlyTriggeredNotes(), currentNote);
@@ -391,6 +384,7 @@ public class MainWindow extends Parent {
 
     void setDisplay() {
         lightSelectionWindow.setLEDDisplay(notes[currentNote].getLEDS());
+        lightSelectionWindow.setDMXValues(notes[currentNote].getDmxVals());
         lightSelectionWindow.setTimes(notes[currentNote].getFadeIn(), notes[currentNote].getHold(), notes[currentNote].getFadeOut());
 
         if (currentNote != presetWindow.getCurrentlyDisplayingNote()) {
@@ -511,10 +505,34 @@ public class MainWindow extends Parent {
     void selectSerialPort(String n, boolean val, int ind) {
         System.out.println(n + val);
 
+
+        try {
+            serialPort.connect("/dev/cu.wchusbserial14510");
+
+        } catch (Exception e) {e.printStackTrace();}
+
+
     }
 
     LEDMatrix getMixerMatrix() {
         return mixer.getMixerMatrix();
+    }
+
+    void setPreferences(Stage mainWindow, JSONObject preferencesObject) {
+
+        mainWindow.setTitle(preferencesObject.getString("title"));
+
+        if (Integer.parseInt(preferencesObject.getString("fullscreen")) == 1) {
+            mainWindow.setFullScreen(true);
+        }
+
+        if (Integer.parseInt(preferencesObject.getString("serialenabled")) == 1) {
+            serialPortEnabled = true;
+        } else {
+            serialPortEnabled = false;
+        }
+
+
     }
 
 

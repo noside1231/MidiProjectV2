@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 /**
  * Created by Edison on 1/16/18.
@@ -73,6 +74,7 @@ public class DisplayMatrixWindow extends HBox {
                 displayRects[x][y] = new Rectangle();
                 displayRects[x][y].setFill(Color.BLACK);
                 displayRects[x][y].setStroke(Color.BLACK);
+                displayRects[x][y].setStrokeType(StrokeType.INSIDE);
                 displayRects[x][y].setStrokeWidth(strokeWidth);
                 int tempX = x;
                 int tempY = y;
@@ -132,7 +134,6 @@ public class DisplayMatrixWindow extends HBox {
     }
 
     public void setScale() {
-
         int horizontalSpacingTotal = displayMatrixSpacing * ledsPerStrip - 1;
         int verticalSpacingTotal = displayMatrixSpacing * strips - 1;
         int displayMatrixRectangleScaleX = ((int) Math.floor(getWidth()) - horizontalSpacingTotal) / ledsPerStrip;
@@ -153,8 +154,6 @@ public class DisplayMatrixWindow extends HBox {
                 displayRects[x][y].setStroke(leds[x][y].getSelected() ? Color.WHITE : Color.BLACK);
             }
         }
-
-
     }
 
     void rightClick(ContextMenuEvent event) {
