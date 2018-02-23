@@ -41,6 +41,7 @@ public class LightSelectionWindow extends VBox {
     private SimpleIntegerProperty setSelected;
 
     private SimpleStringProperty dmxChangedVal;
+    private SimpleIntegerProperty selectedDmxChannel;
 
     public LightSelectionWindow(int ledsPerStrip, int strips, int dmxChannels) {
         setPrefWidth(super.getWidth());
@@ -56,6 +57,7 @@ public class LightSelectionWindow extends VBox {
         setSelected = new SimpleIntegerProperty();
         setSelected.set(0);
         dmxChangedVal = new SimpleStringProperty("");
+        selectedDmxChannel = new SimpleIntegerProperty(0);
 
         setTriggerTimeBar = new HBox();
         triggerButton = new Button("Trigger");
@@ -99,6 +101,7 @@ public class LightSelectionWindow extends VBox {
         dmxWindow = new DMXWindow(dmxChannels);
         dmxWindow.setEditMode(true);
         dmxWindow.getChangedVal().addListener(event -> dmxValueChanged(dmxWindow.getChangedVal().get()));
+        dmxWindow.getSelectedChannel().addListener(event ->selectedDmxChannelChanged(dmxWindow.getSelectedChannel().get()));
 
         ledDisplayTab.setContent(displayMatrixWindow);
         dmxTab.setContent(dmxWindow);
@@ -107,6 +110,15 @@ public class LightSelectionWindow extends VBox {
         getChildren().addAll(lightTab, setTriggerTimeBar);
 
 
+    }
+
+    public SimpleIntegerProperty getSelectedDmxChannel() {
+        return selectedDmxChannel;
+    }
+
+    private void selectedDmxChannelChanged(int ch) {
+        dmxWindow.setSelectedChannel(ch);
+        selectedDmxChannel.set(ch);
     }
 
     public SimpleObjectProperty<Integer[]> getLastPressed() {
@@ -126,7 +138,7 @@ public class LightSelectionWindow extends VBox {
         return dmxChangedVal;
     }
 
-    public void setDMXValues(int[] vals) {
+    public void setDMXValues(DMXChannel[] vals) {
         dmxWindow.setDMXValues(vals);
     }
 

@@ -29,6 +29,7 @@ public class Mixer {
     public Led[][] update(long curTime) {
         currentTime = curTime;
         mixerMatrix.reset();
+        clearDMXArr();
 
         iterator = currentlyTriggeredNotes.listIterator();
 
@@ -39,17 +40,21 @@ public class Mixer {
                 iterator.remove();
             } else {
                 mixerMatrix.addToLED(tNote.update(currentTime));
+                addToDmxArr(tNote.getUpdatedDMX());
             }
         }
         return mixerMatrix.getLEDS();
     }
 
-    public int[] updateDMX() {
+    public DMXChannel[] updateDMX() {
 
+        DMXChannel[] s = new DMXChannel[dmxChannels.length];
         for (int i = 0; i < dmxChannels.length; i++) {
-            dmxChannels[i] = 0;
+            s[i] = new DMXChannel(i);
+            s[i].setValue(dmxChannels[i]);
+
         }
-        return dmxChannels;
+        return s;
     }
 
     public LEDMatrix getMixerMatrix() {
@@ -93,6 +98,25 @@ public class Mixer {
                 currentlyTriggeredNotes.get(i).resetTrigger(currentTime);
                 return;
             }
+        }
+    }
+
+    private void clearDMXArr() {
+        for (int i = 0; i < dmxChannels.length; i++) {
+            dmxChannels[i] = 0;
+        }
+    }
+
+    void addToDmxArr(int channel, int val) {
+        dmxChannels[channel] += val;
+        if (dmxChannels[channel] > 255) {
+            dmxChannels[channel] = 255;
+        }
+    }
+
+    void addToDmxArr(int[] arr) {
+        for(int i = 0; i < arr.length; i++) {
+            addToDmxArr(i, arr[i]);
         }
     }
 

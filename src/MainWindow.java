@@ -76,6 +76,8 @@ public class MainWindow extends Parent {
     //Presets
     PresetWindow presetWindow;
 
+    DMXPresetWindow dmxPresetWindow;
+
     //Loaded File
 //    JSONObject currentFile;
 
@@ -96,7 +98,7 @@ public class MainWindow extends Parent {
     int ledsPerStrip = 30;
     int strips = 5;
     boolean editMode = true;
-    int dmxChannels = 10;
+    int dmxChannels = 50;
     SimpleBooleanProperty openItemPressed;
     SimpleBooleanProperty saveFileItemPressed;
     SimpleBooleanProperty saveFileAsItemPressed;
@@ -239,7 +241,8 @@ public class MainWindow extends Parent {
         lightSelectionWindow.getSelectCol().addListener(event -> selectCol(lightSelectionWindow.getSelectCol().get()));
         lightSelectionWindow.getLastEditToggle().addListener(event -> setEditMode(lightSelectionWindow.getLastEditToggle().get()));
         lightSelectionWindow.getSetSelected().addListener(event -> colorPickerWindow.setColor());
-        lightSelectionWindow.getDmxChangedVal().addListener(event -> notes[currentNote].setDMXValFromString(lightSelectionWindow.getDmxChangedVal().get()));
+        lightSelectionWindow.getDmxChangedVal().addListener(event -> setNoteDMX(lightSelectionWindow.getDmxChangedVal().get()));
+        lightSelectionWindow.getSelectedDmxChannel().addListener(event ->setSelectedDmxChannel(lightSelectionWindow.getSelectedDmxChannel().get()));
 
         //Notes
         notes = new Note[noteAmount];
@@ -252,6 +255,8 @@ public class MainWindow extends Parent {
         presetWindow.getLastChangedPresetProperty().addListener(event -> notes[currentNote].setPresetProperty(presetWindow.getLastChangedPresetProperty().get()));
         presetWindow.getLastSelectedPreset().addListener(event -> notes[currentNote].setCurrentPreset(presetWindow.getLastSelectedPreset().get()));
 
+        dmxPresetWindow = new DMXPresetWindow();
+
         //Mixer
         mixer = new Mixer(strips, ledsPerStrip, dmxChannels);
         mixer.getTriggerMultiList().addListener(event -> triggerNotes(mixer.getTriggerMultiList().get()));
@@ -259,7 +264,7 @@ public class MainWindow extends Parent {
 
         VBox noteC = new VBox();
         HBox horNoteC = new HBox();
-        horNoteC.getChildren().addAll(colorPickerWindow, presetWindow);
+        horNoteC.getChildren().addAll(colorPickerWindow, presetWindow, dmxPresetWindow);
         noteC.getChildren().addAll(displayNoteWindow, horNoteC);
 
 
@@ -384,7 +389,7 @@ public class MainWindow extends Parent {
 
     void setDisplay() {
         lightSelectionWindow.setLEDDisplay(notes[currentNote].getLEDS());
-        lightSelectionWindow.setDMXValues(notes[currentNote].getDmxVals());
+        lightSelectionWindow.setDMXValues(notes[currentNote].getDmxValues());
         lightSelectionWindow.setTimes(notes[currentNote].getFadeIn(), notes[currentNote].getHold(), notes[currentNote].getFadeOut());
 
         if (currentNote != presetWindow.getCurrentlyDisplayingNote()) {
@@ -425,6 +430,22 @@ public class MainWindow extends Parent {
 
         return tFile;
 
+    }
+
+    void setNoteDMX(String s) {
+        if (editMode) {
+            notes[currentNote].setDMXValFromString(s);
+        }
+    }
+
+    void setSelectedDmxChannel(int ch) {
+        System.out.println("mainwindow438, " + ch);
+
+
+
+//        notes[currentNote].
+//        dmxPresetWindow.setValues();
+        setDisplay();
     }
 
 

@@ -7,8 +7,7 @@ import java.util.ArrayList;
 public class Note {
 
     LEDMatrix matrix;
-
-    int[] dmxVals;
+    DMXChannel[] dmxChannels;
 
     ArrayList<String> presetContainer;
     String currentPreset;
@@ -19,10 +18,10 @@ public class Note {
     float hold;
     int id;
 
-    public Note(int j, int strips, int ledsPerStrip, int dmxChannels) {
+    public Note(int j, int strips, int ledsPerStrip, int channels) {
         id = j;
         matrix = new LEDMatrix(strips, ledsPerStrip);
-        dmxVals = new int[dmxChannels];
+        dmxChannels = new DMXChannel[channels];
         fadeIn = 0;
         fadeOut = 0;
         hold = 0;
@@ -30,8 +29,8 @@ public class Note {
         currentPreset = "None";
         presetContainer = new ArrayList<>();
 
-        for (int i  = 0; i < dmxVals.length; i++) {
-            dmxVals[i] = 0;
+        for (int i  = 0; i < dmxChannels.length; i++) {
+            dmxChannels[i] = new DMXChannel(i);
         }
 
 
@@ -211,19 +210,18 @@ public class Note {
         return matrix;
     }
 
-    public int[] getDmxVals() {return dmxVals;}
-
-    public void setDMXVal(int channel, int value) {
-        dmxVals[channel] = value;
-    }
-
     public void setDMXValFromString(String s) {
         String[] a = s.split(";");
-        setDMXVal(Integer.parseInt(a[0]), Integer.parseInt(a[1]));
-
+        dmxChannels[Integer.parseInt(a[0])].setValue(Integer.parseInt(a[1]));
+        boolean b = false;
+        if (Integer.parseInt(a[2]) == 1) {
+            b = true;
+        }
+        dmxChannels[Integer.parseInt(a[0])].setChecked(b);
     }
-    public int getDMXVal(int channel) {
-        return dmxVals[channel];
+
+    public DMXChannel[] getDmxValues() {
+        return dmxChannels;
     }
 
     public int getPresetParameter(String preset, String parameter) {

@@ -115,7 +115,19 @@ public class TriggeredNote {
             return blackOut(tColors);
         }
 
+    }
 
+    int[] getUpdatedDMX() {
+        int[] vals = new int[note.getDmxValues().length];
+        for (int i = 0; i < vals.length; i++) {
+            if (note.getDmxValues()[i].getChecked()) {
+                vals[i] = note.getDmxValues()[i].getValue();
+            } else {
+                vals[i] = 0;
+            }
+        }
+
+        return vals;
     }
 
     Color[][] applyFadeIn(Color[][] cols, long t) {

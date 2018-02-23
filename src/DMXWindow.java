@@ -1,3 +1,4 @@
+import Utilities.DMXSlider;
 import Utilities.SliderTextFieldVertical;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -14,12 +15,12 @@ import javafx.scene.shape.Rectangle;
 public class DMXWindow extends VBox{
 
     HBox sliderContainer;
-    Rectangle[] channelSelect;
     int dmxChannels;
 
     StringProperty changedVal;
+    SimpleIntegerProperty selectedChannel;
 
-    SliderTextFieldVertical[] tSliders;
+    DMXSlider[] tSliders;
     ScrollPane s;
 
     public DMXWindow(int ch) {
@@ -31,34 +32,61 @@ public class DMXWindow extends VBox{
         s = new ScrollPane(sliderContainer);
         s.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        tSliders= new SliderTextFieldVertical[this.dmxChannels];
+        tSliders= new DMXSlider[this.dmxChannels];
 
         for (int i = 0; i < tSliders.length; i++) {
-            tSliders[i] = new SliderTextFieldVertical(0,0,255, String.valueOf(i+1));
+            tSliders[i] = new DMXSlider(0,0,255, String.valueOf(i+1));
             int tI = i;
-            tSliders[i].getValue().addListener(event -> valueChanged(tI, tSliders[tI].getValue().get()));
+            tSliders[i].getChangedVal().addListener(event -> valueChanged(tI, tSliders[tI].getChangedVal().get()));
+            tSliders[i].getChecked().addListener(event -> valueChanged(tI, tSliders[tI].getChecked().get()));
+
+            tSliders[i].setOnMouseClicked(event -> setSelectedChannel(tI));
         }
 
         sliderContainer.getChildren().addAll(tSliders);
 
         changedVal = new SimpleStringProperty("");
+        selectedChannel = new SimpleIntegerProperty(0);
 
 
         getChildren().add(s);
 
     }
 
+    public SimpleIntegerProperty getSelectedChannel() {
+        return selectedChannel;
+    }
+
+    public void setSelectedChannel(int i) {
+        System.out.println(i);
+        tSliders[selectedChannel.get()].setSelected(false);
+        selectedChannel.set(i);
+        tSliders[i].setSelected(true);
+
+
+    }
+
+    private void valueChanged(int channel, int value, boolean state) {
+        String  s = state ? "1" : "0";
+        changedVal.set(String.valueOf(channel+";"+String.valueOf(value)+";" + s));
+    }
+    private void valueChanged(int channel, boolean state) {
+        valueChanged(channel, tSliders[channel].getChangedVal().get(), state);
+    }
     private void valueChanged(int channel, int value) {
-        changedVal.set(String.valueOf(channel+";"+String.valueOf(value)));
+        valueChanged(channel, value, tSliders[channel].getChecked().get());
+
     }
 
     public StringProperty getChangedVal() {
         return changedVal;
     }
 
-    public void setDMXValues(int[] values) {
-        for (int i = 0; i < values.length; i++) {
-            tSliders[i].setValue(values[i]);
+    public void setDMXValues(DMXChannel[] channels) {
+        for (int i = 0; i < channels.length; i++) {
+            tSliders[i].setValue(channels[i].getValue());
+            tSliders[i].setChecked(channels[i].getChecked());
+
         }
     }
 
