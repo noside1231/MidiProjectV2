@@ -117,11 +117,36 @@ public class TriggeredNote {
 
     }
 
-    int[] getUpdatedDMX() {
+    int[] getUpdatedDMX(long t) {
+        System.out.println("UP");
         int[] vals = new int[note.getDmxValues().length];
         for (int i = 0; i < vals.length; i++) {
             if (note.getDmxValues()[i].getChecked()) {
-                vals[i] = note.getDmxValues()[i].getValue();
+
+                if (note.getDmxValues()[i].getstartVal() != 0 || note.getDmxValues()[i].getEndVal() != 0) {
+
+                    double value = (t - originalTriggerTime) / 1000000000.0;
+                    double end = note.getFadeIn() + note.getFadeOut() + note.getHold();
+
+                    int start1 = 0;
+                    double stop1 = end;
+                    int start2 = note.getDmxValues()[i].getstartVal();
+                    int stop2 = note.getDmxValues()[i].getEndVal();
+
+
+                    vals[i] = (int)(start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1)));
+                    if (vals[i] > 255) {
+                        vals[i] = 255;
+                    } else if (vals[i] < 0) {
+                        vals[i] = 0;
+                    }
+
+                            System.out.println(vals[i]);
+                } else {
+                    vals[i] = note.getDmxValues()[i].getValue();
+                }
+
+
             } else {
                 vals[i] = 0;
             }

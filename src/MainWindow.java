@@ -256,12 +256,15 @@ public class MainWindow extends Parent {
         presetWindow.getLastSelectedPreset().addListener(event -> notes[currentNote].setCurrentPreset(presetWindow.getLastSelectedPreset().get()));
 
         dmxPresetWindow = new DMXPresetWindow();
+        dmxPresetWindow.getChangedValues().addListener(event -> notes[currentNote].setDMXTimesFromString(dmxPresetWindow.getChangedValues().get()));
+        dmxPresetWindow.getChangedValues().addListener(event -> System.out.println(dmxPresetWindow.getChangedValues().get()));
 
         //Mixer
         mixer = new Mixer(strips, ledsPerStrip, dmxChannels);
         mixer.getTriggerMultiList().addListener(event -> triggerNotes(mixer.getTriggerMultiList().get()));
 
 
+        //Display top panes
         VBox noteC = new VBox();
         HBox horNoteC = new HBox();
         horNoteC.getChildren().addAll(colorPickerWindow, presetWindow, dmxPresetWindow);
@@ -390,6 +393,7 @@ public class MainWindow extends Parent {
     void setDisplay() {
         lightSelectionWindow.setLEDDisplay(notes[currentNote].getLEDS());
         lightSelectionWindow.setDMXValues(notes[currentNote].getDmxValues());
+        dmxPresetWindow.setValues(notes[currentNote].getDmxValues());
         lightSelectionWindow.setTimes(notes[currentNote].getFadeIn(), notes[currentNote].getHold(), notes[currentNote].getFadeOut());
 
         if (currentNote != presetWindow.getCurrentlyDisplayingNote()) {
@@ -441,7 +445,7 @@ public class MainWindow extends Parent {
     void setSelectedDmxChannel(int ch) {
         System.out.println("mainwindow438, " + ch);
 
-
+        dmxPresetWindow.setCurrentlySelectedDmx(ch);
 
 //        notes[currentNote].
 //        dmxPresetWindow.setValues();

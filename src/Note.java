@@ -220,6 +220,13 @@ public class Note {
         dmxChannels[Integer.parseInt(a[0])].setChecked(b);
     }
 
+    public void setDMXTimesFromString(String s) {
+        String[] a = s.split(";");
+        dmxChannels[Integer.parseInt(a[0])].setStartVal(Integer.parseInt(a[1]));
+        dmxChannels[Integer.parseInt(a[0])].setEndVal(Integer.parseInt(a[2]));
+
+    }
+
     public DMXChannel[] getDmxValues() {
         return dmxChannels;
     }

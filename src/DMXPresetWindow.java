@@ -1,4 +1,6 @@
 import Utilities.SliderTextField;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.layout.VBox;
 
 /**
@@ -7,26 +9,40 @@ import javafx.scene.layout.VBox;
 public class DMXPresetWindow extends VBox{
 
 
-    SliderTextField valStart;
-    SliderTextField valEnd;
+    private SliderTextField valStart;
+    private SliderTextField valEnd;
+
+    private int currentSelectedDmx = 0;
+    private SimpleStringProperty changedValues;
 
     public DMXPresetWindow() {
 
         valStart = new SliderTextField(0,0,255, "Starting Value");
-        valEnd = new SliderTextField(0,0,355, "Ending Value");
+        valEnd = new SliderTextField(0,0,255, "Ending Value");
+
+        valStart.getValue().addListener(event->setChangedValues(valStart.getValue().get(), valEnd.getValue().get()));
+        valEnd.getValue().addListener(event->setChangedValues(valStart.getValue().get(), valEnd.getValue().get()));
+
+        changedValues = new SimpleStringProperty("");
 
         getChildren().addAll(valStart, valEnd);
 
     }
 
-    public void setValues(String v) {
-        String[] a = v.split(";");
-        valStart.setValue(Integer.parseInt(a[0]));
-        valEnd.setValue(Integer.parseInt(a[1]));
+    public SimpleStringProperty getChangedValues() {
+        return changedValues;
     }
 
-    public String getValues() {
-        String v = String.valueOf(valStart.getValue().get())+";"+String.valueOf(valEnd.getValue().get());
-        return v;
+    private void setChangedValues(int s, int e) {
+        changedValues.set(String.valueOf(currentSelectedDmx)+";"+String.valueOf(s)+";"+ String.valueOf(e));
+    }
+
+    public void setValues(DMXChannel[] v) {
+        valStart.setValue(v[currentSelectedDmx].getstartVal());
+        valEnd.setValue(v[currentSelectedDmx].getEndVal());
+    }
+
+    public void setCurrentlySelectedDmx(int ch) {
+        currentSelectedDmx = ch;
     }
 }

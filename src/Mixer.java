@@ -40,7 +40,7 @@ public class Mixer {
                 iterator.remove();
             } else {
                 mixerMatrix.addToLED(tNote.update(currentTime));
-                addToDmxArr(tNote.getUpdatedDMX());
+                addToDmxArr(tNote.getUpdatedDMX(currentTime));
             }
         }
         return mixerMatrix.getLEDS();
