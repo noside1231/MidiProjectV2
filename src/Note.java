@@ -10,7 +10,7 @@ public class Note {
     private DMXChannel[] dmxChannels;
 
     private ArrayList<String> presetContainer;
-    private String currentPreset;
+    private String[] currentPreset;
 
 
     private float fadeIn;
@@ -29,10 +29,13 @@ public class Note {
         hold = 0;
         endTrigger = false;
 
-        currentPreset = "None";
+        currentPreset = new String[4];
+        for (int i = 0; i < currentPreset.length; i++) {
+            currentPreset[i] = "None";
+        }
         presetContainer = new ArrayList<>();
 
-        for (int i  = 0; i < dmxChannels.length; i++) {
+        for (int i = 0; i < dmxChannels.length; i++) {
             dmxChannels[i] = new DMXChannel(i);
         }
 
@@ -93,7 +96,6 @@ public class Note {
 
     void setTimeFromString(String s) {
         String[] a = s.split(";");
-//        System.out.println(a[0]);
         fadeIn = Float.parseFloat(a[0]);
         hold = Float.parseFloat(a[1]);
         fadeOut = Float.parseFloat(a[2]);
@@ -129,10 +131,12 @@ public class Note {
                 //try to replace
                 if (add[0].equals(temp[0])) {
                     if (add[1].equals(temp[1])) {
-                        temp[2] = add[2];
-                        presetContainer.remove(i);
-                        presetContainer.add(p);
-                        return;
+                        if (add[2].equals(temp[2])) {
+                            temp[3] = add[3];
+                            presetContainer.remove(i);
+                            presetContainer.add(p);
+                            return;
+                        }
                     }
                 }
             }
@@ -142,21 +146,23 @@ public class Note {
     }
 
     public void setCurrentPreset(String p) {
-        currentPreset = p;
+        String temp[] = p.split(";");
+        int ind = Integer.parseInt(temp[0]);
+        currentPreset[ind] = temp[1];
     }
 
     public ArrayList<String> getPresetContainer() {
         return presetContainer;
     }
 
-    public String getCurrentPreset() {
+    public String[] getCurrentPreset() {
         return currentPreset;
     }
 
     public void printPresetArray() {
         System.out.println("List for " + id);
         for (int i = 0; i < presetContainer.size(); i++) {
-            System.out.println("  "+presetContainer.get(i));
+            System.out.println("  " + presetContainer.get(i));
         }
         System.out.println();
     }
@@ -242,12 +248,12 @@ public class Note {
         return dmxChannels;
     }
 
-    public int getPresetParameter(String preset, String parameter) {
+    public int getPresetParameter(String preset, String parameter, int presetInd) {
         for (int i = 0; i < presetContainer.size(); i++) {
             String[] temp = presetContainer.get(i).split(";");
 
-            if (temp[0].equals(preset) && temp[1].equals(parameter)) {
-                return Integer.parseInt(temp[2]);
+            if (Integer.parseInt(temp[0]) ==presetInd && temp[1].equals(preset) && temp[2].equals(parameter)) {
+                return Integer.parseInt(temp[3]);
             }
         }
         return 0;
@@ -260,7 +266,7 @@ public class Note {
 
             String[] temp = presetContainer.get(i).split(";");
             if (temp[0].equals("Multi") && temp[2].equals("1")) {
-                    tList.add(Integer.parseInt(temp[1]));
+                tList.add(Integer.parseInt(temp[1]));
             }
         }
         return tList;

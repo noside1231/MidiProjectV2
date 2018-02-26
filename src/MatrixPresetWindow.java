@@ -9,13 +9,12 @@ import java.util.ArrayList;
 /**
  * Created by edisongrauman on 1/17/18.
  */
-public class PresetWindow extends VBox {
+public class MatrixPresetWindow extends VBox {
 
     String[] presets = {"None", "Rainbow", "Flash", "Trail", "Twinkle", "Multi"};
 
     ChoiceBox<String> presetOptions;
     Pane presetPane;
-
 
     ArrayList<VBox> presetWindows;
     NonePresetWindow nonePresetWindow;
@@ -28,11 +27,11 @@ public class PresetWindow extends VBox {
     SimpleStringProperty lastChangedPresetProperty;
     SimpleStringProperty lastSelectedPreset;
 
-    int currentlyDisplayingNote = 0;
+    int id;
 
 
-    public PresetWindow(int ledsPerStrip, int strips) {
-
+    public MatrixPresetWindow(int ind, int ledsPerStrip, int strips) {
+        id = ind;
         lastChangedPresetProperty = new SimpleStringProperty();
         lastSelectedPreset = new SimpleStringProperty();
 
@@ -114,30 +113,21 @@ public class PresetWindow extends VBox {
         String[] s = pText.toArray(new String[pText.size()]);
         for (int i = 0; i < s.length; i++) {
             String[] splitted = s[i].split(";");
-
-            if (splitted[0].equals(presets[1])) { //If Rainbow
-                rainbowPresetWindow.setPresetField(splitted[1], splitted[2]);
-            }
-            else if (splitted[0].equals(presets[2])) { //If Flash
-                flashPresetWindow.setPresetField(splitted[1], splitted[2]);
-            }
-            else if (splitted[0].equals(presets[3])) { //If Trail
-                trailPresetWindow.setPresetField(splitted[1], splitted[2]);
-            }
-            else if (splitted[0].equals(presets[4])) { // If Twinkle
-                twinklePresetWindow.setPresetField(splitted[1], splitted[2]);
-            }
-            else if (splitted[0].equals(presets[5])) { //If Multi
-                multiPresetWindow.setPresetField(splitted[1], splitted[2]);
+            System.out.println(pText);
+            if (splitted[0] == Integer.toString(id)) {
+                if (splitted[1].equals(presets[1])) { //If Rainbow
+                    rainbowPresetWindow.setPresetField(splitted[2], splitted[3]);
+                } else if (splitted[1].equals(presets[2])) { //If Flash
+                    flashPresetWindow.setPresetField(splitted[2], splitted[3]);
+                } else if (splitted[1].equals(presets[3])) { //If Trail
+                    trailPresetWindow.setPresetField(splitted[2], splitted[3]);
+                } else if (splitted[1].equals(presets[4])) { // If Twinkle
+                    twinklePresetWindow.setPresetField(splitted[2], splitted[3]);
+                } else if (splitted[1].equals(presets[5])) { //If Multi
+                    multiPresetWindow.setPresetField(splitted[2], splitted[3]);
+                }
             }
         }
     }
 
-    public int getCurrentlyDisplayingNote() {
-        return currentlyDisplayingNote;
-    }
-
-    public void setCurrentlyDisplayingNote(int s) {
-        currentlyDisplayingNote = s;
-    }
 }

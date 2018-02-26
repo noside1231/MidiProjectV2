@@ -63,26 +63,28 @@ public class TriggeredNote {
         }
 
         //apply preset
-        switch (note.getCurrentPreset()) {
-            case "None":
+        for (int i = 0; i < 4; i++) {
+            switch (note.getCurrentPreset()[i]) {
+                case "None":
 //                System.out.println("NONE");
-                break;
-            case "Rainbow":
-                tColors = applyRainbowPreset(tColors, t);
-                break;
-            case "Flash":
-                tColors = applyFlashPreset(tColors, t);
-                break;
-            case "Trail":
-                tColors = applyTrailPreset(tColors, t);
-                break;
-            case "Twinkle":
-                tColors = applyTwinklePreset(tColors, t);
-                break;
-            case "Multi":
-                applyMultiPreset();
-                setStatus(3);
-                break;
+                    break;
+                case "Rainbow":
+                    tColors = applyRainbowPreset(tColors, t, i);
+                    break;
+                case "Flash":
+                    tColors = applyFlashPreset(tColors, t, i);
+                    break;
+                case "Trail":
+                    tColors = applyTrailPreset(tColors, t, i);
+                    break;
+                case "Twinkle":
+                    tColors = applyTwinklePreset(tColors, t, i);
+                    break;
+                case "Multi":
+                    applyMultiPreset();
+                    setStatus(3);
+                    break;
+            }
         }
 
         //apply fade
@@ -188,13 +190,13 @@ public class TriggeredNote {
         return cols;
     }
 
-    Color[][] applyRainbowPreset(Color[][] cols, long t) {
+    Color[][] applyRainbowPreset(Color[][] cols, long t, int ind) {
         double curT = (t - originalTriggerTime) / 1000000000.0;
 
-        double speed = curT * note.getPresetParameter("Rainbow", "Speed");
-        double spread = note.getPresetParameter("Rainbow", "Spread");
-        double offset = note.getPresetParameter("Rainbow", "Offset");
-        double skip = note.getPresetParameter("Rainbow", "Skip");
+        double speed = curT * note.getPresetParameter("Rainbow", "Speed", ind);
+        double spread = note.getPresetParameter("Rainbow", "Spread", ind);
+        double offset = note.getPresetParameter("Rainbow", "Offset", ind);
+        double skip = note.getPresetParameter("Rainbow", "Skip", ind);
 
         for (int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
@@ -206,12 +208,12 @@ public class TriggeredNote {
         return cols;
     }
 
-    Color[][] applyFlashPreset(Color[][] cols, long t) {
+    Color[][] applyFlashPreset(Color[][] cols, long t, int ind) {
 
         double curT = (t - originalTriggerTime) / 1000000000.0;
 
-        double frequency = note.getPresetParameter("Flash", "Speed");
-        double length = note.getPresetParameter("Flash", "Spread");
+        double frequency = note.getPresetParameter("Flash", "Speed", ind);
+        double length = note.getPresetParameter("Flash", "Spread", ind);
 
         boolean on = (curT * frequency - Math.floor(curT * frequency)) < length / 100;
 
@@ -225,15 +227,15 @@ public class TriggeredNote {
         return cols;
     }
 
-    Color[][] applyTrailPreset(Color[][] cols, long t) {
+    Color[][] applyTrailPreset(Color[][] cols, long t, int ind) {
         double curT = (t - originalTriggerTime) / 1000000000.0;
 
-        int speedX = note.getPresetParameter("Trail", "SpeedX");
-        int speedY = note.getPresetParameter("Trail", "SpeedY");
-        int lengthX = note.getPresetParameter("Trail", "LengthX");
-        int lengthY = note.getPresetParameter("Trail", "LengthY");
-        double skipX = note.getPresetParameter("Trail", "SkipX");
-        double skipd = note.getPresetParameter("Trail", "SkipY");
+        int speedX = note.getPresetParameter("Trail", "SpeedX", ind);
+        int speedY = note.getPresetParameter("Trail", "SpeedY", ind);
+        int lengthX = note.getPresetParameter("Trail", "LengthX", ind);
+        int lengthY = note.getPresetParameter("Trail", "LengthY", ind);
+        double skipX = note.getPresetParameter("Trail", "SkipX", ind);
+        double skipd = note.getPresetParameter("Trail", "SkipY", ind);
 
         int trailIndexX, trailIndexY;
         if (speedX < 0) {
@@ -282,13 +284,13 @@ public class TriggeredNote {
         return triggeredMulti;
     }
 
-    Color[][] applyTwinklePreset(Color[][] cols, long t) {
+    Color[][] applyTwinklePreset(Color[][] cols, long t, int ind) {
 
-        int twinkleAmount = note.getPresetParameter("Twinkle", "Amount");
-        int variance = note.getPresetParameter("Twinkle", "Variance");
-        int fadeIn = note.getPresetParameter("Twinkle", "Fade In");
-        int hold = note.getPresetParameter("Twinkle", "Hold");
-        int fadeOut = note.getPresetParameter("Twinkle", "Fade Out");
+        int twinkleAmount = note.getPresetParameter("Twinkle", "Amount", ind);
+        int variance = note.getPresetParameter("Twinkle", "Variance", ind);
+        int fadeIn = note.getPresetParameter("Twinkle", "Fade In", ind);
+        int hold = note.getPresetParameter("Twinkle", "Hold", ind);
+        int fadeOut = note.getPresetParameter("Twinkle", "Fade Out", ind);
 
         return cols;
     }

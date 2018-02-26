@@ -1,3 +1,4 @@
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ContextMenu;
@@ -18,33 +19,32 @@ import javafx.scene.shape.StrokeType;
  */
 public class DisplayMatrixWindow extends HBox {
 
-    int strokeWidth = 3;
-    int displayMatrixSpacing = 2;
+    private int strokeWidth = 3;
+    private int displayMatrixSpacing = 2;
 
-    int strips;
-    int ledsPerStrip;
+    private int strips;
+    private int ledsPerStrip;
 
-    boolean editMode;
+    private  Rectangle[][] displayRects;
+    private  VBox displayRectRows;
+    private  HBox[] displayMatrixCols;
 
-    Rectangle[][] displayRects;
-    VBox displayRectRows;
-    HBox[] displayMatrixCols;
+    private  ContextMenu rightClickOptionMenu;
+    private  MenuItem selectAllItem;
+    private   MenuItem deselectAllItem;
+    private   Menu selectRowMenu;
+    private   Menu selectColMenu;
+    private  MenuItem[] selectRowItem;
+    private   MenuItem[] selectColItem;
+    private  MenuItem set;
 
-    ContextMenu rightClickOptionMenu;
-    MenuItem selectAllItem;
-    MenuItem deselectAllItem;
-    Menu selectRowMenu;
-    Menu selectColMenu;
-    MenuItem[] selectRowItem;
-    MenuItem[] selectColItem;
-    MenuItem set;
+    private  SimpleObjectProperty<Integer[]> lastClicked;
 
-    SimpleObjectProperty<Integer[]> lastClicked;
-
-    SimpleIntegerProperty selectAllInt;
-    SimpleIntegerProperty selectRowInt;
-    SimpleIntegerProperty selectColInt;
-    SimpleIntegerProperty selectSet;
+    private  SimpleIntegerProperty selectAllInt;
+    private  SimpleIntegerProperty selectRowInt;
+    private  SimpleIntegerProperty selectColInt;
+    private  SimpleIntegerProperty selectSet;
+    private SimpleBooleanProperty editModeVal;
 
     public DisplayMatrixWindow(int lPS, int s) {
         setPrefHeight(200);
@@ -59,6 +59,8 @@ public class DisplayMatrixWindow extends HBox {
         selectColInt.set(0);
         selectSet = new SimpleIntegerProperty();
         selectSet.set(0);
+
+        editModeVal = new SimpleBooleanProperty(false);
 
         lastClicked = new SimpleObjectProperty<>();
 
@@ -119,6 +121,8 @@ public class DisplayMatrixWindow extends HBox {
 
         rightClickOptionMenu.getItems().addAll(set, selectAllItem, deselectAllItem, new SeparatorMenuItem(), selectRowMenu, selectColMenu);
 
+        setOnMouseClicked(event -> setEditMode(true));
+
 
     }
 
@@ -157,7 +161,7 @@ public class DisplayMatrixWindow extends HBox {
     }
 
     void rightClick(ContextMenuEvent event) {
-        if (editMode) {
+        if (editModeVal.get()) {
             rightClickOptionMenu.show(this, event.getScreenX(), event.getScreenY());
         }
     }
@@ -181,7 +185,11 @@ public class DisplayMatrixWindow extends HBox {
     }
 
     public void setEditMode(boolean t) {
-        editMode = t;
+        editModeVal.set(t);
+    }
+
+    SimpleBooleanProperty getEditModeVal() {
+        return editModeVal;
     }
 
     SimpleIntegerProperty getSelectAll() {

@@ -16,19 +16,16 @@ public class LightSelectionWindow extends VBox {
     private TabPane lightTab;
     private Tab ledDisplayTab;
     private Tab dmxTab;
+    private Tab keyMapTab;
 
     private HBox setTriggerTimeBar;
-    private Button triggerButton;
-    private NumberTextFieldDecimal fadeInField;
-    private NumberTextFieldDecimal holdField;
-    private NumberTextFieldDecimal fadeOutField;
-    private SimpleIntegerProperty triggerInt;
+
     private LabelCheckBox editMode;
 
     private DisplayMatrixWindow displayMatrixWindow;
     private DMXWindow dmxWindow;
+    private KeyMapWindow keyMapWindow;
 
-    private SimpleObjectProperty<Float[]> times;
 
     private SimpleObjectProperty<Integer[]> lastMatrixRectSelected;
 
@@ -46,8 +43,6 @@ public class LightSelectionWindow extends VBox {
     public LightSelectionWindow(int ledsPerStrip, int strips, int dmxChannels) {
         setPrefWidth(super.getWidth());
 
-        triggerInt = new SimpleIntegerProperty();
-        triggerInt.set(0);
         selectAllInt = new SimpleIntegerProperty();
         selectAllInt.set(0);
         selectRowInt = new SimpleIntegerProperty();
@@ -60,27 +55,14 @@ public class LightSelectionWindow extends VBox {
         selectedDmxChannel = new SimpleIntegerProperty(0);
 
         setTriggerTimeBar = new HBox();
-        triggerButton = new Button("Trigger");
-        fadeInField = new NumberTextFieldDecimal();
-        fadeOutField = new NumberTextFieldDecimal();
-        holdField = new NumberTextFieldDecimal();
 
         editMode = new LabelCheckBox("Edit Mode", true);
         lastEditToggle = new SimpleBooleanProperty();
         lastEditToggle.set(true);
 
-
-        triggerButton.setOnAction(event -> triggerPressed());
         editMode.getChecked().addListener(event -> editToggled(editMode.getChecked().get()));
 
-        times = new SimpleObjectProperty<>();
-        times.set(new Float[] {(float)0,(float)0,(float)0});
-
-        fadeInField.getValue().addListener(event -> setTime(new Float[] {fadeInField.getValue().get(),  holdField.getValue().get(), fadeOutField.getValue().get()}));
-        holdField.getValue().addListener(event -> setTime(new Float[] {fadeInField.getValue().get(),  holdField.getValue().get(), fadeOutField.getValue().get()}));
-        fadeOutField.getValue().addListener(event -> setTime(new Float[] {fadeInField.getValue().get(),  holdField.getValue().get(), fadeOutField.getValue().get()}));
-
-        setTriggerTimeBar.getChildren().addAll(fadeInField, holdField, fadeOutField, triggerButton, editMode);
+        setTriggerTimeBar.getChildren().addAll(editMode);
 
         lastMatrixRectSelected = new SimpleObjectProperty<>();
         lightTab = new TabPane();
@@ -88,7 +70,9 @@ public class LightSelectionWindow extends VBox {
 
         ledDisplayTab = new Tab("Led Strips");
         dmxTab = new Tab("DMX");
-        lightTab.getTabs().addAll(ledDisplayTab, dmxTab);
+        keyMapTab = new Tab("Key Map");
+
+        lightTab.getTabs().addAll(ledDisplayTab, dmxTab, keyMapTab);
 
         displayMatrixWindow = new DisplayMatrixWindow(ledsPerStrip, strips);
         displayMatrixWindow.setEditMode(true);
@@ -97,14 +81,21 @@ public class LightSelectionWindow extends VBox {
         displayMatrixWindow.getSelectRow().addListener(selectRowInt -> selectRowSelected(displayMatrixWindow.getSelectRow().get()));
         displayMatrixWindow.getSelectCol().addListener(selectColInt -> selectColSelected(displayMatrixWindow.getSelectCol().get()));
         displayMatrixWindow.getsetSelected().addListener(event -> setPressed());
+        displayMatrixWindow.getEditModeVal().addListener(event -> editToggled(displayMatrixWindow.getEditModeVal().get()));
 
         dmxWindow = new DMXWindow(dmxChannels);
         dmxWindow.setEditMode(true);
         dmxWindow.getChangedVal().addListener(event -> dmxValueChanged(dmxWindow.getChangedVal().get()));
         dmxWindow.getSelectedChannel().addListener(event ->selectedDmxChannelChanged(dmxWindow.getSelectedChannel().get()));
 
+        keyMapWindow = new KeyMapWindow();
+
         ledDisplayTab.setContent(displayMatrixWindow);
         dmxTab.setContent(dmxWindow);
+        keyMapTab.setContent(keyMapWindow);
+
+
+
 
 
         getChildren().addAll(lightTab, setTriggerTimeBar);
@@ -150,16 +141,6 @@ public class LightSelectionWindow extends VBox {
         displayMatrixWindow.setLEDS(leds);
     }
 
-    public void setTimes(float fI, float h, float fO) {
-        fadeInField.setValue(fI);
-        holdField.setValue(h);
-        fadeOutField.setValue(fO);
-    }
-
-    void triggerPressed() {
-        triggerInt.set((triggerInt.get() + 1)%2);
-        editToggled(false);
-    }
 
     private void setPressed() {
         setSelected.set((setSelected.get()+1)%2);
@@ -176,15 +157,7 @@ public class LightSelectionWindow extends VBox {
         return lastEditToggle;
     }
 
-    public SimpleIntegerProperty getTriggerPressed() {
-        return triggerInt;
-    }
 
-    private void setTime(Float[] f) {
-        times.set(f);
-        System.out.println(times.get()[0]);
-
-    }
     private void selectAllSelected(int s) {
         if (s > 0) {
             selectAllInt.set(Math.abs(selectAllInt.get())+1);
@@ -209,11 +182,15 @@ public class LightSelectionWindow extends VBox {
     public SimpleIntegerProperty getSelectAll() {
         return selectAllInt;
     }
-    public SimpleObjectProperty<Float[]> getTimeChanged() {
-        return times;
-    }
     public SimpleIntegerProperty getSetSelected() { return setSelected; }
 
+    public int getKeyMap(String key) {
+        return keyMapWindow.getKeyMap(key);
+    }
+
+    public void setKeyMapValue(String key, int val) {
+        keyMapWindow.setKeyValue(key, val);
+    }
 
 
 
