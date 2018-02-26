@@ -6,17 +6,19 @@ import java.util.ArrayList;
 
 public class Note {
 
-    LEDMatrix matrix;
-    DMXChannel[] dmxChannels;
+    private LEDMatrix matrix;
+    private DMXChannel[] dmxChannels;
 
-    ArrayList<String> presetContainer;
-    String currentPreset;
+    private ArrayList<String> presetContainer;
+    private String currentPreset;
 
 
-    float fadeIn;
-    float fadeOut;
-    float hold;
-    int id;
+    private float fadeIn;
+    private float fadeOut;
+    private float hold;
+    private int id;
+
+    private boolean endTrigger;
 
     public Note(int j, int strips, int ledsPerStrip, int channels) {
         id = j;
@@ -25,6 +27,7 @@ public class Note {
         fadeIn = 0;
         fadeOut = 0;
         hold = 0;
+        endTrigger = false;
 
         currentPreset = "None";
         presetContainer = new ArrayList<>();
@@ -34,6 +37,14 @@ public class Note {
         }
 
 
+    }
+
+    public void setEndTrigger(boolean b) {
+        endTrigger = b;
+    }
+
+    public boolean getEndTrigger() {
+        return endTrigger;
     }
 
     void setLED(int x, int y, Color c) {
@@ -253,5 +264,10 @@ public class Note {
             }
         }
         return tList;
+    }
+
+    public String getPianoNoteString() {
+        String noteLetters[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+        return (noteLetters[id % 12]) + " " + ((id / 12) - 2);
     }
 }

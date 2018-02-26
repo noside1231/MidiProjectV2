@@ -61,6 +61,8 @@ public class MainWindow extends Parent {
     CheckMenuItem[] serialPortItems;
     Label fileOpenLabel;
 
+    DisplayCurrentNoteWindow displayCurrentNoteWindow;
+
     //Note Key Selection
     DisplayNoteWindow displayNoteWindow;
 
@@ -226,6 +228,10 @@ public class MainWindow extends Parent {
         displayNoteWindow = new DisplayNoteWindow(noteAmount);
         displayNoteWindow.getNotePressed().addListener(event -> noteButtonPressed(displayNoteWindow.getNotePressed().get()));
 
+
+       displayCurrentNoteWindow = new DisplayCurrentNoteWindow();
+
+
         //Color Picker
         colorPickerWindow = new ColorPickerWindow();
         colorPickerWindow.getColor().addListener(event -> updateSelectedColor(colorPickerWindow.getColor().get()));
@@ -265,13 +271,25 @@ public class MainWindow extends Parent {
 
 
         //Display top panes
-        VBox noteC = new VBox();
+        VBox verticalMiddleContainer = new VBox();
         HBox horNoteC = new HBox();
         horNoteC.getChildren().addAll(colorPickerWindow, presetWindow, dmxPresetWindow);
-        noteC.getChildren().addAll(displayNoteWindow, horNoteC);
+
+        HBox middleContainer = new HBox();
 
 
-        exteriorPane.setCenter(noteC);
+        //move to top
+        displayCurrentNoteWindow.getNoteChangedVal().addListener(event -> noteButtonPressed(displayCurrentNoteWindow.getNoteChangedVal().get()));
+
+
+        middleContainer.getChildren().addAll(displayCurrentNoteWindow, presetWindow, dmxPresetWindow);
+
+//        verticalMiddleContainer.getChildren().addAll(displayNoteWindow, horNoteC);
+                verticalMiddleContainer.getChildren().addAll(displayNoteWindow, middleContainer);
+
+
+
+        exteriorPane.setCenter(verticalMiddleContainer);
         exteriorPane.setBottom(lightSelectionWindow);
         exteriorPane.setTop(toolbar);
 
@@ -395,6 +413,8 @@ public class MainWindow extends Parent {
         lightSelectionWindow.setDMXValues(notes[currentNote].getDmxValues());
         dmxPresetWindow.setValues(notes[currentNote].getDmxValues());
         lightSelectionWindow.setTimes(notes[currentNote].getFadeIn(), notes[currentNote].getHold(), notes[currentNote].getFadeOut());
+
+        displayCurrentNoteWindow.setValues(notes[currentNote]);
 
         if (currentNote != presetWindow.getCurrentlyDisplayingNote()) {
             presetWindow.setCurrentlyDisplayingNote(currentNote);

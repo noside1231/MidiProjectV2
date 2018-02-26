@@ -13,23 +13,16 @@ import java.util.ArrayList;
 /**
  * Created by Edison on 1/16/18.
  */
-public class DisplayNoteWindow extends VBox {
+public class DisplayNoteWindow extends HBox {
 
-    NumberTextField noteSelectionField;
-    Label currentNoteLabel;
-    Button goLeftButton;
-    Button goRightButton;
 
-    Rectangle[] noteRects;
-    HBox noteContainer;
-    HBox noteInfoDisplay;
-    int noteAmount;
-    SimpleIntegerProperty notePressed;
 
-    int noteRectScaleY = 100;
-    int noteXSpacing = 1;
+    private Rectangle[] noteRects;
+    private int noteAmount;
+    private SimpleIntegerProperty notePressed;
 
-    String noteLetters[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+    private int noteRectScaleY = 100;
+    private int noteXSpacing = 1;
 
 
     public DisplayNoteWindow(int nA) {
@@ -38,9 +31,7 @@ public class DisplayNoteWindow extends VBox {
         noteAmount = nA;
 
         notePressed = new SimpleIntegerProperty();
-
         noteRects = new Rectangle[noteAmount];
-        noteContainer = new HBox();
 
         for (int i = 0; i < noteAmount; i++) {
             noteRects[i] = new Rectangle();
@@ -51,32 +42,17 @@ public class DisplayNoteWindow extends VBox {
             int tempInd = i;
             noteRects[i].setOnMouseClicked(event -> rectanglePressed(tempInd));
         }
-        noteContainer.getChildren().addAll(noteRects);
-        noteContainer.setSpacing(noteXSpacing);
 
-
-        noteInfoDisplay = new HBox();
-        noteSelectionField = new NumberTextField(1, 1, 128);
-        noteSelectionField.getValue().addListener((v, oldValue, newValue) -> rectanglePressed(newValue.intValue() - 1));
-        currentNoteLabel = new Label(getPianoNote());
-
-        goLeftButton = new Button("<");
-        goRightButton = new Button(">");
-        goLeftButton.setOnAction(event -> rectanglePressed(notePressed.get() - 1));
-        goRightButton.setOnAction(event -> rectanglePressed(notePressed.get() + 1));
 
         rectanglePressed(0);
-
-        noteInfoDisplay.getChildren().addAll(goLeftButton, goRightButton, noteSelectionField, currentNoteLabel);
-        getChildren().addAll(noteContainer, noteInfoDisplay);
+        getChildren().addAll(noteRects);
+        setSpacing(noteXSpacing);
 
     }
 
     public void rectanglePressed(int i) {
         if (i >= 0 && i < noteAmount) {
             notePressed.set(i);
-            currentNoteLabel.setText(getPianoNote());
-            noteSelectionField.setValue(notePressed.get() + 1);
         }
     }
 
@@ -84,13 +60,10 @@ public class DisplayNoteWindow extends VBox {
         return notePressed;
     }
 
-    String getPianoNote() {
-        return (noteLetters[notePressed.get() % 12]) + " " + ((notePressed.get() / 12) - 2);
-    }
 
     public void setScale() {
         double noteSpacingXTotal = (noteAmount-1)*noteXSpacing;
-        double noteRectScaleX = ( Math.floor(noteContainer.getWidth()) - noteSpacingXTotal) / noteAmount;
+        double noteRectScaleX = ( Math.floor(getWidth()) - noteSpacingXTotal) / noteAmount;
         for (int i = 0; i < noteAmount; i++) {
             noteRects[i].setWidth(noteRectScaleX);
             noteRects[i].setHeight(noteRectScaleY);
@@ -106,8 +79,6 @@ public class DisplayNoteWindow extends VBox {
         for (int i = 0; i < currentlyTriggeredNotes.size(); i++) {
             noteRects[currentlyTriggeredNotes.get(i)].setFill(Color.GOLD);
         }
-
-
     }
 
 }
