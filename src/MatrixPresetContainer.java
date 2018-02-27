@@ -1,6 +1,5 @@
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 

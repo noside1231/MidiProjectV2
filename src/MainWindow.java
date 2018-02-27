@@ -1,4 +1,7 @@
 import Utilities.MidiHandler;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -100,6 +104,9 @@ public class MainWindow extends Parent {
     SimpleBooleanProperty preferenceItemPressed;
 
     boolean serialPortEnabled;
+
+
+
     public MainWindow(Stage mainWindow, JSONObject preferences) {
 
         setPreferences(mainWindow, preferences);
@@ -209,7 +216,6 @@ public class MainWindow extends Parent {
         }
 
 
-
         //File Open Label
         fileOpenLabel = new Label();
         //Add To Menu
@@ -222,7 +228,7 @@ public class MainWindow extends Parent {
         displayNoteWindow.getNotePressed().addListener(event -> noteButtonPressed(displayNoteWindow.getNotePressed().get()));
 
 
-       displayCurrentNoteWindow = new DisplayCurrentNoteWindow();
+        displayCurrentNoteWindow = new DisplayCurrentNoteWindow();
 
 
         //Color Picker
@@ -239,7 +245,8 @@ public class MainWindow extends Parent {
         lightSelectionWindow.getLastEditToggle().addListener(event -> setEditMode(lightSelectionWindow.getLastEditToggle().get()));
         lightSelectionWindow.getSetSelected().addListener(event -> colorPickerWindow.setColor());
         lightSelectionWindow.getDmxChangedVal().addListener(event -> setNoteDMX(lightSelectionWindow.getDmxChangedVal().get()));
-        lightSelectionWindow.getSelectedDmxChannel().addListener(event ->setSelectedDmxChannel(lightSelectionWindow.getSelectedDmxChannel().get()));
+        lightSelectionWindow.getSelectedDmxChannel().addListener(event -> setSelectedDmxChannel(lightSelectionWindow.getSelectedDmxChannel().get()));
+        lightSelectionWindow.getSequencerTriggeredNote().addListener(event -> triggerNote(lightSelectionWindow.getSequencerTriggeredNote().get()));
 
         //Notes
         notes = new Note[noteAmount];
@@ -268,9 +275,9 @@ public class MainWindow extends Parent {
         //move to top
         displayCurrentNoteWindow.getNoteChangedVal().addListener(event -> noteButtonPressed(displayCurrentNoteWindow.getNoteChangedVal().get()));
         displayCurrentNoteWindow.getTriggerVal().addListener(event -> triggerNote(displayCurrentNoteWindow.getTriggerVal().get()));
-        displayCurrentNoteWindow.getFadeInVal().addListener(event -> timesEntered(0,displayCurrentNoteWindow.getFadeInVal().get()));
-        displayCurrentNoteWindow.getHoldVal().addListener(event -> timesEntered(1,displayCurrentNoteWindow.getHoldVal().get()));
-        displayCurrentNoteWindow.getFadeOutVal().addListener(event -> timesEntered(2,displayCurrentNoteWindow.getFadeOutVal().get()));
+        displayCurrentNoteWindow.getFadeInVal().addListener(event -> timesEntered(0, displayCurrentNoteWindow.getFadeInVal().get()));
+        displayCurrentNoteWindow.getHoldVal().addListener(event -> timesEntered(1, displayCurrentNoteWindow.getHoldVal().get()));
+        displayCurrentNoteWindow.getFadeOutVal().addListener(event -> timesEntered(2, displayCurrentNoteWindow.getFadeOutVal().get()));
 
 
         middleContainer.getChildren().addAll(displayCurrentNoteWindow, matrixPresetContainer, dmxPresetWindow, colorPickerWindow);
@@ -290,16 +297,20 @@ public class MainWindow extends Parent {
         mainWindow.show();
         setScales(); //set after window is shown
         setDisplay();
+
     }
+
 
 
     public void update(long now, double frameRate) {
 
         //update mixer
         Led[][] lastUpdatedMixer = mixer.update(now);
+
         if (!editMode) {
             lightSelectionWindow.setLEDDisplay(lastUpdatedMixer);
             lightSelectionWindow.setDMXValues(mixer.updateDMX());
+            lightSelectionWindow.updateKeyMap(now);
         }
 
         if (serialPortEnabled) {
@@ -308,9 +319,11 @@ public class MainWindow extends Parent {
 
         //update note display
         displayNoteWindow.update(mixer.getCurrentlyTriggeredNotes(), currentNote);
-        frameRateItem.setText("Framerate: " + String.valueOf((int)frameRate));
+        frameRateItem.setText("Framerate: " + String.valueOf((int) frameRate));
 
     }
+
+
 
     //Menu Item Handle Response
     void newFile() {
@@ -331,6 +344,7 @@ public class MainWindow extends Parent {
         saveFileItemPressed.set(true);
         saveFileItemPressed.set(false);
     }
+
     SimpleBooleanProperty getSaveFileItemPressed() {
         return saveFileItemPressed;
     }
@@ -568,7 +582,9 @@ public class MainWindow extends Parent {
         try {
             serialPort.connect("/dev/cu.wchusbserial14510");
 
-        } catch (Exception e) {e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -604,8 +620,7 @@ public class MainWindow extends Parent {
                 } else {
                     triggerNote(lightSelectionWindow.getKeyMap("A"), false);
                 }
-            }
-            else if (event.getCode() == KeyCode.S) {
+            } else if (event.getCode() == KeyCode.S) {
                 if (event.isAltDown()) {
                     lightSelectionWindow.setKeyMapValue("S", currentNote);
                 } else {
@@ -657,7 +672,6 @@ public class MainWindow extends Parent {
 
         });
     }
-
 
 
 }

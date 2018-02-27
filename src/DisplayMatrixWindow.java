@@ -51,14 +51,10 @@ public class DisplayMatrixWindow extends HBox {
         strips = s;
         ledsPerStrip = lPS;
 
-        selectAllInt = new SimpleIntegerProperty();
-        selectAllInt.set(0);
-        selectRowInt = new SimpleIntegerProperty();
-        selectRowInt.set(0);
-        selectColInt = new SimpleIntegerProperty();
-        selectColInt.set(0);
-        selectSet = new SimpleIntegerProperty();
-        selectSet.set(0);
+        selectAllInt = new SimpleIntegerProperty(0);
+        selectRowInt = new SimpleIntegerProperty(0);
+        selectColInt = new SimpleIntegerProperty(0);
+        selectSet = new SimpleIntegerProperty(0);
 
         editModeVal = new SimpleBooleanProperty(false);
 

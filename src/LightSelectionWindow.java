@@ -17,6 +17,7 @@ public class LightSelectionWindow extends VBox {
     private Tab ledDisplayTab;
     private Tab dmxTab;
     private Tab keyMapTab;
+    private Tab sequencerTab;
 
     private HBox setTriggerTimeBar;
 
@@ -25,6 +26,7 @@ public class LightSelectionWindow extends VBox {
     private DisplayMatrixWindow displayMatrixWindow;
     private DMXWindow dmxWindow;
     private KeyMapWindow keyMapWindow;
+    private Sequencer sequencer;
 
 
     private SimpleObjectProperty<Integer[]> lastMatrixRectSelected;
@@ -40,19 +42,18 @@ public class LightSelectionWindow extends VBox {
     private SimpleStringProperty dmxChangedVal;
     private SimpleIntegerProperty selectedDmxChannel;
 
+    private SimpleIntegerProperty sequencerTriggeredNote;
+
     public LightSelectionWindow(int ledsPerStrip, int strips, int dmxChannels) {
         setPrefWidth(super.getWidth());
 
-        selectAllInt = new SimpleIntegerProperty();
-        selectAllInt.set(0);
-        selectRowInt = new SimpleIntegerProperty();
-        selectRowInt.set(0);
-        selectColInt = new SimpleIntegerProperty();
-        selectColInt.set(0);
-        setSelected = new SimpleIntegerProperty();
-        setSelected.set(0);
+        selectAllInt = new SimpleIntegerProperty(0);
+        selectRowInt = new SimpleIntegerProperty(0);
+        selectColInt = new SimpleIntegerProperty(0);
+        setSelected = new SimpleIntegerProperty(0);
         dmxChangedVal = new SimpleStringProperty("");
         selectedDmxChannel = new SimpleIntegerProperty(0);
+        sequencerTriggeredNote = new SimpleIntegerProperty(0);
 
         setTriggerTimeBar = new HBox();
 
@@ -71,8 +72,8 @@ public class LightSelectionWindow extends VBox {
         ledDisplayTab = new Tab("Led Strips");
         dmxTab = new Tab("DMX");
         keyMapTab = new Tab("Key Map");
+        sequencerTab = new Tab("Sequencer");
 
-        lightTab.getTabs().addAll(ledDisplayTab, dmxTab, keyMapTab);
 
         displayMatrixWindow = new DisplayMatrixWindow(ledsPerStrip, strips);
         displayMatrixWindow.setEditMode(true);
@@ -90,12 +91,15 @@ public class LightSelectionWindow extends VBox {
 
         keyMapWindow = new KeyMapWindow();
 
+        sequencer = new Sequencer();
+        sequencer.getGetTriggeredNote().addListener(event -> sequencerTrigger(sequencer.getGetTriggeredNote().get()));
+
         ledDisplayTab.setContent(displayMatrixWindow);
         dmxTab.setContent(dmxWindow);
         keyMapTab.setContent(keyMapWindow);
+        sequencerTab.setContent(sequencer);
 
-
-
+        lightTab.getTabs().addAll(ledDisplayTab, dmxTab, keyMapTab, sequencerTab);
 
 
         getChildren().addAll(lightTab, setTriggerTimeBar);
@@ -192,6 +196,15 @@ public class LightSelectionWindow extends VBox {
         keyMapWindow.setKeyValue(key, val);
     }
 
+    public void updateKeyMap(long now) {
+        keyMapWindow.update(now);
+    }
 
+    private void sequencerTrigger(int i) {
+        sequencerTriggeredNote.set(i);
+    }
+    public SimpleIntegerProperty getSequencerTriggeredNote() {
+        return sequencerTriggeredNote;
+    }
 
 }

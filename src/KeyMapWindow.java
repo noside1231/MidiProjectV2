@@ -37,6 +37,16 @@ public class KeyMapWindow extends HBox {
     }
 
 
+    public void update(long now) {
+
+
+
+       //implement looping feature to  a bpm/keypress beat
+
+
+    }
+
+
 }
 
 

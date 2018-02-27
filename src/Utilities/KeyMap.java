@@ -11,22 +11,17 @@ import javafx.scene.layout.VBox;
 public class KeyMap extends VBox {
 
     private String name;
-    private ComboBox<String> selection;
+    private NoteSelectionBox selectionBox;
     private Label label;
+
+    private boolean loop;
 
     public KeyMap(String key) {
 
-        selection = new ComboBox<>();
+        selectionBox = new NoteSelectionBox();
         name = key;
-
         label = new Label(key);
-
-        selection.getItems().addAll("No Selection");
-        for (int i = 0; i < 128; i++) {
-            selection.getItems().add(Integer.toString(i+1));
-        }
-        selection.setValue("No Selection");
-        getChildren().addAll(label, selection);
+        getChildren().addAll(label, selectionBox);
 
     }
 
@@ -35,14 +30,11 @@ public class KeyMap extends VBox {
     }
 
     public int getValue() {
-        if (selection.getValue() != "No Selection") {
-            return Integer.parseInt(selection.getValue())-1;
-        }
-        return -1;
+        return selectionBox.getSelectedValue();
     }
 
     public void setValue(int val) {
-        selection.setValue(Integer.toString(val+1));
+        selectionBox.setValue(val);
     }
 
 
