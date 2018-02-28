@@ -37,7 +37,7 @@ public class ColorPickerWindow extends VBox{
         selectedColor.set(Color.BLACK);
 
         s = new ColorPickerSlider();
-        palette = new Palette(3,7);
+        palette = new Palette(3,6);
 
         s.getColor().addListener(event -> setPreviewColor(s.getColor().getValue()));
 

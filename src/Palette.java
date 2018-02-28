@@ -45,6 +45,10 @@ public class Palette extends VBox {
             }
         }
         getChildren().addAll(rectRows);
+
+        for (int i = 0; i < xAmt; i++) {
+            rectangleOptions[i][0].setFill(Color.hsb(i*60, 1, 1));
+        }
     }
 
     void setSelectedColor(int x, int y) {

@@ -22,6 +22,10 @@ public class Sequencer extends VBox {
     private SliderTextField bpmField;
     private Button bpmButton;
     private NumberTextField noteLength;
+    private Button doubleBPMButton;
+    private Button halfBPMButton;
+    private Button stopButton;
+    private Button startButton;
 
     private int measureBPMCount;
     private long measureBPMFirst;
@@ -39,10 +43,11 @@ public class Sequencer extends VBox {
     int noteMapping[];
 
     public Sequencer() {
-        currentColumn = 0;
-        cols = 10;
+        currentColumn = -1;
+        cols = 16;
         rows = 6;
         defaultBPM = 120;
+        bpmAverge = defaultBPM;
 
         noteMapping = new int[rows];
 
@@ -54,25 +59,36 @@ public class Sequencer extends VBox {
 
         topFieldContainer = new HBox();
 
-        bpmField = new SliderTextField(120, 0,500, "BPM: ");
+        bpmField = new SliderTextField(120, 0,1080, "BPM: ");
         bpmField.setAlignment(Pos.BASELINE_LEFT);
         bpmField.getValue().addListener(event ->bpmChanged(bpmField.getValue().get()));
 
         bpmButton = new Button("BPM");
         bpmButton.setOnAction(event -> calculateBPM());
 
+        doubleBPMButton = new Button("x2");
+        halfBPMButton = new Button("x0.5");
+
+        doubleBPMButton.setOnAction(event -> doubleBPM());
+        halfBPMButton.setOnAction(event ->halfBPM());
+
+        startButton = new Button("Play");
+        startButton.setOnAction(event -> startPressed());
+        stopButton = new Button("Stop");
+        stopButton.setOnAction(event -> stopPressed());
+
         noteLength = new NumberTextField(cols, 2, 32);
         noteLength.getValue().addListener(event -> noteLengthChanged(noteLength.getValue().get()));
 
         displaySequencerWindow = new DisplaySequencerWindow(rows, cols);
+        displaySequencerWindow.displayCurrentColumnBar(currentColumn);
 
-        topFieldContainer.getChildren().addAll(bpmField, bpmButton, noteLength);
+
+        topFieldContainer.getChildren().addAll(bpmField, bpmButton, noteLength, halfBPMButton, doubleBPMButton, startButton, stopButton);
         getChildren().addAll(topFieldContainer, displaySequencerWindow);
 
         sequencerTimer = new Timeline();
         sequencerTimer.setCycleCount(Timeline.INDEFINITE);
-        resetSequencerTimer(defaultBPM);
-
 
     }
 
@@ -89,7 +105,6 @@ public class Sequencer extends VBox {
                 getTriggeredNote.set(-1);
             }
         }
-
     }
 
     public SimpleIntegerProperty getGetTriggeredNote() {
@@ -98,6 +113,7 @@ public class Sequencer extends VBox {
 
     private void resetSequencerTimer(double bpm) {
         double seconds = 60/bpm;
+        bpmAverge = bpm;
         KeyFrame keyFrame = new KeyFrame(Duration.seconds(seconds), event -> advanceSequencer());
 
         sequencerTimer.stop();
@@ -127,8 +143,31 @@ public class Sequencer extends VBox {
 
     private void noteLengthChanged(int length) {
         cols = length;
-        currentColumn = 0;
+        currentColumn = -1;
         displaySequencerWindow.setColumns(length);
+    }
+
+    private void doubleBPM() {
+        bpmField.setValue((int)(bpmAverge*2));
+    }
+    private void halfBPM() {
+        bpmField.setValue((int)(bpmAverge*.5));
+    }
+
+    public void setScale() {
+        displaySequencerWindow.setScale();
+    }
+
+    public void stopPressed() {
+        sequencerTimer.stop();
+        currentColumn = -1;
+        displaySequencerWindow.displayCurrentColumnBar(currentColumn);
+
+    }
+
+    public void startPressed() {
+        resetSequencerTimer(bpmAverge);
+        advanceSequencer();
     }
 
 

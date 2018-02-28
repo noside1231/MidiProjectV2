@@ -123,6 +123,7 @@ public class LightSelectionWindow extends VBox {
     public void setScale() {
         displayMatrixWindow.setScale();
         dmxWindow.setScale();
+        sequencer.setScale();
     }
 
     private void dmxValueChanged(String s) {
