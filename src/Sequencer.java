@@ -6,13 +6,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 /**
  * Created by edisongrauman on 2/26/18.
  */
-public class Sequencer extends VBox {
+public class Sequencer extends HBox {
 
     private int rows;
     private int cols;
@@ -21,11 +22,16 @@ public class Sequencer extends VBox {
 
     private SliderTextField bpmField;
     private Button bpmButton;
-    private NumberTextField noteLength;
     private Button doubleBPMButton;
     private Button halfBPMButton;
     private Button stopButton;
     private Button startButton;
+    private Button halfNotesButton;
+    private Button doubleNotesButton;
+
+    private HBox bpmContainer;
+    private HBox setNoteContainer;
+    private HBox startStopContainer;
 
     private int measureBPMCount;
     private long measureBPMFirst;
@@ -36,11 +42,14 @@ public class Sequencer extends VBox {
 
     private DisplaySequencerWindow displaySequencerWindow;
 
-    private HBox topFieldContainer;
+    private VBox fieldContainer;
 
     private SimpleIntegerProperty getTriggeredNote;
 
     int noteMapping[];
+
+    private int colsMax = 64;
+    private int colsMin = 2;
 
     public Sequencer() {
         currentColumn = -1;
@@ -57,9 +66,9 @@ public class Sequencer extends VBox {
 
         getTriggeredNote = new SimpleIntegerProperty(0);
 
-        topFieldContainer = new HBox();
+        fieldContainer = new VBox();
 
-        bpmField = new SliderTextField(120, 0,1080, "BPM: ");
+        bpmField = new SliderTextField(120, 0,1080, "BPM:");
         bpmField.setAlignment(Pos.BASELINE_LEFT);
         bpmField.getValue().addListener(event ->bpmChanged(bpmField.getValue().get()));
 
@@ -77,18 +86,35 @@ public class Sequencer extends VBox {
         stopButton = new Button("Stop");
         stopButton.setOnAction(event -> stopPressed());
 
-        noteLength = new NumberTextField(cols, 2, 32);
-        noteLength.getValue().addListener(event -> noteLengthChanged(noteLength.getValue().get()));
+        halfNotesButton = new Button("Half Notes");
+        doubleNotesButton = new Button("Double Notes");
+        halfNotesButton.setOnAction(event -> halfNotes());
+        doubleNotesButton.setOnAction(event -> doubleNotes());
+
+        startStopContainer = new HBox();
+        startStopContainer.getChildren().addAll(startButton, stopButton);
+
+        bpmContainer = new HBox();
+        bpmContainer.getChildren().addAll(bpmButton, halfBPMButton, doubleBPMButton);
+
+        setNoteContainer = new HBox();
+        setNoteContainer.getChildren().addAll(halfNotesButton, doubleNotesButton);
 
         displaySequencerWindow = new DisplaySequencerWindow(rows, cols);
         displaySequencerWindow.displayCurrentColumnBar(currentColumn);
 
 
-        topFieldContainer.getChildren().addAll(bpmField, bpmButton, noteLength, halfBPMButton, doubleBPMButton, startButton, stopButton);
-        getChildren().addAll(topFieldContainer, displaySequencerWindow);
+        fieldContainer.getChildren().addAll(bpmField, bpmContainer, startStopContainer, setNoteContainer);
+
+        fieldContainer.setSpacing(15);
+
+        getChildren().addAll(displaySequencerWindow, fieldContainer);
 
         sequencerTimer = new Timeline();
         sequencerTimer.setCycleCount(Timeline.INDEFINITE);
+
+        HBox.setHgrow(displaySequencerWindow, Priority.NEVER);
+        HBox.setHgrow(bpmField, Priority.ALWAYS);
 
     }
 
@@ -141,12 +167,6 @@ public class Sequencer extends VBox {
         measureBPMPrevious = curTime;
     }
 
-    private void noteLengthChanged(int length) {
-        cols = length;
-        currentColumn = -1;
-        displaySequencerWindow.setColumns(length);
-    }
-
     private void doubleBPM() {
         bpmField.setValue((int)(bpmAverge*2));
     }
@@ -155,20 +175,42 @@ public class Sequencer extends VBox {
     }
 
     public void setScale() {
-        displaySequencerWindow.setScale();
+        displaySequencerWindow.setScale(getWidth());
+        fieldContainer.setMaxWidth(getWidth()*(1/4.));
+
     }
 
-    public void stopPressed() {
+
+    private void stopPressed() {
         sequencerTimer.stop();
         currentColumn = -1;
         displaySequencerWindow.displayCurrentColumnBar(currentColumn);
 
     }
-
-    public void startPressed() {
+    private void startPressed() {
         resetSequencerTimer(bpmAverge);
         advanceSequencer();
     }
+
+    private void doubleNotes() {
+        cols = cols*2;
+        if (cols > colsMax) {
+            cols = colsMax;
+        }
+        currentColumn = -1;
+        displaySequencerWindow.setColumns(cols);
+    }
+
+    private void halfNotes() {
+        cols = cols/2;
+        if (cols < colsMin) {
+            cols = colsMin;
+        }
+        currentColumn = -1;
+        displaySequencerWindow.setColumns(cols);
+    }
+
+
 
 
 

@@ -4,10 +4,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
@@ -25,6 +22,8 @@ public class DisplaySequencerWindow extends GridPane {
     private int currentCol;
     private int pressedBeatNote;
 
+    private int hgap = 2;
+
     private ContextMenu rightClickOptionMenu;
     private MenuItem[] setBeatNotes;
 
@@ -39,15 +38,17 @@ public class DisplaySequencerWindow extends GridPane {
             add(noteSelectionBoxes[i], 0, i);
         }
 
-        setBeatNotes = new MenuItem[4];
-        for (int i =0; i < setBeatNotes.length; i++) {
+        setBeatNotes = new MenuItem[6];
+        setBeatNotes[0] = new MenuItem("Clear");
+        setBeatNotes[0].setOnAction(event -> setBeatNoteRow(setBeatNotes[0].getText(), pressedBeatNote));
+        for (int i =1; i < setBeatNotes.length; i++) {
             int ti = i;
-            setBeatNotes[i] = new MenuItem(Integer.toString((int)Math.pow(2, i+1)));
+            setBeatNotes[i] = new MenuItem(Integer.toString((int)Math.pow(2, i-1)));
             setBeatNotes[i].setOnAction(event -> setBeatNoteRow(setBeatNotes[ti].getText(), pressedBeatNote));
         }
 
-        setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-        setHgap(2);
+//        setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        setHgap(hgap);
         setVgap(2);
         initializeRects();
         displayRects();
@@ -60,6 +61,7 @@ public class DisplaySequencerWindow extends GridPane {
                 rightClickOptionMenu.hide();
             }
         });
+
 
     }
 
@@ -111,7 +113,7 @@ public class DisplaySequencerWindow extends GridPane {
         currentCol = -1;
         cols = c;
         initializeRects();
-        setScaleX();
+        setNoteScale();
         displayRects();
     }
 
@@ -124,7 +126,7 @@ public class DisplaySequencerWindow extends GridPane {
                     int tx = x;
                     int ty = y;
                     noteRects[x][y] = new Rectangle();
-                    noteRects[x][y].setStroke(javafx.scene.paint.Color.WHITE);
+                    noteRects[x][y].setStroke(Color.DARKSLATEBLUE);
                     noteRects[x][y].setStrokeWidth(2);
                     noteRects[x][y].setStrokeType(StrokeType.INSIDE);
                     noteRects[x][y].setOnMouseClicked(event -> rectPressed(event, tx, ty));
@@ -150,23 +152,18 @@ public class DisplaySequencerWindow extends GridPane {
         return j;
     }
 
-    public void setScale() {
+    public void setScale(double w) {
+        setMinWidth(w*(3/4.));
+        setMaxWidth(w*(3/4.));
 
-        double rectY = (getHeight())/rows;
-        double rectX = getWidth()/2/cols;
+        ColumnConstraints fieldConstraint = new ColumnConstraints(noteSelectionBoxes[0].getWidth());
+        getColumnConstraints().add(fieldConstraint);
 
-        for (int y = 0; y < cols; y++) {
-            for (int x = 0; x < rows; x++) {
-                noteRects[x][y].setHeight(rectY);
-                noteRects[x][y].setWidth(rectX);
-            }
-            }
-
+        setNoteScale();
     }
 
-    public void setScaleX() {
-        double rectX = getWidth()/2/cols;
-
+    public void setNoteScale() {
+        double rectX =  (getMaxWidth()-noteSelectionBoxes[0].getWidth() - ((hgap+1)*(cols-1))) / cols;
         for (int y = 0; y < cols; y++) {
             for (int x = 0; x < rows; x++) {
                 noteRects[x][y].setWidth(rectX);
@@ -175,6 +172,15 @@ public class DisplaySequencerWindow extends GridPane {
     }
 
     private void setBeatNoteRow(String s, int r) {
+
+        if (s.equals("Clear")) {
+            for (int i = 0; i < cols; i++) {
+                noteSelected[r][i] = false;
+            }
+            displayRects();
+            return;
+        }
+
         int a = Integer.parseInt(s);
 
         for (int i = 0; i < cols; i++) {
