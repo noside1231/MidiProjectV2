@@ -1,7 +1,4 @@
 import Utilities.MidiHandler;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,7 +11,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -227,9 +223,14 @@ public class MainWindow extends Parent {
         displayNoteWindow = new DisplayNoteWindow(noteAmount);
         displayNoteWindow.getNotePressed().addListener(event -> noteButtonPressed(displayNoteWindow.getNotePressed().get()));
 
-
+        //Current Note
         displayCurrentNoteWindow = new DisplayCurrentNoteWindow();
-
+        displayCurrentNoteWindow.getNoteChangedVal().addListener(event -> noteButtonPressed(displayCurrentNoteWindow.getNoteChangedVal().get()));
+        displayCurrentNoteWindow.getTriggerVal().addListener(event -> triggerNote(displayCurrentNoteWindow.getTriggerVal().get()));
+        displayCurrentNoteWindow.getFadeInVal().addListener(event -> timesEntered(0, displayCurrentNoteWindow.getFadeInVal().get()));
+        displayCurrentNoteWindow.getHoldVal().addListener(event -> timesEntered(1, displayCurrentNoteWindow.getHoldVal().get()));
+        displayCurrentNoteWindow.getFadeOutVal().addListener(event -> timesEntered(2, displayCurrentNoteWindow.getFadeOutVal().get()));
+        displayCurrentNoteWindow.getEditModeVal().addListener(event -> setEditMode(displayCurrentNoteWindow.getEditModeVal().get()));
 
         //Color Picker
         colorPickerWindow = new ColorPickerWindow();
@@ -242,7 +243,6 @@ public class MainWindow extends Parent {
         lightSelectionWindow.getSelectAll().addListener(event -> selectAll(lightSelectionWindow.getSelectAll().get()));
         lightSelectionWindow.getSelectRow().addListener(event -> selectRow(lightSelectionWindow.getSelectRow().get()));
         lightSelectionWindow.getSelectCol().addListener(event -> selectCol(lightSelectionWindow.getSelectCol().get()));
-        lightSelectionWindow.getLastEditToggle().addListener(event -> setEditMode(lightSelectionWindow.getLastEditToggle().get()));
         lightSelectionWindow.getSetSelected().addListener(event -> colorPickerWindow.setColor());
         lightSelectionWindow.getDmxChangedVal().addListener(event -> setNoteDMX(lightSelectionWindow.getDmxChangedVal().get()));
         lightSelectionWindow.getSelectedDmxChannel().addListener(event -> setSelectedDmxChannel(lightSelectionWindow.getSelectedDmxChannel().get()));
@@ -254,11 +254,12 @@ public class MainWindow extends Parent {
             notes[i] = new Note(i, strips, ledsPerStrip, dmxChannels);
         }
 
-        //Presets
+        //DMX Presets
         dmxPresetWindow = new DMXPresetWindow();
         dmxPresetWindow.getChangedValues().addListener(event -> notes[currentNote].setDMXTimesFromString(dmxPresetWindow.getChangedValues().get()));
         dmxPresetWindow.getChangedValues().addListener(event -> System.out.println(dmxPresetWindow.getChangedValues().get()));
 
+        //Matrix Presets
         matrixPresetContainer = new MatrixPresetContainer(ledsPerStrip, strips);
         matrixPresetContainer.getLastChangedPresetProperty().addListener(event -> notes[currentNote].setPresetProperty(matrixPresetContainer.getLastChangedPresetProperty().get()));
         matrixPresetContainer.getLastSelectedPresetValue().addListener(event -> notes[currentNote].setCurrentPreset(matrixPresetContainer.getLastSelectedPresetValue().get()));
@@ -271,13 +272,6 @@ public class MainWindow extends Parent {
         //Display top panes
         VBox verticalMiddleContainer = new VBox();
         HBox middleContainer = new HBox();
-
-        //move to top
-        displayCurrentNoteWindow.getNoteChangedVal().addListener(event -> noteButtonPressed(displayCurrentNoteWindow.getNoteChangedVal().get()));
-        displayCurrentNoteWindow.getTriggerVal().addListener(event -> triggerNote(displayCurrentNoteWindow.getTriggerVal().get()));
-        displayCurrentNoteWindow.getFadeInVal().addListener(event -> timesEntered(0, displayCurrentNoteWindow.getFadeInVal().get()));
-        displayCurrentNoteWindow.getHoldVal().addListener(event -> timesEntered(1, displayCurrentNoteWindow.getHoldVal().get()));
-        displayCurrentNoteWindow.getFadeOutVal().addListener(event -> timesEntered(2, displayCurrentNoteWindow.getFadeOutVal().get()));
 
 
         middleContainer.getChildren().addAll(displayCurrentNoteWindow, matrixPresetContainer, dmxPresetWindow, colorPickerWindow);
@@ -419,11 +413,6 @@ public class MainWindow extends Parent {
         dmxPresetWindow.setValues(notes[currentNote].getDmxValues());
         displayCurrentNoteWindow.setValues(notes[currentNote]);
 
-//        if (currentNote != matrixPresetWindow.getCurrentlyDisplayingNote()) {
-//            matrixPresetWindow.setCurrentlyDisplayingNote(currentNote);
-//            matrixPresetWindow.setPresetDisplay(notes[currentNote].getPresetContainer(), notes[currentNote].getCurrentPreset(), currentNote);
-//        }
-
         if (currentNote != matrixPresetContainer.getCurrentlyDisplayingNote()) {
             matrixPresetContainer.setPresetDisplay(notes[currentNote].getPresetContainer(), notes[currentNote].getCurrentPreset(), currentNote);
         }
@@ -556,7 +545,8 @@ public class MainWindow extends Parent {
 
     void setEditMode(boolean t) {
         editMode = t;
-        lightSelectionWindow.editToggled(t);
+        displayCurrentNoteWindow.setEditMode(t);
+        lightSelectionWindow.setEditMode(t);
         if (t) {
             setDisplay();
         }

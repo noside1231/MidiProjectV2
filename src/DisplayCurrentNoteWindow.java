@@ -24,6 +24,7 @@ public class DisplayCurrentNoteWindow extends VBox {
     private NumberTextFieldDecimal holdField;
     private NumberTextFieldDecimal fadeOutField;
     private LabelCheckBox endTrigger;
+    private LabelCheckBox editMode;
 
     private NumberTextField noteSelectionField;
     private Label currentNoteLabel;
@@ -40,12 +41,14 @@ public class DisplayCurrentNoteWindow extends VBox {
     SimpleFloatProperty fadeInVal;
     SimpleFloatProperty holdVal;
     SimpleFloatProperty fadeOutVal;
+    SimpleBooleanProperty editModeVal;
 
     public DisplayCurrentNoteWindow() {
 
         noteChangedVal = new SimpleIntegerProperty(0);
         endTriggerVal = new SimpleBooleanProperty(false);
         triggerVal = new SimpleBooleanProperty(false);
+        editModeVal = new SimpleBooleanProperty(true);
 
         fadeInField = new NumberTextFieldDecimal();
         fadeOutField = new NumberTextFieldDecimal();
@@ -62,6 +65,10 @@ public class DisplayCurrentNoteWindow extends VBox {
         fadeOutVal = new SimpleFloatProperty(0);
 
         triggerButton = new Button("Trigger");
+
+        editMode = new LabelCheckBox("Edit Mode", true);
+        editMode.getChecked().addListener(event -> editModeToggled(editMode.getChecked().get()));
+
 
         times = new SimpleObjectProperty<>();
         times.set(new Float[] {(float)0,(float)0,(float)0});
@@ -85,7 +92,7 @@ public class DisplayCurrentNoteWindow extends VBox {
         timeContainer.getChildren().addAll(fadeInField, holdField, fadeOutField);
 
 
-        getChildren().addAll(noteSelectionContainer, timeContainer, multiPresetWindow, endTrigger, triggerButton);
+        getChildren().addAll(noteSelectionContainer, timeContainer, multiPresetWindow, endTrigger, triggerButton, editMode);
 
         setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
     }
@@ -158,6 +165,15 @@ public class DisplayCurrentNoteWindow extends VBox {
         return triggerVal;
     }
 
+    public SimpleBooleanProperty getEditModeVal() {
+        return editModeVal;
+    }
+    private void editModeToggled(boolean b) {
+        editModeVal.set(b);
+    }
 
+    public void setEditMode(boolean b) {
+        editMode.setChecked(b);
+    }
 
 }

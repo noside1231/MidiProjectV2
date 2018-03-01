@@ -1,5 +1,4 @@
 import Utilities.LabelCheckBox;
-import Utilities.NumberTextFieldDecimal;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,9 +18,6 @@ public class LightSelectionWindow extends VBox {
     private Tab keyMapTab;
     private Tab sequencerTab;
 
-    private HBox setTriggerTimeBar;
-
-    private LabelCheckBox editMode;
 
     private DisplayMatrixWindow displayMatrixWindow;
     private DMXWindow dmxWindow;
@@ -35,7 +31,6 @@ public class LightSelectionWindow extends VBox {
     private SimpleIntegerProperty selectRowInt;
     private SimpleIntegerProperty selectColInt;
 
-    private SimpleBooleanProperty lastEditToggle;
 
     private SimpleIntegerProperty setSelected;
 
@@ -55,15 +50,6 @@ public class LightSelectionWindow extends VBox {
         selectedDmxChannel = new SimpleIntegerProperty(0);
         sequencerTriggeredNote = new SimpleIntegerProperty(0);
 
-        setTriggerTimeBar = new HBox();
-
-        editMode = new LabelCheckBox("Edit Mode", true);
-        lastEditToggle = new SimpleBooleanProperty();
-        lastEditToggle.set(true);
-
-        editMode.getChecked().addListener(event -> editToggled(editMode.getChecked().get()));
-
-        setTriggerTimeBar.getChildren().addAll(editMode);
 
         lastMatrixRectSelected = new SimpleObjectProperty<>();
         lightTab = new TabPane();
@@ -82,7 +68,7 @@ public class LightSelectionWindow extends VBox {
         displayMatrixWindow.getSelectRow().addListener(selectRowInt -> selectRowSelected(displayMatrixWindow.getSelectRow().get()));
         displayMatrixWindow.getSelectCol().addListener(selectColInt -> selectColSelected(displayMatrixWindow.getSelectCol().get()));
         displayMatrixWindow.getsetSelected().addListener(event -> setPressed());
-        displayMatrixWindow.getEditModeVal().addListener(event -> editToggled(displayMatrixWindow.getEditModeVal().get()));
+        displayMatrixWindow.getEditModeVal().addListener(event -> setEditMode(displayMatrixWindow.getEditModeVal().get()));
 
         dmxWindow = new DMXWindow(dmxChannels);
         dmxWindow.setEditMode(true);
@@ -102,7 +88,7 @@ public class LightSelectionWindow extends VBox {
         lightTab.getTabs().addAll(ledDisplayTab, dmxTab, keyMapTab, sequencerTab);
 
 
-        getChildren().addAll(lightTab, setTriggerTimeBar);
+        getChildren().addAll(lightTab);
 
 
     }
@@ -151,17 +137,10 @@ public class LightSelectionWindow extends VBox {
         setSelected.set((setSelected.get()+1)%2);
     }
 
-    void editToggled(boolean t) {
-        lastEditToggle.set(t);
+    public void setEditMode(boolean t) {
         displayMatrixWindow.setEditMode(t);
         dmxWindow.setEditMode(t);
-        editMode.setChecked(lastEditToggle.get());
     }
-
-    public SimpleBooleanProperty getLastEditToggle() {
-        return lastEditToggle;
-    }
-
 
     private void selectAllSelected(int s) {
         if (s > 0) {

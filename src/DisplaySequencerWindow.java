@@ -1,5 +1,6 @@
 import Utilities.NoteSelectionBox;
 import javafx.geometry.Insets;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
@@ -17,6 +18,7 @@ public class DisplaySequencerWindow extends GridPane {
     private Rectangle[][] noteRects;
     private boolean[][] noteSelected;
     private NoteSelectionBox[] noteSelectionBoxes;
+    private CheckBox[] noteCheckBoxes;
     private int rows;
     private int cols;
     private int currentCol;
@@ -36,6 +38,13 @@ public class DisplaySequencerWindow extends GridPane {
         for (int i = 0; i < noteSelectionBoxes.length; i++) {
             noteSelectionBoxes[i] = new NoteSelectionBox();
             add(noteSelectionBoxes[i], 0, i);
+        }
+
+        noteCheckBoxes = new CheckBox[r];
+        for (int i = 0; i < noteCheckBoxes.length; i++) {
+            noteCheckBoxes[i] = new CheckBox();
+            noteCheckBoxes[i].setSelected(true);
+            add(noteCheckBoxes[i], 1, i);
         }
 
         setBeatNotes = new MenuItem[6];
@@ -132,7 +141,7 @@ public class DisplaySequencerWindow extends GridPane {
                     noteRects[x][y].setOnMouseClicked(event -> rectPressed(event, tx, ty));
                     noteRects[x][y].setWidth(20);
                     noteRects[x][y].setHeight(20);
-                    add(noteRects[x][y], y+1, x);
+                    add(noteRects[x][y], y+2, x);
                 }
             }
     }
@@ -140,7 +149,7 @@ public class DisplaySequencerWindow extends GridPane {
     public boolean[] getCurrentRowState() {
         boolean b[] = new boolean[rows];
         for (int i = 0; i < rows; i++) {
-            b[i] = noteSelected[i][currentCol];
+            b[i] = noteSelected[i][currentCol] & noteCheckBoxes[i].isSelected();
         }
         return b;
     }
@@ -163,7 +172,7 @@ public class DisplaySequencerWindow extends GridPane {
     }
 
     public void setNoteScale() {
-        double rectX =  (getMaxWidth()-noteSelectionBoxes[0].getWidth() - ((hgap+1)*(cols-1))) / cols;
+        double rectX =  (getMaxWidth()-noteSelectionBoxes[0].getWidth()-noteCheckBoxes[0].getWidth() - 5 - ((hgap+1)*(cols-1))) / cols;
         for (int y = 0; y < cols; y++) {
             for (int x = 0; x < rows; x++) {
                 noteRects[x][y].setWidth(rectX);
