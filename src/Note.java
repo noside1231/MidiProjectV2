@@ -168,43 +168,17 @@ public class Note {
     }
 
     public void loadData(JSONObject obj) {
-        //load matrix
-        JSONObject tMatrixObj = obj.getJSONObject("Matrix");
-        for (int y = 0; y < matrix.getStrips(); y++) {
-            for (int x = 0; x < matrix.getLedsPerStrip(); x++) {
-                String tCol = tMatrixObj.getString((Integer.toString(x) + " " + Integer.toString(y)));
-                setLED(x, y, Color.web(tCol));
-            }
-        }
-        //load presets
-        JSONObject tPresetObj = obj.getJSONObject("PresetData");
-        for (int tInc = 0; !tPresetObj.isNull(Integer.toString(tInc)); tInc++) {
-            setPresetProperty(tPresetObj.getString(Integer.toString(tInc)));
-        }
-        setCurrentPreset(obj.getString("CurrentPreset"));
-        //load times
+        matrix.loadData(obj.getJSONObject("Matrix"));
+        loadPresetData(obj.getJSONObject("Presets"));
         setTimeFromString(obj.getString("Times"));
     }
 
     public JSONObject saveData() {
         JSONObject obj = new JSONObject();
 
-        //save matrix
-        JSONObject tMatrixObj = new JSONObject();
-        for (int y = 0; y < matrix.getStrips(); y++) {
-            for (int x = 0; x < matrix.getLedsPerStrip(); x++) {
-                tMatrixObj.put((Integer.toString(x) + " " + Integer.toString(y)), getLEDString(x, y));
-            }
-        }
-        //save presets
-        JSONObject tPresetObj = new JSONObject();
-        for (int j = 0; j < getPresetContainer().size(); j++) {
-            tPresetObj.put(Integer.toString(j), getPresetContainer().get(j));
-        }
+        obj.put("Matrix", matrix.saveData());
+        obj.put("Presets", savePresetData());
         obj.put("Times", getTimeString());
-        obj.put("PresetData", tPresetObj);
-        obj.put("CurrentPreset", getCurrentPreset());
-        obj.put("Matrix", tMatrixObj);
 
         return obj;
     }
@@ -252,7 +226,7 @@ public class Note {
         for (int i = 0; i < presetContainer.size(); i++) {
             String[] temp = presetContainer.get(i).split(";");
 
-            if (Integer.parseInt(temp[0]) ==presetInd && temp[1].equals(preset) && temp[2].equals(parameter)) {
+            if (Integer.parseInt(temp[0]) == presetInd && temp[1].equals(preset) && temp[2].equals(parameter)) {
                 return Integer.parseInt(temp[3]);
             }
         }
@@ -275,5 +249,35 @@ public class Note {
     public String getPianoNoteString() {
         String noteLetters[] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
         return (noteLetters[id % 12]) + " " + ((id / 12) - 2);
+    }
+
+    private JSONObject savePresetData() {
+        JSONObject tFile = new JSONObject();
+        JSONObject tCurPresets = new JSONObject();
+        JSONObject tPresetData = new JSONObject();
+
+        for (int i = 0; i < currentPreset.length; i++) {
+            tCurPresets.put(Integer.toString(i), currentPreset[i]);
+        }
+        for (int i = 0; i < presetContainer.size(); i++) {
+            tPresetData.put(Integer.toString(i), getPresetContainer().get(i));
+
+        }
+        tFile.put("CurrentPresets", tCurPresets);
+        tFile.put("PresetData", tPresetData);
+        return tFile;
+    }
+
+    private void loadPresetData(JSONObject curFile) {
+
+        JSONObject tCurPresets = curFile.getJSONObject("CurrentPresets");
+        JSONObject tPresetData = curFile.getJSONObject("PresetData");
+
+        for (int i = 0; i < currentPreset.length; i++) {
+            currentPreset[i] = tCurPresets.getString(Integer.toString(i));
+        }
+        for (int tInc = 0; !tPresetData.isNull(Integer.toString(tInc)); tInc++) {
+            setPresetProperty(tPresetData.getString(Integer.toString(tInc)));
+        }
     }
 }

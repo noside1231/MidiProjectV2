@@ -113,8 +113,8 @@ public class MatrixPresetWindow extends VBox {
         String[] s = pText.toArray(new String[pText.size()]);
         for (int i = 0; i < s.length; i++) {
             String[] splitted = s[i].split(";");
-            System.out.println(pText);
-            if (splitted[0] == Integer.toString(id)) {
+//            System.out.println(pText);
+            if (splitted[0].equals(Integer.toString(id))) {
                 if (splitted[1].equals(presets[1])) { //If Rainbow
                     rainbowPresetWindow.setPresetField(splitted[2], splitted[3]);
                 } else if (splitted[1].equals(presets[2])) { //If Flash

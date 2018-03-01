@@ -9,6 +9,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
+import javafx.stage.Screen;
+import javafx.stage.Window;
 
 /**
  * Created by edisongrauman on 2/26/18.

@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 /**
  * Created by Edison on 1/16/18.
  */
-public class LightSelectionWindow extends VBox {
+public class LightSelectionWindow extends TabPane {
 
     private TabPane lightTab;
     private Tab ledDisplayTab;
@@ -52,8 +52,7 @@ public class LightSelectionWindow extends VBox {
 
 
         lastMatrixRectSelected = new SimpleObjectProperty<>();
-        lightTab = new TabPane();
-        lightTab.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         ledDisplayTab = new Tab("Led Strips");
         dmxTab = new Tab("DMX");
@@ -85,11 +84,7 @@ public class LightSelectionWindow extends VBox {
         keyMapTab.setContent(keyMapWindow);
         sequencerTab.setContent(sequencer);
 
-        lightTab.getTabs().addAll(ledDisplayTab, dmxTab, keyMapTab, sequencerTab);
-
-
-        getChildren().addAll(lightTab);
-
+        getTabs().addAll(ledDisplayTab, dmxTab, keyMapTab, sequencerTab);
 
     }
 

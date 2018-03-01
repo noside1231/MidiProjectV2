@@ -1,4 +1,5 @@
 import javafx.scene.paint.Color;
+import org.json.JSONObject;
 
 /**
  * Created by edisongrauman on 12/20/17.
@@ -76,6 +77,24 @@ public class LEDMatrix {
         for (int y = 0; y < strips; y++) {
             for (int x = 0; x < ledsPerStrip; x++) {
                 leds[x][y].addColor(c[x][y]);
+            }
+        }
+    }
+
+    public JSONObject saveData() {
+        JSONObject tFile = new JSONObject();
+        for (int y = 0; y < strips; y++) {
+            for (int x = 0; x < ledsPerStrip; x++) {
+                tFile.put((Integer.toString(x) + " " + Integer.toString(y)), getLEDString(x, y));
+            }
+        }
+        return tFile;
+    }
+
+    public void loadData(JSONObject currentFile) {
+        for (int y = 0; y < strips; y++) {
+            for (int x = 0; x < ledsPerStrip; x++) {
+                setLED(x, y, Color.web(currentFile.getString((Integer.toString(x) + " " + Integer.toString(y)))));
             }
         }
     }
