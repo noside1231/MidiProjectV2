@@ -18,7 +18,11 @@ public class NoteSelectionBox extends ComboBox<String> {
     }
 
     public void setValue(int val) {
-        setValue(Integer.toString(val+1));
+        if (val == -1) {
+            setValue("No Selection");
+        } else {
+            setValue(Integer.toString(val + 1));
+        }
     }
 
     public int getSelectedValue() {

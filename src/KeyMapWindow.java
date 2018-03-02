@@ -1,5 +1,6 @@
 import Utilities.KeyMap;
 import javafx.scene.layout.HBox;
+import org.json.JSONObject;
 
 /**
  * Created by edisongrauman on 2/25/18.
@@ -36,15 +37,23 @@ public class KeyMapWindow extends HBox {
         }
     }
 
+    public JSONObject saveData() {
+        JSONObject tFile = new JSONObject();
 
-    public void update(long now) {
+        for (int i = 0; i < keyMaps.length; i++) {
+            tFile.put(Integer.toString(i), keyMaps[i].getValue());
+        }
+        return tFile;
+    }
 
-
-
-       //implement looping feature to  a bpm/keypress beat
-
+    public void loadData(JSONObject obj) {
+        for (int i = 0; i < keyMaps.length; i++) {
+            keyMaps[i].setValue(obj.getInt(Integer.toString(i)));
+        }
 
     }
+
+
 
 
 }

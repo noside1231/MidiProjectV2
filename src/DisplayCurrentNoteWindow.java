@@ -65,6 +65,7 @@ public class DisplayCurrentNoteWindow extends VBox {
         fadeOutVal = new SimpleFloatProperty(0);
 
         triggerButton = new Button("Trigger");
+        multiPresetWindow = new MultiPresetWindow("Multi");
 
         editMode = new LabelCheckBox("Edit Mode", true);
         editMode.getChecked().addListener(event -> editModeToggled(editMode.getChecked().get()));
@@ -78,12 +79,10 @@ public class DisplayCurrentNoteWindow extends VBox {
         goRightButton.setOnAction(event -> noteChanged(noteChangedVal.get()+1));
         endTrigger.getChecked().addListener(event -> endTriggerChanged(endTrigger.getChecked().get()));
         triggerButton.setOnAction(event -> triggerButtonPressed());
-
         fadeInField.getValue().addListener(event -> setTime(0, fadeInField.getValue().get()));
         holdField.getValue().addListener(event -> setTime(1, holdField.getValue().get()));
         fadeOutField.getValue().addListener(event -> setTime(2, fadeOutField.getValue().get()));
 
-        multiPresetWindow = new MultiPresetWindow("Multi");
 
         noteSelectionContainer = new HBox();
         noteSelectionContainer.getChildren().addAll(goLeftButton, goRightButton, noteSelectionField, currentNoteLabel);

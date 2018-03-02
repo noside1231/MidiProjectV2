@@ -39,8 +39,9 @@ public class DMXWindow extends VBox{
             int tI = i;
             tSliders[i].getChangedVal().addListener(event -> valueChanged(tI, tSliders[tI].getChangedVal().get()));
             tSliders[i].getChecked().addListener(event -> valueChanged(tI, tSliders[tI].getChecked().get()));
-
-            tSliders[i].setOnMouseClicked(event -> setSelectedChannel(tI));
+            tSliders[i].getSelected().addListener(event ->  {
+                if (tSliders[tI].getSelected().get()) setSelectedChannel(tI);
+            });
         }
 
         sliderContainer.getChildren().addAll(tSliders);
@@ -58,12 +59,9 @@ public class DMXWindow extends VBox{
     }
 
     public void setSelectedChannel(int i) {
-        System.out.println(i);
         tSliders[selectedChannel.get()].setSelected(false);
         selectedChannel.set(i);
         tSliders[i].setSelected(true);
-
-
     }
 
     private void valueChanged(int channel, int value, boolean state) {

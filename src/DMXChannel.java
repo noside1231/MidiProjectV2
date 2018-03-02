@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 /**
  * Created by edisongrauman on 2/22/18.
  */
@@ -10,10 +12,8 @@ public class DMXChannel {
     boolean checked;
 
     public DMXChannel(int ind) {
-
-    index = ind;
-    checked = false;
-
+        index = ind;
+        checked = false;
     }
 
     public void setValue(int v) {
@@ -35,13 +35,36 @@ public class DMXChannel {
     public int getValue() {
         return val;
     }
-    public int getstartVal() {
+
+    public int getStartVal() {
         return beginVal;
     }
-    public  int getEndVal() {
+
+    public int getEndVal() {
         return endVal;
     }
+
     public boolean getChecked() {
         return checked;
+    }
+
+    public JSONObject saveData() {
+        JSONObject tFile = new JSONObject();
+
+        tFile.put("value", val);
+        tFile.put("beginVal", beginVal);
+        tFile.put("endVal", endVal);
+        tFile.put("checked", checked);
+
+        return tFile;
+    }
+
+    public void loadData(JSONObject curFile) {
+
+        val = curFile.getInt("value");
+        beginVal = curFile.getInt("beginVal");
+        endVal = curFile.getInt("endVal");
+        checked = curFile.getBoolean("checked");
+
     }
 }

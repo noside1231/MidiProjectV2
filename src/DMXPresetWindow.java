@@ -1,6 +1,5 @@
 import Utilities.SliderTextField;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.scene.layout.VBox;
 
 /**
@@ -38,7 +37,7 @@ public class DMXPresetWindow extends VBox{
     }
 
     public void setValues(DMXChannel[] v) {
-        valStart.setValue(v[currentSelectedDmx].getstartVal());
+        valStart.setValue(v[currentSelectedDmx].getStartVal());
         valEnd.setValue(v[currentSelectedDmx].getEndVal());
     }
 

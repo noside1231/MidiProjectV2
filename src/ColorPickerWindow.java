@@ -14,18 +14,18 @@ import org.json.JSONObject;
  */
 public class ColorPickerWindow extends VBox{
 
-    HBox buttonOptions;
-    Button setButton;
-    Rectangle previewColor;
+    private HBox buttonOptions;
+    private Button setButton;
+    private Rectangle previewColor;
 
-    TabPane tabPane;
-    Tab colorPickerSliderTab;
-    Tab colorPickerPaletteTab;
+    private TabPane tabPane;
+    private Tab colorPickerSliderTab;
+    private Tab colorPickerPaletteTab;
 
-    ColorPickerSlider s;
-    Palette palette;
+    private ColorPickerSlider s;
+    private Palette palette;
 
-    SimpleObjectProperty<Color> selectedColor;
+    private SimpleObjectProperty<Color> selectedColor;
 
 
     public ColorPickerWindow() {
@@ -63,13 +63,8 @@ public class ColorPickerWindow extends VBox{
         return selectedColor;
     }
 
-    void updateColor(Color c) {
-        selectedColor.set(c);
-    }
-
     public void setScale() {
         palette.setScale();
-
         previewColor.setHeight(buttonOptions.getHeight());
         previewColor.setWidth(buttonOptions.getWidth()-setButton.getWidth());
 
@@ -81,32 +76,21 @@ public class ColorPickerWindow extends VBox{
         selectedColor.set(tSelectedColor);
     }
 
-    void setPreviewColor(Color c) {
+    private void setPreviewColor(Color c) {
         previewColor.setFill(c);
         palette.setPreviewColor(c);
     }
 
-    String getColorPaletteString(int x, int y) {
-        return palette.getPaletteColorString(x, y);
+    public void loadData(JSONObject obj) {
+        palette.loadData(obj.getJSONObject("Palette"));
+        previewColor.setFill(Color.valueOf(obj.getString("SelectedColor")));
     }
 
-    int getPaletteX() {
-        return palette.getxAmt();
-    }
-    int getPaletteY() {
-        return palette.getyAmt();
-    }
-
-    void setPaletteColor(int x, int y, Color c) {
-        palette.setPaletteColor(x, y, c);
-    }
-
-    void loadData(JSONObject obj) {
-        palette.loadData(obj);
-    }
-
-    JSONObject saveData() {
-        return palette.saveData();
+    public JSONObject saveData() {
+        JSONObject tFile = new JSONObject();
+        tFile.put("Palette", palette.saveData());
+        tFile.put("SelectedColor", previewColor.getFill().toString());
+        return tFile;
     }
 
 

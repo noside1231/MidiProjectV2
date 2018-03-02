@@ -12,17 +12,20 @@ import javafx.scene.paint.Color;
 /**
  * Created by edisongrauman on 2/22/18.
  */
-public class DMXSlider extends VBox{
+public class DMXSlider extends VBox {
 
     private SliderTextFieldVertical s;
     private CheckBox active;
 
     private SimpleBooleanProperty checked;
     private SimpleIntegerProperty changedVal;
+    private SimpleBooleanProperty selected;
 
-    boolean selected;
+    private boolean editMode;
 
     public DMXSlider(int def, int lower, int upper, String name) {
+
+        editMode = true;
 
         s = new SliderTextFieldVertical(def, lower, upper, name);
         active = new CheckBox();
@@ -32,28 +35,40 @@ public class DMXSlider extends VBox{
 
         checked = new SimpleBooleanProperty(false);
         changedVal = new SimpleIntegerProperty(0);
+        selected = new SimpleBooleanProperty(false);
 
         getChildren().addAll(s, active);
 
         setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 
+        setOnMousePressed(event -> setSelected(true));
     }
 
-    public void setSelected(boolean s) {
-        if (s) {
-            setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-        }   else {
-            setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+    public void setSelected(boolean b) {
+        if (editMode) {
+            if (b) {
+                selected.set(true);
+                setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+            } else {
+                selected.set(false);
+                setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 
+            }
         }
     }
 
+    public SimpleBooleanProperty getSelected() {
+        return selected;
+    }
+
     private void valueChanged(int val) {
+        setSelected(true);
         changedVal.set(val);
     }
 
     private void checkBoxChecked() {
+        setSelected(true);
         checked.set(active.isSelected());
     }
 
@@ -74,8 +89,17 @@ public class DMXSlider extends VBox{
     }
 
     public void disable(boolean b) {
-        s.disable(b);
 
+        editMode = !b;
+        if (b) {
+            setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
+        } else {
+            if (selected.get()) {
+                setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+
+            }
+        }
+        s.disable(b);
     }
 
 

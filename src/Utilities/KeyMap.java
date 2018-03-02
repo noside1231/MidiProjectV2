@@ -14,8 +14,6 @@ public class KeyMap extends VBox {
     private NoteSelectionBox selectionBox;
     private Label label;
 
-    private boolean loop;
-
     public KeyMap(String key) {
 
         selectionBox = new NoteSelectionBox();

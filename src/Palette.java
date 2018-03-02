@@ -14,20 +14,18 @@ import org.json.JSONObject;
 
 public class Palette extends VBox {
 
-    int xAmt;
-    int yAmt;
+    private int xAmt;
+    private int yAmt;
 
-    SimpleObjectProperty<Color> selectedColor;
-    Color previewColor;
+    private SimpleObjectProperty<Color> selectedColor;
+    private Color previewColor;
 
-    Rectangle[][] rectangleOptions;
-    HBox rectRows[];
-    LEDMatrix colorMatrix;
+    private Rectangle[][] rectangleOptions;
+    private HBox rectRows[];
 
     public Palette(int yAmount, int xAmount) {
         xAmt = xAmount;
         yAmt = yAmount;
-        colorMatrix = new LEDMatrix(yAmt, xAmt);
         previewColor = Color.BLACK;
         rectRows = new HBox[yAmt];
         selectedColor = new SimpleObjectProperty<>();
@@ -47,24 +45,12 @@ public class Palette extends VBox {
         getChildren().addAll(rectRows);
 
         for (int i = 0; i < xAmt; i++) {
-            rectangleOptions[i][0].setFill(Color.hsb(i*60, 1, 1));
+            rectangleOptions[i][0].setFill(Color.hsb(i * 60, 1, 1));
         }
     }
 
-    void setSelectedColor(int x, int y) {
+    private void setSelectedColor(int x, int y) {
         selectedColor.set((Color) rectangleOptions[x][y].getFill());
-    }
-
-    String getPaletteColorString(int x, int y) {
-        return colorMatrix.getLEDString(x, y);
-    }
-
-    int getxAmt() {
-        return xAmt;
-    }
-
-    int getyAmt() {
-        return yAmt;
     }
 
     public SimpleObjectProperty<Color> getColor() {
@@ -72,7 +58,6 @@ public class Palette extends VBox {
     }
 
     public void setScale() {
-        System.out.println(getWidth());
         int scale = (int) getWidth() / xAmt;
 
         for (int y = 0; y < yAmt; y++) {
@@ -88,7 +73,6 @@ public class Palette extends VBox {
             setSelectedColor(x, y);
         } else if (event.getButton() == MouseButton.SECONDARY) {
             rectangleOptions[x][y].setFill(previewColor);
-            colorMatrix.setLED(x, y, previewColor);
         }
     }
 
@@ -98,24 +82,23 @@ public class Palette extends VBox {
 
     public void setPaletteColor(int x, int y, Color c) {
         rectangleOptions[x][y].setFill(c);
-        colorMatrix.setLED(x, y, c);
     }
 
     public JSONObject saveData() {
         JSONObject obj = new JSONObject();
-        for (int y = 0; y < colorMatrix.getStrips(); y++) {
-            for (int x = 0; x < colorMatrix.getLedsPerStrip(); x++) {
-                obj.put((Integer.toString(x) + " " + Integer.toString(y)), colorMatrix.getLEDString(x, y));
+        for (int y = 0; y < yAmt; y++) {
+            for (int x = 0; x < xAmt; x++) {
+                obj.put((Integer.toString(x) + " " + Integer.toString(y)), rectangleOptions[x][y].getFill().toString());
             }
         }
         return obj;
     }
 
     public void loadData(JSONObject obj) {
-        for (int y = 0; y < colorMatrix.getStrips(); y++) {
-            for (int x = 0; x < colorMatrix.getLedsPerStrip(); x++) {
+        for (int y = 0; y < yAmt; y++) {
+            for (int x = 0; x < xAmt; x++) {
                 String tCol = obj.getString((Integer.toString(x) + " " + Integer.toString(y)));
-                setPaletteColor(x, y, Color.web(tCol));
+                setPaletteColor(x, y, Color.valueOf(tCol));
             }
         }
     }

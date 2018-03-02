@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.json.JSONObject;
 
 /**
  * Created by Edison on 1/16/18.
@@ -92,10 +93,10 @@ public class LightSelectionWindow extends TabPane {
         return selectedDmxChannel;
     }
 
-    private void selectedDmxChannelChanged(int ch) {
-        dmxWindow.setSelectedChannel(ch);
-        selectedDmxChannel.set(ch);
+    private void selectedDmxChannelChanged(int i) {
+        selectedDmxChannel.set(i);
     }
+
 
     public SimpleObjectProperty<Integer[]> getLastPressed() {
         return lastMatrixRectSelected;
@@ -171,15 +172,22 @@ public class LightSelectionWindow extends TabPane {
         keyMapWindow.setKeyValue(key, val);
     }
 
-    public void updateKeyMap(long now) {
-        keyMapWindow.update(now);
-    }
-
     private void sequencerTrigger(int i) {
         sequencerTriggeredNote.set(i);
     }
     public SimpleIntegerProperty getSequencerTriggeredNote() {
         return sequencerTriggeredNote;
+    }
+
+    public void loadData(JSONObject curFile) {
+        keyMapWindow.loadData(curFile.getJSONObject("KeyMap"));
+    }
+
+    public JSONObject saveData() {
+        JSONObject tFile = new JSONObject();
+
+        tFile.put("KeyMap", keyMapWindow.saveData());
+        return tFile;
     }
 
 }

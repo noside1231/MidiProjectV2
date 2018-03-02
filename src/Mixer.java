@@ -72,6 +72,15 @@ public class Mixer {
         TriggeredNote t = new TriggeredNote(n, currentTime);
         t.getTriggeredMulti().addListener(event -> triggerMulti(t.getTriggeredMulti().get()));
 //        currentlyTriggeredNotes.add(new TriggeredNote(n, currentTime));
+
+        if (t.getNote().getEndTrigger()) {
+            iterator = currentlyTriggeredNotes.listIterator();
+            while(iterator.hasNext()) {
+                TriggeredNote tNote = iterator.next();
+                tNote.setStatus(3);
+            }
+        }
+
         currentlyTriggeredNotes.add(t);
     }
 

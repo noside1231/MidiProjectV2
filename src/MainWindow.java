@@ -234,6 +234,7 @@ public class MainWindow extends Parent {
         displayCurrentNoteWindow.getHoldVal().addListener(event -> timesEntered(1, displayCurrentNoteWindow.getHoldVal().get()));
         displayCurrentNoteWindow.getFadeOutVal().addListener(event -> timesEntered(2, displayCurrentNoteWindow.getFadeOutVal().get()));
         displayCurrentNoteWindow.getEditModeVal().addListener(event -> setEditMode(displayCurrentNoteWindow.getEditModeVal().get()));
+        displayCurrentNoteWindow.getEndTriggerVal().addListener(event -> noteContainer.setCurrentNoteEndTrigger(displayCurrentNoteWindow.getEndTriggerVal().get()));
 
         //Color Picker
         colorPickerWindow = new ColorPickerWindow();
@@ -307,7 +308,6 @@ public class MainWindow extends Parent {
         if (!editMode) {
             lightSelectionWindow.setLEDDisplay(lastUpdatedMixer);
             lightSelectionWindow.setDMXValues(mixer.updateDMX());
-            lightSelectionWindow.updateKeyMap(now);
         }
 
         if (serialPortEnabled) {
@@ -428,12 +428,14 @@ public class MainWindow extends Parent {
     }
 
     void loadData(JSONObject currentFile) {
-        //load each notes data
         noteContainer.loadData(currentFile.getJSONObject("Notes"));
-        //load palette
         colorPickerWindow.loadData(currentFile.getJSONObject("Palette"));
+
+        lightSelectionWindow.loadData(currentFile.getJSONObject("LightSelectionWindow"));
         noteButtonPressed(1);
         noteButtonPressed(0); //refresh current note display
+
+//        setDisplay();
     }
 
     public JSONObject saveData() {
@@ -442,6 +444,8 @@ public class MainWindow extends Parent {
 
         tFile.put("Notes", noteContainer.saveData());
         tFile.put("Palette", colorPickerWindow.saveData());
+        tFile.put("LightSelectionWindow", lightSelectionWindow.saveData());
+
 
         return tFile;
 
@@ -454,12 +458,7 @@ public class MainWindow extends Parent {
     }
 
     void setSelectedDmxChannel(int ch) {
-        System.out.println("mainwindow438, " + ch);
-
         dmxPresetWindow.setCurrentlySelectedDmx(ch);
-
-//        notes[currentNote].
-//        dmxPresetWindow.setValues();
         setDisplay();
     }
 
@@ -479,7 +478,6 @@ public class MainWindow extends Parent {
     void triggerNote(int n) {
         if (n != -1) {
             System.out.println("Triggered");
-//            mixer.setTriggered(notes[n]);
             mixer.setTriggered(noteContainer.getNote(n));
         }
 

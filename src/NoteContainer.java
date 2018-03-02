@@ -1,4 +1,3 @@
-import com.sun.tools.corba.se.idl.constExpr.Not;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import org.json.JSONObject;
@@ -84,11 +83,11 @@ public class NoteContainer extends HBox {
     }
 
     public void setCurrentNoteDMXValue(String s) {
-        notes[currentNote].setDMXValFromString(s);
+        notes[currentNote].setDMXValue(s);
     }
 
     public void setCurrentNoteDMXTimes(String s) {
-        notes[currentNote].setDMXTimesFromString(s);
+        notes[currentNote].setDMXTimes(s);
     }
 
     public void setCurrentNoteFadeInTime(float v) {
@@ -121,6 +120,10 @@ public class NoteContainer extends HBox {
         }
     }
 
+    public void setCurrentNoteEndTrigger(boolean b) {
+        notes[currentNote].setEndTrigger(b);
+    }
+
 
 
     public JSONObject saveData() {
@@ -136,6 +139,8 @@ public class NoteContainer extends HBox {
             notes[i].loadData(currentFile.getJSONObject(Integer.toString(i)));
         }
     }
+
+
 
 
 }

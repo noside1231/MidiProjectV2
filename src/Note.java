@@ -1,4 +1,3 @@
-import javafx.beans.property.IntegerProperty;
 import javafx.scene.paint.Color;
 import org.json.JSONObject;
 
@@ -7,7 +6,7 @@ import java.util.ArrayList;
 public class Note {
 
     private LEDMatrix matrix;
-    private DMXChannel[] dmxChannels;
+    private DMXChannelContainer dmxChannels;
 
     private ArrayList<String> presetContainer;
     private String[] currentPreset;
@@ -17,13 +16,12 @@ public class Note {
     private float fadeOut;
     private float hold;
     private int id;
-
     private boolean endTrigger;
 
     public Note(int j, int strips, int ledsPerStrip, int channels) {
         id = j;
         matrix = new LEDMatrix(strips, ledsPerStrip);
-        dmxChannels = new DMXChannel[channels];
+        dmxChannels = new DMXChannelContainer(channels);
         fadeIn = 0;
         fadeOut = 0;
         hold = 0;
@@ -35,9 +33,6 @@ public class Note {
         }
         presetContainer = new ArrayList<>();
 
-        for (int i = 0; i < dmxChannels.length; i++) {
-            dmxChannels[i] = new DMXChannel(i);
-        }
 
 
     }
@@ -50,7 +45,7 @@ public class Note {
         return endTrigger;
     }
 
-    void setLED(int x, int y, Color c) {
+    private void setLED(int x, int y, Color c) {
         matrix.setLED(x, y, c);
     }
 
@@ -60,10 +55,6 @@ public class Note {
 
     Led[][] getLEDS() {
         return matrix.getLEDS();
-    }
-
-    String getLEDString(int x, int y) {
-        return matrix.getLEDString(x, y);
     }
 
     boolean getLEDSelected(int x, int y) {
@@ -169,16 +160,20 @@ public class Note {
 
     public void loadData(JSONObject obj) {
         matrix.loadData(obj.getJSONObject("Matrix"));
+        dmxChannels.loadData(obj.getJSONObject("DMX"));
         loadPresetData(obj.getJSONObject("Presets"));
         setTimeFromString(obj.getString("Times"));
+        endTrigger = obj.getBoolean("EndTrigger");
     }
 
     public JSONObject saveData() {
         JSONObject obj = new JSONObject();
 
         obj.put("Matrix", matrix.saveData());
+        obj.put("DMX", dmxChannels.saveData());
         obj.put("Presets", savePresetData());
         obj.put("Times", getTimeString());
+        obj.put("EndTrigger", endTrigger);
 
         return obj;
     }
@@ -201,25 +196,16 @@ public class Note {
         return matrix;
     }
 
-    public void setDMXValFromString(String s) {
-        String[] a = s.split(";");
-        dmxChannels[Integer.parseInt(a[0])].setValue(Integer.parseInt(a[1]));
-        boolean b = false;
-        if (Integer.parseInt(a[2]) == 1) {
-            b = true;
-        }
-        dmxChannels[Integer.parseInt(a[0])].setChecked(b);
+    public void setDMXValue(String s) {
+        dmxChannels.setDMXValue(s);
     }
 
-    public void setDMXTimesFromString(String s) {
-        String[] a = s.split(";");
-        dmxChannels[Integer.parseInt(a[0])].setStartVal(Integer.parseInt(a[1]));
-        dmxChannels[Integer.parseInt(a[0])].setEndVal(Integer.parseInt(a[2]));
-
+    public void setDMXTimes(String s) {
+        dmxChannels.setDMXTimes(s);
     }
 
     public DMXChannel[] getDmxValues() {
-        return dmxChannels;
+        return dmxChannels.getDMXChannels();
     }
 
     public int getPresetParameter(String preset, String parameter, int presetInd) {
@@ -235,9 +221,7 @@ public class Note {
 
     public ArrayList<Integer> getMultiPreset() {
         ArrayList<Integer> tList = new ArrayList<>();
-
         for (int i = 0; i < presetContainer.size(); i++) {
-
             String[] temp = presetContainer.get(i).split(";");
             if (temp[0].equals("Multi") && temp[2].equals("1")) {
                 tList.add(Integer.parseInt(temp[1]));
@@ -269,7 +253,6 @@ public class Note {
     }
 
     private void loadPresetData(JSONObject curFile) {
-
         JSONObject tCurPresets = curFile.getJSONObject("CurrentPresets");
         JSONObject tPresetData = curFile.getJSONObject("PresetData");
 
