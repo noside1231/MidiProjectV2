@@ -10,30 +10,41 @@ import static java.lang.Math.abs;
  */
 public class TriggeredNote {
 
-    long timeStatus;
-    Note note;
-    long originalTriggerTime;
+    private long timeStatus;
+    private Note note;
+    private long originalTriggerTime;
 
-    SimpleObjectProperty<ArrayList<Integer>> triggeredMulti;
+    private ArrayList<Integer> triggeredMulti;
 
-    int status; //0 fade in, 1 hold, 2 fade out
+
+    private int status; //0 fade in, 1 hold, 2 fade out
 
     public TriggeredNote(Note n, long t) {
         note = n;
         timeStatus = t;
         originalTriggerTime = t;
-        triggeredMulti = new SimpleObjectProperty<>();
+        triggeredMulti = new ArrayList<>();
+
+        for(int i = 0; i < note.getMultiTrigger().length; i++) {
+            if (note.getMultiTrigger()[i]) {
+                triggeredMulti.add(i);
+            }
+        }
     }
 
-    long getTimeStatus() {
+    public ArrayList<Integer> getTriggeredMulti() {
+        return triggeredMulti;
+    }
+
+    public long getTimeStatus() {
         return timeStatus;
     }
 
-    Note getNote() {
+    public Note getNote() {
         return note;
     }
 
-    int getStatus() {
+    public int getStatus() {
         return status;
     }
 
@@ -79,10 +90,6 @@ public class TriggeredNote {
                     break;
                 case "Twinkle":
                     tColors = applyTwinklePreset(tColors, t, i);
-                    break;
-                case "Multi":
-                    applyMultiPreset();
-                    setStatus(3);
                     break;
             }
         }
@@ -274,14 +281,6 @@ public class TriggeredNote {
         return tCols;
     }
 
-    void applyMultiPreset() {
-        triggeredMulti.set(note.getMultiPreset());
-        triggeredMulti.set(new ArrayList<>());
-    }
-
-    SimpleObjectProperty<ArrayList<Integer>> getTriggeredMulti() {
-        return triggeredMulti;
-    }
 
     Color[][] applyTwinklePreset(Color[][] cols, long t, int ind) {
 

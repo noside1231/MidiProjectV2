@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public class MatrixPresetWindow extends VBox {
 
-    String[] presets = {"None", "Rainbow", "Flash", "Trail", "Twinkle", "Multi"};
+    String[] presets = {"None", "Rainbow", "Flash", "Trail", "Twinkle"};
 
     ChoiceBox<String> presetOptions;
     Pane presetPane;
@@ -22,7 +22,6 @@ public class MatrixPresetWindow extends VBox {
     FlashPresetWindow flashPresetWindow;
     TrailPresetWindow trailPresetWindow;
     TwinklePresetWindow twinklePresetWindow;
-    MultiPresetWindow multiPresetWindow;
 
     SimpleStringProperty lastChangedPresetProperty;
     SimpleStringProperty lastSelectedPreset;
@@ -49,21 +48,18 @@ public class MatrixPresetWindow extends VBox {
         flashPresetWindow = new FlashPresetWindow(presets[2]);
         trailPresetWindow = new TrailPresetWindow(presets[3], ledsPerStrip, strips);
         twinklePresetWindow = new TwinklePresetWindow(presets[4]);
-        multiPresetWindow = new MultiPresetWindow(presets[5]);
 
         lastChangedPresetProperty.set("A");
         rainbowPresetWindow.changedProperty().addListener(event -> changedPresetProperty(rainbowPresetWindow.changedProperty().get()));
         flashPresetWindow.changedProperty().addListener(event -> changedPresetProperty(flashPresetWindow.changedProperty().get()));
         trailPresetWindow.changedProperty().addListener(event -> changedPresetProperty(trailPresetWindow.changedProperty().get()));
         twinklePresetWindow.changedProperty().addListener(event -> changedPresetProperty(twinklePresetWindow.changedProperty().get()));
-        multiPresetWindow.changedProperty().addListener(event ->changedPresetProperty(multiPresetWindow.changedProperty().get()));
 
         presetWindows.add(nonePresetWindow);
         presetWindows.add(rainbowPresetWindow);
         presetWindows.add(flashPresetWindow);
         presetWindows.add(trailPresetWindow);
         presetWindows.add(twinklePresetWindow);
-        presetWindows.add(multiPresetWindow);
 
         for (int i = 0; i < presetWindows.size(); i++) {
             presetPane.getChildren().add(presetWindows.get(i));
@@ -106,7 +102,6 @@ public class MatrixPresetWindow extends VBox {
         flashPresetWindow.resetFields();
         trailPresetWindow.resetFields();
         twinklePresetWindow.resetFields();
-        multiPresetWindow.resetFields(curNote);
 
 
         //lol don't mess with this mess
@@ -123,8 +118,6 @@ public class MatrixPresetWindow extends VBox {
                     trailPresetWindow.setPresetField(splitted[2], splitted[3]);
                 } else if (splitted[1].equals(presets[4])) { // If Twinkle
                     twinklePresetWindow.setPresetField(splitted[2], splitted[3]);
-                } else if (splitted[1].equals(presets[5])) { //If Multi
-                    multiPresetWindow.setPresetField(splitted[2], splitted[3]);
                 }
             }
         }

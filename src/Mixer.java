@@ -63,16 +63,17 @@ public class Mixer {
 
     public void setTriggered(Note n) {
 
+        //if retriggered currently triggered note, reset the note
         for (int j = 0; j < getCurrentlyTriggeredNotes().size(); j++) {
             if (n.getID() == getCurrentlyTriggeredNotes().get(j)) {
                 resetNote(n.getID());
                 return;
             }
         }
-        TriggeredNote t = new TriggeredNote(n, currentTime);
-        t.getTriggeredMulti().addListener(event -> triggerMulti(t.getTriggeredMulti().get()));
-//        currentlyTriggeredNotes.add(new TriggeredNote(n, currentTime));
 
+        TriggeredNote t = new TriggeredNote(n, currentTime);
+
+        //end triggers
         if (t.getNote().getEndTrigger()) {
             iterator = currentlyTriggeredNotes.listIterator();
             while(iterator.hasNext()) {
@@ -81,19 +82,19 @@ public class Mixer {
             }
         }
 
+        //trigger multi notes
+        triggerMultiList.set(t.getTriggeredMulti());
+        triggerMultiList.set(new ArrayList<>());
+
         currentlyTriggeredNotes.add(t);
     }
 
-    ArrayList<Integer> getCurrentlyTriggeredNotes() {
+    public ArrayList<Integer> getCurrentlyTriggeredNotes() {
         ArrayList<Integer> a = new ArrayList<>();
         for (int i = 0; i < currentlyTriggeredNotes.size(); i++) {
             a.add(currentlyTriggeredNotes.get(i).getNote().getID());
         }
         return a;
-    }
-
-    void triggerMulti(ArrayList<Integer> t) {
-        triggerMultiList.set(t);
     }
 
     public SimpleObjectProperty<ArrayList<Integer>> getTriggerMultiList() {
@@ -116,14 +117,14 @@ public class Mixer {
         }
     }
 
-    void addToDmxArr(int channel, int val) {
+    private void addToDmxArr(int channel, int val) {
         dmxChannels[channel] += val;
         if (dmxChannels[channel] > 255) {
             dmxChannels[channel] = 255;
         }
     }
 
-    void addToDmxArr(int[] arr) {
+    private void addToDmxArr(int[] arr) {
         for(int i = 0; i < arr.length; i++) {
             addToDmxArr(i, arr[i]);
         }

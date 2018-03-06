@@ -70,8 +70,6 @@ public class MainWindow extends Parent {
     LightSelectionWindow lightSelectionWindow;
 
     //Presets
-    MatrixPresetWindow matrixPresetWindow;
-
     DMXPresetWindow dmxPresetWindow;
 
     //Loaded File
@@ -235,6 +233,7 @@ public class MainWindow extends Parent {
         displayCurrentNoteWindow.getFadeOutVal().addListener(event -> timesEntered(2, displayCurrentNoteWindow.getFadeOutVal().get()));
         displayCurrentNoteWindow.getEditModeVal().addListener(event -> setEditMode(displayCurrentNoteWindow.getEditModeVal().get()));
         displayCurrentNoteWindow.getEndTriggerVal().addListener(event -> noteContainer.setCurrentNoteEndTrigger(displayCurrentNoteWindow.getEndTriggerVal().get()));
+        displayCurrentNoteWindow.getMultiTriggerChangedVal().addListener(event ->noteContainer.setMultiTriggerVal(displayCurrentNoteWindow.getMultiTriggerChangedVal().get()));
 
         //Color Picker
         colorPickerWindow = new ColorPickerWindow();
@@ -261,7 +260,7 @@ public class MainWindow extends Parent {
         //DMX Presets
         dmxPresetWindow = new DMXPresetWindow();
         dmxPresetWindow.getChangedValues().addListener(event -> noteContainer.setCurrentNoteDMXTimes(dmxPresetWindow.getChangedValues().get()));
-        dmxPresetWindow.getChangedValues().addListener(event -> System.out.println(dmxPresetWindow.getChangedValues().get()));
+//        dmxPresetWindow.getChangedValues().addListener(event -> noteContainer.setCurrentNoteDMXValue());
 
         //Matrix Presets
         matrixPresetContainer = new MatrixPresetContainer(ledsPerStrip, strips);
@@ -556,7 +555,7 @@ public class MainWindow extends Parent {
 
 
         try {
-            serialPort.connect("/dev/cu.wchusbserial14510");
+                serialPort.connect(n);
 
         } catch (Exception e) {
             e.printStackTrace();

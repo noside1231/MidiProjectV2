@@ -5,7 +5,6 @@ import javafx.stage.Stage;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.util.ArrayList;
 
 public class Main extends Application {
 
@@ -60,11 +59,10 @@ public class Main extends Application {
                     long elapsedNanos = now - oldFrameTime;
                     long elapsedNanosPerFrame = elapsedNanos / frameTimes.length;
                     frameRate = 1_000_000_000.0 / elapsedNanosPerFrame;
-//                    frameRateItem.setText(String.format("Frame Rate: %.3f", frameRate));
                 }
                 mainWindow.update(now, frameRate);
 
-//                s.sendMatrixData(mainWindow.getMixerMatrix());
+//                serialWriter.sendMatrixData(mainWindow.getMixerMatrix());
 
 
             }

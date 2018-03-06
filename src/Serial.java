@@ -9,13 +9,12 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-public class Serial
-
-
-{
-    SerialWriter s;
+public class Serial {
+    SerialWriter serialWriter;
 
     static boolean sendData = false;
+
+    static private boolean serialConnected = false;
 
     public Serial() {
 
@@ -33,6 +32,7 @@ public class Serial
                     try {
                         CommPort thePort = com.open("CommUtil", 10);
                         thePort.close();
+                        System.out.println(com.getName());
                         ports.add(com.getName());
                     } catch (PortInUseException e) {
                         System.out.println("Port, " + com.getName() + ", is in use.");
@@ -50,25 +50,31 @@ public class Serial
 
     public void sendMatrixData(LEDMatrix leds) {
 
-        if (sendData) {
-            System.out.println("SENDING");
-            s.writeData("<");
-            for (int y = 0; y < leds.getStrips(); y++) {
-                for (int x = 0; x < leds.getLedsPerStrip(); x++) {
+
+        if (serialConnected) {
+
+            if (sendData) {
+                System.out.println("SENDING");
+                serialWriter.writeData("<");
+                for (int y = 0; y < leds.getStrips(); y++) {
+                    for (int x = 0; x < leds.getLedsPerStrip(); x++) {
 //                System.out.println(leds.getLED(x, y).toString());
 
 
-                    s.writeData(leds.getLEDString(x, y));
+                        serialWriter.writeData(leds.getLEDString(x, y));
+                    }
                 }
+
+                serialWriter.writeData(">");
+                sendData = false;
             }
-
-            s.writeData(">");
-            sendData = false;
         }
-
     }
 
     public void connect(String portName) throws Exception {
+
+        System.out.println(portName);
+
         CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
         if (portIdentifier.isCurrentlyOwned()) {
             System.out.println("Error: Port is currently in use");
@@ -86,10 +92,10 @@ public class Serial
                 PrintWriter t = new PrintWriter(out);
 
 
-                s = new SerialWriter(t);
+                serialWriter = new SerialWriter(t);
 
                 (new Thread(new SerialReader(in))).start();
-                (new Thread(s)).start();
+                (new Thread(serialWriter)).start();
 
 
             } else {
@@ -113,11 +119,25 @@ public class Serial
                 while ((len = this.in.read(buffer)) > -1) {
 
                     String s = new String(buffer, 0, len);
-                    System.out.print(s);
+                    if (s.length() == 1) {
+                        System.out.println(Character.toString (s.charAt(0)));
+
+                    } else {
+                        System.out.print(s);
+
+                    }
+
+
+
 
                     if (s.equals("b")) {
                         System.out.println("B RECEIVED");
+                        serialConnected = true;
                         sendData = true;
+
+
+
+
                     }                 }
             } catch (IOException e) {
                 e.printStackTrace();

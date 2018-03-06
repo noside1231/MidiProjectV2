@@ -1,11 +1,8 @@
-import PresetWindows.MultiPresetWindow;
+import PresetWindows.MultiTriggerWindow;
 import Utilities.LabelCheckBox;
 import Utilities.NumberTextField;
 import Utilities.NumberTextFieldDecimal;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleFloatProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -32,16 +29,17 @@ public class DisplayCurrentNoteWindow extends VBox {
     private Button goRightButton;
     private Button triggerButton;
 
-    private MultiPresetWindow multiPresetWindow;
+    private MultiTriggerWindow multiTriggerWindow;
 
-    SimpleIntegerProperty noteChangedVal;
-    SimpleBooleanProperty endTriggerVal;
-    SimpleBooleanProperty triggerVal;
-    SimpleObjectProperty<Float[]> times;
-    SimpleFloatProperty fadeInVal;
-    SimpleFloatProperty holdVal;
-    SimpleFloatProperty fadeOutVal;
-    SimpleBooleanProperty editModeVal;
+    private SimpleIntegerProperty noteChangedVal;
+    private SimpleBooleanProperty endTriggerVal;
+    private SimpleBooleanProperty triggerVal;
+    private SimpleObjectProperty<Float[]> times;
+    private SimpleFloatProperty fadeInVal;
+    private SimpleFloatProperty holdVal;
+    private SimpleFloatProperty fadeOutVal;
+    private SimpleBooleanProperty editModeVal;
+    private SimpleStringProperty multiTriggerChanged;
 
     public DisplayCurrentNoteWindow() {
 
@@ -49,6 +47,7 @@ public class DisplayCurrentNoteWindow extends VBox {
         endTriggerVal = new SimpleBooleanProperty(false);
         triggerVal = new SimpleBooleanProperty(false);
         editModeVal = new SimpleBooleanProperty(true);
+        multiTriggerChanged = new SimpleStringProperty("");
 
         fadeInField = new NumberTextFieldDecimal();
         fadeOutField = new NumberTextFieldDecimal();
@@ -65,7 +64,7 @@ public class DisplayCurrentNoteWindow extends VBox {
         fadeOutVal = new SimpleFloatProperty(0);
 
         triggerButton = new Button("Trigger");
-        multiPresetWindow = new MultiPresetWindow("Multi");
+        multiTriggerWindow = new MultiTriggerWindow();
 
         editMode = new LabelCheckBox("Edit Mode", true);
         editMode.getChecked().addListener(event -> editModeToggled(editMode.getChecked().get()));
@@ -82,6 +81,7 @@ public class DisplayCurrentNoteWindow extends VBox {
         fadeInField.getValue().addListener(event -> setTime(0, fadeInField.getValue().get()));
         holdField.getValue().addListener(event -> setTime(1, holdField.getValue().get()));
         fadeOutField.getValue().addListener(event -> setTime(2, fadeOutField.getValue().get()));
+        multiTriggerWindow.getLastChanged().addListener(event -> multiTriggerChanged.set(multiTriggerWindow.getLastChanged().get()));
 
 
         noteSelectionContainer = new HBox();
@@ -91,7 +91,7 @@ public class DisplayCurrentNoteWindow extends VBox {
         timeContainer.getChildren().addAll(fadeInField, holdField, fadeOutField);
 
 
-        getChildren().addAll(noteSelectionContainer, timeContainer, multiPresetWindow, endTrigger, triggerButton, editMode);
+        getChildren().addAll(noteSelectionContainer, timeContainer, multiTriggerWindow, endTrigger, triggerButton, editMode);
 
         setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
     }
@@ -104,7 +104,7 @@ public class DisplayCurrentNoteWindow extends VBox {
         endTrigger.setChecked(curNote.getEndTrigger());
         noteSelectionField.setValue(curNote.getID()+1);
         currentNoteLabel.setText(curNote.getPianoNoteString());
-
+        multiTriggerWindow.resetFields(curNote.getID(), curNote.getMultiTrigger());
     }
 
     private void setTime(int ind, float val) {
@@ -167,6 +167,11 @@ public class DisplayCurrentNoteWindow extends VBox {
     public SimpleBooleanProperty getEditModeVal() {
         return editModeVal;
     }
+
+    public SimpleStringProperty getMultiTriggerChangedVal() {
+        return multiTriggerChanged;
+    }
+
     private void editModeToggled(boolean b) {
         editModeVal.set(b);
     }

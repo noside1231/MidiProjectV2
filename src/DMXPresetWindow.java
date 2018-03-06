@@ -19,8 +19,8 @@ public class DMXPresetWindow extends VBox{
         valStart = new SliderTextField(0,0,255, "Starting Value");
         valEnd = new SliderTextField(0,0,255, "Ending Value");
 
-        valStart.getValue().addListener(event->setChangedValues(valStart.getValue().get(), valEnd.getValue().get()));
-        valEnd.getValue().addListener(event->setChangedValues(valStart.getValue().get(), valEnd.getValue().get()));
+        valStart.getValue().addListener(event->setChangedValues(0));
+        valEnd.getValue().addListener(event->setChangedValues(1));
 
         changedValues = new SimpleStringProperty("");
 
@@ -32,11 +32,18 @@ public class DMXPresetWindow extends VBox{
         return changedValues;
     }
 
-    private void setChangedValues(int s, int e) {
-        changedValues.set(String.valueOf(currentSelectedDmx)+";"+String.valueOf(s)+";"+ String.valueOf(e));
+    private void setChangedValues(int ind) {
+
+        if (ind == 0) {
+            changedValues.set(String.valueOf(ind)+";"+String.valueOf(valStart.getValue().get()));
+        } else if (ind == 1) {
+            changedValues.set(String.valueOf(ind)+";"+String.valueOf(valEnd.getValue().get()));
+
+        }
     }
 
     public void setValues(DMXChannel[] v) {
+        System.out.println(v[currentSelectedDmx].getStartVal());
         valStart.setValue(v[currentSelectedDmx].getStartVal());
         valEnd.setValue(v[currentSelectedDmx].getEndVal());
     }

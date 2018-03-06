@@ -11,6 +11,7 @@ public class Note {
     private ArrayList<String> presetContainer;
     private String[] currentPreset;
 
+    private boolean[] multiTrigger;
 
     private float fadeIn;
     private float fadeOut;
@@ -33,6 +34,10 @@ public class Note {
         }
         presetContainer = new ArrayList<>();
 
+        multiTrigger = new boolean[128];
+        for (int i = 0; i < 128; i++) {
+            multiTrigger[i] = false;
+        }
 
 
     }
@@ -164,6 +169,7 @@ public class Note {
         loadPresetData(obj.getJSONObject("Presets"));
         setTimeFromString(obj.getString("Times"));
         endTrigger = obj.getBoolean("EndTrigger");
+        loadMultiTriggerData(obj.getJSONObject("MultiTrigger"));
     }
 
     public JSONObject saveData() {
@@ -174,6 +180,7 @@ public class Note {
         obj.put("Presets", savePresetData());
         obj.put("Times", getTimeString());
         obj.put("EndTrigger", endTrigger);
+        obj.put("MultiTrigger", saveMultiTriggerData());
 
         return obj;
     }
@@ -201,6 +208,7 @@ public class Note {
     }
 
     public void setDMXTimes(String s) {
+        System.out.println(s);
         dmxChannels.setDMXTimes(s);
     }
 
@@ -219,15 +227,13 @@ public class Note {
         return 0;
     }
 
-    public ArrayList<Integer> getMultiPreset() {
-        ArrayList<Integer> tList = new ArrayList<>();
-        for (int i = 0; i < presetContainer.size(); i++) {
-            String[] temp = presetContainer.get(i).split(";");
-            if (temp[0].equals("Multi") && temp[2].equals("1")) {
-                tList.add(Integer.parseInt(temp[1]));
-            }
-        }
-        return tList;
+    public void setMultiTrigger(String seq) {
+        String s[] = seq.split(";");
+        multiTrigger[Integer.parseInt(s[0])] = Boolean.parseBoolean(s[1]);
+    }
+
+    public boolean[] getMultiTrigger() {
+        return multiTrigger;
     }
 
     public String getPianoNoteString() {
@@ -263,4 +269,24 @@ public class Note {
             setPresetProperty(tPresetData.getString(Integer.toString(tInc)));
         }
     }
+
+    private JSONObject saveMultiTriggerData() {
+        JSONObject tFile = new JSONObject();
+        for (int i = 0; i < multiTrigger.length; i++) {
+            tFile.put(Integer.toString(i), multiTrigger[i]);
+        }
+        return tFile;
+    }
+
+    private void loadMultiTriggerData(JSONObject tFile) {
+        for (int i = 0; i < multiTrigger.length; i++) {
+
+
+            multiTrigger[i] = tFile.getBoolean(Integer.toString(i));
+            if ( multiTrigger[i]) {
+                System.out.println("AA"+i);
+            }
+        }
+    }
+
 }

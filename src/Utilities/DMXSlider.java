@@ -26,23 +26,21 @@ public class DMXSlider extends VBox {
     public DMXSlider(int def, int lower, int upper, String name) {
 
         editMode = true;
-
-        s = new SliderTextFieldVertical(def, lower, upper, name);
-        active = new CheckBox();
-
-        s.getValue().addListener(event -> valueChanged(s.getValue().get()));
-        active.setOnAction(event -> checkBoxChecked());
-
         checked = new SimpleBooleanProperty(false);
         changedVal = new SimpleIntegerProperty(0);
         selected = new SimpleBooleanProperty(false);
 
+        s = new SliderTextFieldVertical(def, lower, upper, name);
+        s.getValue().addListener(event -> valueChanged(s.getValue().get()));
+
+        active = new CheckBox();
+        active.setOnAction(event -> checkBoxChecked());
+
         getChildren().addAll(s, active);
+        setOnMousePressed(event -> setSelected(true));
 
         setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-
-        setOnMousePressed(event -> setSelected(true));
     }
 
     public void setSelected(boolean b) {

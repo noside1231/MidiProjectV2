@@ -36,8 +36,12 @@ public class DMXChannelContainer {
 
     public void setDMXTimes(String s) {
         String[] a = s.split(";");
-        channels[Integer.parseInt(a[0])].setStartVal(Integer.parseInt(a[1]));
-        channels[Integer.parseInt(a[0])].setEndVal(Integer.parseInt(a[2]));
+        if (a[0].equals("0")) {
+            channels[currentChannel].setStartVal(Integer.parseInt(a[1]));
+        } else if (a[0].equals("1")) {
+            channels[currentChannel].setEndVal(Integer.parseInt(a[1]));
+
+        }
     }
 
     public JSONObject saveData() {

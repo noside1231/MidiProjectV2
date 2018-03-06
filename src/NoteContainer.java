@@ -100,6 +100,10 @@ public class NoteContainer extends HBox {
         notes[currentNote].setFadeOut(v);
     }
 
+    public void setMultiTriggerVal(String s) {
+        notes[currentNote].setMultiTrigger(s);
+    }
+
     public void setCurrentNoteSelectAll(int t) {
         for (int y = 0; y < strips; y++) {
             for (int x = 0; x < ledsPerStrip; x++) {

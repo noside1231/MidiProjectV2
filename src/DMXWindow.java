@@ -29,6 +29,8 @@ public class DMXWindow extends VBox{
         sliderContainer.setSpacing(10);
         sliderContainer.setMaxWidth(30);
 
+
+
         s = new ScrollPane(sliderContainer);
         s.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
@@ -43,12 +45,14 @@ public class DMXWindow extends VBox{
                 if (tSliders[tI].getSelected().get()) setSelectedChannel(tI);
             });
         }
+        selectedChannel = new SimpleIntegerProperty(0);
+        changedVal = new SimpleStringProperty("");
+
+        tSliders[0].setSelected(true);
+
+
 
         sliderContainer.getChildren().addAll(tSliders);
-
-        changedVal = new SimpleStringProperty("");
-        selectedChannel = new SimpleIntegerProperty(0);
-
 
         getChildren().add(s);
 
@@ -61,7 +65,7 @@ public class DMXWindow extends VBox{
     public void setSelectedChannel(int i) {
         tSliders[selectedChannel.get()].setSelected(false);
         selectedChannel.set(i);
-        tSliders[i].setSelected(true);
+//        tSliders[i].setSelected(true);
     }
 
     private void valueChanged(int channel, int value, boolean state) {
