@@ -13,44 +13,28 @@ import org.json.JSONObject;
  */
 public class LightSelectionWindow extends TabPane {
 
-    private TabPane lightTab;
     private Tab ledDisplayTab;
     private Tab dmxTab;
     private Tab keyMapTab;
     private Tab sequencerTab;
-
 
     private DisplayMatrixWindow displayMatrixWindow;
     private DMXWindow dmxWindow;
     private KeyMapWindow keyMapWindow;
     private Sequencer sequencer;
 
-
     private SimpleObjectProperty<Integer[]> lastMatrixRectSelected;
-
-    private SimpleIntegerProperty selectAllInt;
-    private SimpleIntegerProperty selectRowInt;
-    private SimpleIntegerProperty selectColInt;
-
-
-    private SimpleIntegerProperty setSelected;
-
     private SimpleStringProperty dmxChangedVal;
     private SimpleIntegerProperty selectedDmxChannel;
-
     private SimpleIntegerProperty sequencerTriggeredNote;
+    private SimpleStringProperty matrixContextMenuVal;
 
     public LightSelectionWindow(int ledsPerStrip, int strips, int dmxChannels) {
-        setPrefWidth(super.getWidth());
 
-        selectAllInt = new SimpleIntegerProperty(0);
-        selectRowInt = new SimpleIntegerProperty(0);
-        selectColInt = new SimpleIntegerProperty(0);
-        setSelected = new SimpleIntegerProperty(0);
         dmxChangedVal = new SimpleStringProperty("");
         selectedDmxChannel = new SimpleIntegerProperty(0);
         sequencerTriggeredNote = new SimpleIntegerProperty(0);
-
+        matrixContextMenuVal = new SimpleStringProperty("");
 
         lastMatrixRectSelected = new SimpleObjectProperty<>();
         setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
@@ -60,15 +44,11 @@ public class LightSelectionWindow extends TabPane {
         keyMapTab = new Tab("Key Map");
         sequencerTab = new Tab("Sequencer");
 
-
         displayMatrixWindow = new DisplayMatrixWindow(ledsPerStrip, strips);
         displayMatrixWindow.setEditMode(true);
         displayMatrixWindow.getPressed().addListener(event -> setLastPressed(displayMatrixWindow.getPressed().get()));
-        displayMatrixWindow.getSelectAll().addListener(selectAllInt -> selectAllSelected(displayMatrixWindow.getSelectAll().get()));
-        displayMatrixWindow.getSelectRow().addListener(selectRowInt -> selectRowSelected(displayMatrixWindow.getSelectRow().get()));
-        displayMatrixWindow.getSelectCol().addListener(selectColInt -> selectColSelected(displayMatrixWindow.getSelectCol().get()));
-        displayMatrixWindow.getsetSelected().addListener(event -> setPressed());
         displayMatrixWindow.getEditModeVal().addListener(event -> setEditMode(displayMatrixWindow.getEditModeVal().get()));
+        displayMatrixWindow.getLastContextMenuVal().addListener(event -> matrixContextMenuVal.set(displayMatrixWindow.getLastContextMenuVal().get()));
 
         dmxWindow = new DMXWindow(dmxChannels);
         dmxWindow.setEditMode(true);
@@ -89,31 +69,29 @@ public class LightSelectionWindow extends TabPane {
 
     }
 
-    public SimpleIntegerProperty getSelectedDmxChannel() {
-        return selectedDmxChannel;
+    public SimpleStringProperty getMatrixContextMenuVal() {
+        return matrixContextMenuVal;
     }
-
     private void selectedDmxChannelChanged(int i) {
         selectedDmxChannel.set(i);
     }
 
+    public void setScale(int w,int h) {
 
-    public SimpleObjectProperty<Integer[]> getLastPressed() {
-        return lastMatrixRectSelected;
-    }
+        int windowHeight = (int)Math.round(h/3.);
+        int windowWidth = w;
+        setPrefHeight(windowHeight);
+        setMaxHeight(windowHeight);
+        setPrefWidth(w);
+        setMaxWidth(w);
 
-    public void setScale() {
-        displayMatrixWindow.setScale();
-        dmxWindow.setScale();
+        displayMatrixWindow.setScale(windowWidth, windowHeight);
+        dmxWindow.setScale(windowWidth, windowHeight);
         sequencer.setScale();
     }
 
     private void dmxValueChanged(String s) {
         dmxChangedVal.set(s);
-    }
-
-    public SimpleStringProperty getDmxChangedVal() {
-        return dmxChangedVal;
     }
 
     public void setDMXValues(DMXChannel[] vals) {
@@ -129,40 +107,23 @@ public class LightSelectionWindow extends TabPane {
     }
 
 
-    private void setPressed() {
-        setSelected.set((setSelected.get()+1)%2);
-    }
-
     public void setEditMode(boolean t) {
         displayMatrixWindow.setEditMode(t);
         dmxWindow.setEditMode(t);
     }
 
-    private void selectAllSelected(int s) {
-        if (s > 0) {
-            selectAllInt.set(Math.abs(selectAllInt.get())+1);
-        } else {
-            selectAllInt.set(-Math.abs(selectAllInt.get())-1);
-        }
+    public SimpleIntegerProperty getSelectedDmxChannel() {
+        return selectedDmxChannel;
     }
-    private void selectRowSelected(int i) {
-        selectRowInt.set(i);
+    public SimpleIntegerProperty getSequencerTriggeredNote() {
+        return sequencerTriggeredNote;
     }
-    private void selectColSelected(int i) {
-        selectColInt.set(i);
+    public SimpleObjectProperty<Integer[]> getLastPressed() {
+        return lastMatrixRectSelected;
     }
-
-
-    public SimpleIntegerProperty getSelectRow() {
-        return selectRowInt;
+    public SimpleStringProperty getDmxChangedVal() {
+        return dmxChangedVal;
     }
-    public SimpleIntegerProperty getSelectCol() {
-        return selectColInt;
-    }
-    public SimpleIntegerProperty getSelectAll() {
-        return selectAllInt;
-    }
-    public SimpleIntegerProperty getSetSelected() { return setSelected; }
 
     public int getKeyMap(String key) {
         return keyMapWindow.getKeyMap(key);
@@ -174,9 +135,6 @@ public class LightSelectionWindow extends TabPane {
 
     private void sequencerTrigger(int i) {
         sequencerTriggeredNote.set(i);
-    }
-    public SimpleIntegerProperty getSequencerTriggeredNote() {
-        return sequencerTriggeredNote;
     }
 
     public void loadData(JSONObject curFile) {

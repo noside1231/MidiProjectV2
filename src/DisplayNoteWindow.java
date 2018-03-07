@@ -21,13 +21,11 @@ public class DisplayNoteWindow extends HBox {
     private int noteAmount;
     private SimpleIntegerProperty notePressed;
 
-    private int noteRectScaleY = 100;
+//    private int noteRectScaleY = 100;
     private int noteXSpacing = 1;
 
 
     public DisplayNoteWindow(int nA) {
-
-        setPrefHeight(100);
         noteAmount = nA;
 
         notePressed = new SimpleIntegerProperty();
@@ -46,7 +44,7 @@ public class DisplayNoteWindow extends HBox {
 
         rectanglePressed(0);
         getChildren().addAll(noteRects);
-        setSpacing(noteXSpacing);
+//        setSpacing(noteXSpacing);
 
     }
 
@@ -61,14 +59,14 @@ public class DisplayNoteWindow extends HBox {
     }
 
 
-    public void setScale() {
-        double noteSpacingXTotal = (noteAmount-1)*noteXSpacing;
-        double noteRectScaleX = ( Math.floor(getWidth()) - noteSpacingXTotal) / noteAmount;
+    public void setScale(int w, int h) {
+        setPrefWidth(w);
+        setMaxWidth(w/2);
+        double noteRectScaleX = getWidth()/noteAmount;
         for (int i = 0; i < noteAmount; i++) {
             noteRects[i].setWidth(noteRectScaleX);
-            noteRects[i].setHeight(noteRectScaleY);
+            noteRects[i].setHeight(h/6);
         }
-
     }
 
     public void update(ArrayList<Integer> currentlyTriggeredNotes, int currentNote) {

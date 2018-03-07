@@ -9,8 +9,8 @@ import java.io.*;
 public class Main extends Application {
 
 
-    int screenWidth = 1280;
-    int screenHeight = 800;
+//    int screenWidth = 1280;
+//    int screenHeight = 800;
     MainWindow mainWindow;
 
     JSONObject currentFile;
@@ -168,8 +168,6 @@ public class Main extends Application {
     }
 
     private void loadData() {
-        screenWidth = Integer.parseInt((currentFile.getJSONObject("Preferences").getString("screenX")));
-        screenHeight = Integer.parseInt((currentFile.getJSONObject("Preferences").getString("screenY")));
         preferencesWindow.loadData(currentFile.getJSONObject("Preferences"));
         resetWindow();
         mainWindow.loadData(currentFile.getJSONObject("WindowData"));

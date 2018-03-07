@@ -1,6 +1,8 @@
+import Utilities.DisplayMatrixContextMenu;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -8,6 +10,7 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -17,7 +20,7 @@ import javafx.scene.shape.StrokeType;
 /**
  * Created by Edison on 1/16/18.
  */
-public class DisplayMatrixWindow extends HBox {
+public class DisplayMatrixWindow extends GridPane {
 
     private int strokeWidth = 3;
     private int displayMatrixSpacing = 2;
@@ -26,48 +29,33 @@ public class DisplayMatrixWindow extends HBox {
     private int ledsPerStrip;
 
     private  Rectangle[][] displayRects;
-    private  VBox displayRectRows;
-    private  HBox[] displayMatrixCols;
 
-    private  ContextMenu rightClickOptionMenu;
-    private  MenuItem selectAllItem;
-    private   MenuItem deselectAllItem;
-    private   Menu selectRowMenu;
-    private   Menu selectColMenu;
-    private  MenuItem[] selectRowItem;
-    private   MenuItem[] selectColItem;
-    private  MenuItem set;
+    private DisplayMatrixContextMenu rightClickOptionMenu;
 
     private  SimpleObjectProperty<Integer[]> lastClicked;
-
     private  SimpleIntegerProperty selectAllInt;
     private  SimpleIntegerProperty selectRowInt;
     private  SimpleIntegerProperty selectColInt;
     private  SimpleIntegerProperty selectSet;
     private SimpleBooleanProperty editModeVal;
 
+    private SimpleStringProperty lastContextMenuVal;
+
     public DisplayMatrixWindow(int lPS, int s) {
-        setPrefHeight(200);
         strips = s;
         ledsPerStrip = lPS;
 
+        lastContextMenuVal = new SimpleStringProperty("");
         selectAllInt = new SimpleIntegerProperty(0);
         selectRowInt = new SimpleIntegerProperty(0);
         selectColInt = new SimpleIntegerProperty(0);
         selectSet = new SimpleIntegerProperty(0);
-
         editModeVal = new SimpleBooleanProperty(false);
-
         lastClicked = new SimpleObjectProperty<>();
 
         displayRects = new Rectangle[ledsPerStrip][strips];
-        displayRectRows = new VBox();
-        displayMatrixCols = new HBox[strips];
-        displayRectRows.setSpacing(displayMatrixSpacing);
 
         for (int y = 0; y < strips; y++) {
-            displayMatrixCols[y] = new HBox();
-            displayMatrixCols[y].setSpacing(displayMatrixSpacing);
             for (int x = 0; x < ledsPerStrip; x++) {
                 displayRects[x][y] = new Rectangle();
                 displayRects[x][y].setFill(Color.BLACK);
@@ -77,45 +65,18 @@ public class DisplayMatrixWindow extends HBox {
                 int tempX = x;
                 int tempY = y;
                 displayRects[x][y].setOnMouseClicked(event -> rectanglePressed(event, tempX, tempY));
-                displayMatrixCols[y].getChildren().add(displayRects[x][y]);
+                add(displayRects[x][y], x, y);
             }
         }
-        displayRectRows.getChildren().addAll(displayMatrixCols);
-        getChildren().add(displayRectRows);
-        displayRectRows.setStyle("-fx-background-color: #00FFFF;");
 
+        setHgap(displayMatrixSpacing);
+        setVgap(displayMatrixSpacing);
 
         //Context Menu
-        rightClickOptionMenu = new ContextMenu();
+        rightClickOptionMenu = new DisplayMatrixContextMenu(strips, ledsPerStrip);
+        rightClickOptionMenu.getLastChangedVal().addListener(event -> lastContextMenuVal.set(rightClickOptionMenu.getLastChangedVal().get()));
         setOnContextMenuRequested(event -> rightClick(event));
 
-        selectAllItem = new MenuItem("Select All");
-        selectAllItem.setOnAction(event -> selectAll(true));
-        deselectAllItem = new MenuItem("Deselect All");
-        deselectAllItem.setOnAction(event -> selectAll(false));
-        selectRowMenu = new Menu("Select Row:");
-        selectColMenu = new Menu("Select Column:");
-        set = new MenuItem("Set");
-        set.setOnAction(event -> setPressed());
-
-        selectRowItem = new MenuItem[strips];
-        for (int i = 0; i < strips; i++) {
-            selectRowItem[i] = new MenuItem(Integer.toString(i+1));
-            int tInt = i;
-            selectRowItem[i].setOnAction(event -> selectRow(tInt));
-        }
-        selectRowMenu.getItems().addAll(selectRowItem);
-
-        selectColItem = new MenuItem[ledsPerStrip];
-        for (int i = 0; i < ledsPerStrip; i++) {
-            selectColItem[i] = new MenuItem(Integer.toString(i+1));
-            int tInt = i;
-            selectColItem[i].setOnAction(event -> selectCol(tInt));
-
-        }
-        selectColMenu.getItems().addAll(selectColItem);
-
-        rightClickOptionMenu.getItems().addAll(set, selectAllItem, deselectAllItem, new SeparatorMenuItem(), selectRowMenu, selectColMenu);
 
         setOnMouseClicked(event -> setEditMode(true));
 
@@ -133,11 +94,14 @@ public class DisplayMatrixWindow extends HBox {
         return lastClicked;
     }
 
-    public void setScale() {
-        int horizontalSpacingTotal = displayMatrixSpacing * ledsPerStrip - 1;
-        int verticalSpacingTotal = displayMatrixSpacing * strips - 1;
-        int displayMatrixRectangleScaleX = ((int) Math.floor(getWidth()) - horizontalSpacingTotal) / ledsPerStrip;
-        int displayMatrixRectangleScaleY = ((int) Math.floor(getHeight() - verticalSpacingTotal) / strips);
+    public void setScale(int w, int h) {
+        setPrefWidth(w);
+        setMaxWidth(w);
+        setPrefHeight(h);
+        setMaxHeight(h);
+
+        double displayMatrixRectangleScaleX = (getWidth() - displayMatrixSpacing*(ledsPerStrip-1)) / ledsPerStrip;
+        double displayMatrixRectangleScaleY = Math.floor((getHeight()+30 - displayMatrixSpacing*(strips-1)) / strips);
 
         for (int y = 0; y < strips; y++) {
             for (int x = 0; x < ledsPerStrip; x++) {
@@ -162,24 +126,6 @@ public class DisplayMatrixWindow extends HBox {
         }
     }
 
-    void selectAll(boolean t) {
-        if (t) {
-            selectAllInt.set(Math.abs(selectAllInt.get()+1));
-        } else {
-            selectAllInt.set(-Math.abs(selectAllInt.get())-1);
-        }
-    }
-
-    void selectRow(int i) {
-        selectRowInt.set(i);
-    }
-    void selectCol(int i) {
-        selectColInt.set(i);
-    }
-    void setPressed() {
-        selectSet.set((selectSet.get()+1)%2);
-    }
-
     public void setEditMode(boolean t) {
         editModeVal.set(t);
     }
@@ -198,5 +144,7 @@ public class DisplayMatrixWindow extends HBox {
         return selectColInt;
     }
     SimpleIntegerProperty getsetSelected() { return selectSet; }
-
+    SimpleStringProperty getLastContextMenuVal() {
+        return lastContextMenuVal;
+    }
 }

@@ -88,7 +88,6 @@ public class MainWindow extends Parent {
 
     //preferences
     int noteAmount = 128;
-//    int currentNote = 0;
     int ledsPerStrip = 30;
     int strips = 5;
     boolean editMode = true;
@@ -119,7 +118,7 @@ public class MainWindow extends Parent {
 
 
         mainScene = new Scene(exteriorPane, screenX, screenY);
-//        mainWindow.setResizable(false);
+        mainWindow.setResizable(false);
 
         openItemPressed = new SimpleBooleanProperty();
         openItemPressed.set(false);
@@ -243,19 +242,10 @@ public class MainWindow extends Parent {
         //Lights
         lightSelectionWindow = new LightSelectionWindow(ledsPerStrip, strips, dmxChannels);
         lightSelectionWindow.getLastPressed().addListener(event -> displayMatrixRectanglesPressed(lightSelectionWindow.getLastPressed().get()));
-        lightSelectionWindow.getSelectAll().addListener(event -> selectAll(lightSelectionWindow.getSelectAll().get()));
-        lightSelectionWindow.getSelectRow().addListener(event -> selectRow(lightSelectionWindow.getSelectRow().get()));
-        lightSelectionWindow.getSelectCol().addListener(event -> selectCol(lightSelectionWindow.getSelectCol().get()));
-        lightSelectionWindow.getSetSelected().addListener(event -> colorPickerWindow.setColor());
         lightSelectionWindow.getDmxChangedVal().addListener(event -> setNoteDMX(lightSelectionWindow.getDmxChangedVal().get()));
         lightSelectionWindow.getSelectedDmxChannel().addListener(event -> setSelectedDmxChannel(lightSelectionWindow.getSelectedDmxChannel().get()));
         lightSelectionWindow.getSequencerTriggeredNote().addListener(event -> triggerNote(lightSelectionWindow.getSequencerTriggeredNote().get()));
-
-        //Notes
-//        notes = new Note[noteAmount];
-//        for (int i = 0; i < noteAmount; i++) {
-//            notes[i] = new Note(i, strips, ledsPerStrip, dmxChannels);
-//        }
+        lightSelectionWindow.getMatrixContextMenuVal().addListener(event -> handleMatrixContextMenu(lightSelectionWindow.getMatrixContextMenuVal().get()));
 
         //DMX Presets
         dmxPresetWindow = new DMXPresetWindow();
@@ -403,8 +393,8 @@ public class MainWindow extends Parent {
     }
 
     void setScales() {
-        displayNoteWindow.setScale();
-        lightSelectionWindow.setScale();
+        displayNoteWindow.setScale(screenX, screenY);
+        lightSelectionWindow.setScale(screenX, screenY);
         colorPickerWindow.setScale();
 
     }
@@ -463,7 +453,7 @@ public class MainWindow extends Parent {
 
 
     void triggerNote() {
-        System.out.println("Triggered");
+//        System.out.println("Triggered");
         mixer.setTriggered(noteContainer.getCurrentNote());
         setEditMode(false);
     }
@@ -507,25 +497,27 @@ public class MainWindow extends Parent {
         }
     }
 
-    void selectAll(int t) {
-        if (editMode) {
-            noteContainer.setCurrentNoteSelectAll(t);
-            setDisplay();
-        }
-    }
+    private void handleMatrixContextMenu(String s) {
+        System.out.println(s);
+        String a[] = s.split(";");
 
-    void selectRow(int i) {
-        if (editMode) {
-            noteContainer.setCurrentNoteSelectRow(i);
-            setDisplay();
+        switch (a[0]) {
+            case "SelectAll":
+                noteContainer.setCurrentNoteSelectAll(Boolean.parseBoolean(a[1]));
+                break;
+            case "SelectRow":
+                noteContainer.setCurrentNoteSelectRow(Integer.parseInt(a[1]));
+                break;
+            case "SelectCol":
+                noteContainer.setCurrentNoteSelectColumn(Integer.parseInt(a[1]));
+                break;
+            case "Set":
+                colorPickerWindow.setColor();
+                break;
+            default:
+                break;
         }
-    }
-
-    void selectCol(int i) {
-        if (editMode) {
-            noteContainer.setCurrentNoteSelectColumn(i);
-            setDisplay();
-        }
+        setDisplay();
     }
 
     void setEditMode(boolean t) {

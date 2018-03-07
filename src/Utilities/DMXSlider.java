@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -37,6 +38,7 @@ public class DMXSlider extends VBox {
         active.setOnAction(event -> checkBoxChecked());
 
         getChildren().addAll(s, active);
+//        setAlignment(Pos.CENTER);
         setOnMousePressed(event -> setSelected(true));
 
         setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
@@ -98,6 +100,11 @@ public class DMXSlider extends VBox {
             }
         }
         s.disable(b);
+    }
+
+    public void setScale(double h) {
+        setPrefHeight(h);
+        setAlignment(Pos.CENTER);
     }
 
 

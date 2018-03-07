@@ -23,7 +23,7 @@ public class Preferences extends Stage {
 
     int defaultStrips = 5;
     int defaultLedsPerStrip = 30;
-    int defaultScreenX = 1200;
+    int defaultScreenX = 1280;
     int defaultScreenY = 800;
     int defaultFullscreen = 0;
     String defaultTitle = "untitled";

@@ -1,4 +1,5 @@
 import Utilities.KeyMap;
+import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import org.json.JSONObject;
 
@@ -18,6 +19,8 @@ public class KeyMapWindow extends HBox {
         }
 
         getChildren().addAll(keyMaps);
+        setSpacing(3);
+        setAlignment(Pos.CENTER);
     }
 
     public int getKeyMap(String key) {

@@ -104,10 +104,11 @@ public class NoteContainer extends HBox {
         notes[currentNote].setMultiTrigger(s);
     }
 
-    public void setCurrentNoteSelectAll(int t) {
+    public void setCurrentNoteSelectAll(boolean b) {
+        System.out.println("A"+b);
         for (int y = 0; y < strips; y++) {
             for (int x = 0; x < ledsPerStrip; x++) {
-                notes[currentNote].setSelected(x, y, t > 0);
+                notes[currentNote].setSelected(x, y, b);
             }
         }
     }
@@ -143,8 +144,6 @@ public class NoteContainer extends HBox {
             notes[i].loadData(currentFile.getJSONObject(Integer.toString(i)));
         }
     }
-
-
 
 
 }

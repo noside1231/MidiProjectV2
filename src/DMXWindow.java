@@ -4,7 +4,9 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -12,27 +14,19 @@ import javafx.scene.shape.Rectangle;
 /**
  * Created by edisongrauman on 2/21/18.
  */
-public class DMXWindow extends VBox{
+public class DMXWindow extends ScrollPane{
 
-    HBox sliderContainer;
-    int dmxChannels;
-
-    StringProperty changedVal;
-    SimpleIntegerProperty selectedChannel;
-
-    DMXSlider[] tSliders;
-    ScrollPane s;
+    private HBox sliderContainer;
+    private int dmxChannels;
+    private StringProperty changedVal;
+    private SimpleIntegerProperty selectedChannel;
+    private DMXSlider[] tSliders;
 
     public DMXWindow(int ch) {
         dmxChannels = ch;
         sliderContainer = new HBox();
         sliderContainer.setSpacing(10);
         sliderContainer.setMaxWidth(30);
-
-
-
-        s = new ScrollPane(sliderContainer);
-        s.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         tSliders= new DMXSlider[this.dmxChannels];
 
@@ -50,11 +44,10 @@ public class DMXWindow extends VBox{
 
         tSliders[0].setSelected(true);
 
-
-
         sliderContainer.getChildren().addAll(tSliders);
+        setContent(sliderContainer);
+        setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        getChildren().add(s);
 
     }
 
@@ -65,7 +58,6 @@ public class DMXWindow extends VBox{
     public void setSelectedChannel(int i) {
         tSliders[selectedChannel.get()].setSelected(false);
         selectedChannel.set(i);
-//        tSliders[i].setSelected(true);
     }
 
     private void valueChanged(int channel, int value, boolean state) {
@@ -92,9 +84,14 @@ public class DMXWindow extends VBox{
         }
     }
 
-    public void setScale() {
-        s.setPrefHeight(super.getHeight());
-        s.setPrefWidth(super.getWidth());
+    public void setScale(int w, int h) {
+        setPrefHeight(h);
+        setPrefWidth(w);
+
+        for (int i = 0; i< tSliders.length; i++) {
+            tSliders[i].setScale(getHeight());
+        }
+
     }
 
     public void setEditMode(boolean t) {
