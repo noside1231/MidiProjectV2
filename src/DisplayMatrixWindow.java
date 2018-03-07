@@ -33,10 +33,6 @@ public class DisplayMatrixWindow extends GridPane {
     private DisplayMatrixContextMenu rightClickOptionMenu;
 
     private  SimpleObjectProperty<Integer[]> lastClicked;
-    private  SimpleIntegerProperty selectAllInt;
-    private  SimpleIntegerProperty selectRowInt;
-    private  SimpleIntegerProperty selectColInt;
-    private  SimpleIntegerProperty selectSet;
     private SimpleBooleanProperty editModeVal;
 
     private SimpleStringProperty lastContextMenuVal;
@@ -46,10 +42,6 @@ public class DisplayMatrixWindow extends GridPane {
         ledsPerStrip = lPS;
 
         lastContextMenuVal = new SimpleStringProperty("");
-        selectAllInt = new SimpleIntegerProperty(0);
-        selectRowInt = new SimpleIntegerProperty(0);
-        selectColInt = new SimpleIntegerProperty(0);
-        selectSet = new SimpleIntegerProperty(0);
         editModeVal = new SimpleBooleanProperty(false);
         lastClicked = new SimpleObjectProperty<>();
 
@@ -133,17 +125,6 @@ public class DisplayMatrixWindow extends GridPane {
     SimpleBooleanProperty getEditModeVal() {
         return editModeVal;
     }
-
-    SimpleIntegerProperty getSelectAll() {
-        return selectAllInt;
-    }
-    SimpleIntegerProperty getSelectRow() {
-        return selectRowInt;
-    }
-    SimpleIntegerProperty getSelectCol() {
-        return selectColInt;
-    }
-    SimpleIntegerProperty getsetSelected() { return selectSet; }
     SimpleStringProperty getLastContextMenuVal() {
         return lastContextMenuVal;
     }

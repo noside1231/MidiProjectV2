@@ -246,6 +246,7 @@ public class MainWindow extends Parent {
         lightSelectionWindow.getSelectedDmxChannel().addListener(event -> setSelectedDmxChannel(lightSelectionWindow.getSelectedDmxChannel().get()));
         lightSelectionWindow.getSequencerTriggeredNote().addListener(event -> triggerNote(lightSelectionWindow.getSequencerTriggeredNote().get()));
         lightSelectionWindow.getMatrixContextMenuVal().addListener(event -> handleMatrixContextMenu(lightSelectionWindow.getMatrixContextMenuVal().get()));
+        lightSelectionWindow.getEditModeVal().addListener(event -> setEditMode(lightSelectionWindow.getEditModeVal().get()));
 
         //DMX Presets
         dmxPresetWindow = new DMXPresetWindow();
@@ -274,10 +275,8 @@ public class MainWindow extends Parent {
         exteriorPane.setBottom(lightSelectionWindow);
         exteriorPane.setTop(toolbar);
 
-
         //keymap
         initializeKeyMap();
-
 
         //Show Window
         mainWindow.setScene(mainScene);
@@ -419,12 +418,9 @@ public class MainWindow extends Parent {
     void loadData(JSONObject currentFile) {
         noteContainer.loadData(currentFile.getJSONObject("Notes"));
         colorPickerWindow.loadData(currentFile.getJSONObject("Palette"));
-
         lightSelectionWindow.loadData(currentFile.getJSONObject("LightSelectionWindow"));
         noteButtonPressed(1);
         noteButtonPressed(0); //refresh current note display
-
-//        setDisplay();
     }
 
     public JSONObject saveData() {
@@ -434,7 +430,6 @@ public class MainWindow extends Parent {
         tFile.put("Notes", noteContainer.saveData());
         tFile.put("Palette", colorPickerWindow.saveData());
         tFile.put("LightSelectionWindow", lightSelectionWindow.saveData());
-
 
         return tFile;
 
@@ -453,7 +448,6 @@ public class MainWindow extends Parent {
 
 
     void triggerNote() {
-//        System.out.println("Triggered");
         mixer.setTriggered(noteContainer.getCurrentNote());
         setEditMode(false);
     }

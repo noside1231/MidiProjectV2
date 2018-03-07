@@ -15,15 +15,9 @@ import java.util.ArrayList;
  */
 public class DisplayNoteWindow extends HBox {
 
-
-
     private Rectangle[] noteRects;
     private int noteAmount;
     private SimpleIntegerProperty notePressed;
-
-//    private int noteRectScaleY = 100;
-    private int noteXSpacing = 1;
-
 
     public DisplayNoteWindow(int nA) {
         noteAmount = nA;
@@ -40,12 +34,8 @@ public class DisplayNoteWindow extends HBox {
             int tempInd = i;
             noteRects[i].setOnMouseClicked(event -> rectanglePressed(tempInd));
         }
-
-
         rectanglePressed(0);
         getChildren().addAll(noteRects);
-//        setSpacing(noteXSpacing);
-
     }
 
     public void rectanglePressed(int i) {

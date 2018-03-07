@@ -28,6 +28,7 @@ public class LightSelectionWindow extends TabPane {
     private SimpleIntegerProperty selectedDmxChannel;
     private SimpleIntegerProperty sequencerTriggeredNote;
     private SimpleStringProperty matrixContextMenuVal;
+    private SimpleBooleanProperty editModeVal;
 
     public LightSelectionWindow(int ledsPerStrip, int strips, int dmxChannels) {
 
@@ -35,6 +36,7 @@ public class LightSelectionWindow extends TabPane {
         selectedDmxChannel = new SimpleIntegerProperty(0);
         sequencerTriggeredNote = new SimpleIntegerProperty(0);
         matrixContextMenuVal = new SimpleStringProperty("");
+        editModeVal = new SimpleBooleanProperty(true);
 
         lastMatrixRectSelected = new SimpleObjectProperty<>();
         setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
@@ -106,8 +108,12 @@ public class LightSelectionWindow extends TabPane {
         displayMatrixWindow.setLEDS(leds);
     }
 
+    public SimpleBooleanProperty getEditModeVal() {
+        return editModeVal;
+    }
 
     public void setEditMode(boolean t) {
+        editModeVal.set(t);
         displayMatrixWindow.setEditMode(t);
         dmxWindow.setEditMode(t);
     }
@@ -143,7 +149,6 @@ public class LightSelectionWindow extends TabPane {
 
     public JSONObject saveData() {
         JSONObject tFile = new JSONObject();
-
         tFile.put("KeyMap", keyMapWindow.saveData());
         return tFile;
     }
