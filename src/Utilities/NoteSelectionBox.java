@@ -9,7 +9,7 @@ public class NoteSelectionBox extends ComboBox<String> {
 
     public NoteSelectionBox() {
 
-        getItems().addAll("No Selection");
+        getItems().add("No Selection");
 
         for (int i = 0; i < 128; i++) {
             getItems().add(Integer.toString(i+1));

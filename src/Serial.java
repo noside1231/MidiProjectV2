@@ -1,181 +1,178 @@
+/**
+ * Created by edisongrauman on 3/8/18.
+ */
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import jssc.*;
 
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import static jssc.SerialPort.MASK_RXCHAR;
 
 public class Serial {
-    SerialWriter serialWriter;
 
-    static boolean sendData = false;
+    private SerialPort arduinoPort = null;
+    private ObservableList<String> portList;
+    private String state;
 
-    static private boolean serialConnected = false;
+    private Thread serialTread;
+    private SerialWriter serialWriter;
+
+    private LEDMatrix toSendMatrix;
+
+    private byte lastReceivedByte;
+    private long curTime;
+
+    int baudRate;
+
+    SimpleStringProperty status;
 
     public Serial() {
+        status = new SimpleStringProperty("");
+        status.set("");
+
+        detectPorts();
+        state = "WAITING";
+
+        serialWriter = new SerialWriter();
+        serialTread = new Thread(serialWriter);
 
     }
 
-    public ArrayList<String> getPorts() {
-        ArrayList<String> ports = new ArrayList<>();
-        Enumeration portIdentifiers = CommPortIdentifier.getPortIdentifiers();
 
-        while (portIdentifiers.hasMoreElements()) {
-            CommPortIdentifier com = (CommPortIdentifier) portIdentifiers.nextElement();
+    private void detectPorts() {
+        portList = FXCollections.observableArrayList();
+        String[] serialPortNames = SerialPortList.getPortNames();
+        for (String name : serialPortNames) {
+//            System.out.println(name);
+            portList.add(name);
+        }
 
-            switch (com.getPortType()) {
-                case CommPortIdentifier.PORT_SERIAL:
+    }
+
+    public boolean connectToPort(String port) {
+        if (port.equals("")) {
+            return false;
+        }
+        status.set("connecting to serial");
+
+        boolean success = false;
+        SerialPort serialPort = new SerialPort(port);
+        try {
+            serialPort.openPort();
+            serialPort.setParams(
+                    baudRate,
+                    SerialPort.DATABITS_8,
+                    SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
+            serialPort.setEventsMask(MASK_RXCHAR);
+            serialPort.addEventListener((SerialPortEvent serialPortEvent) -> {
+                if (serialPortEvent.isRXCHAR()) {
                     try {
-                        CommPort thePort = com.open("CommUtil", 10);
-                        thePort.close();
-                        System.out.println(com.getName());
-                        ports.add(com.getName());
-                    } catch (PortInUseException e) {
-                        System.out.println("Port, " + com.getName() + ", is in use.");
-                    } catch (Exception e) {
-                        System.err.println("Failed to open port " + com.getName());
-                        e.printStackTrace();
+                        byte[] b = serialPort.readBytes();
+                        lastReceivedByte = b[0];
+
+                    } catch (SerialPortException ex) {
+                        status.set("serial error: could not connect");
+
                     }
-            }
 
+                }
+            });
 
+            arduinoPort = serialPort;
+            serialTread.start();
+            success = true;
+            status.set("connected to port");
+        } catch (SerialPortException ex) {
+            status.set("serial error: could not connect");
         }
 
-        return ports;
+        return success;
     }
 
-    public void sendMatrixData(LEDMatrix leds) {
+    public ObservableList<String> getPortNames() {
+        return portList;
+    }
+
+    public String[] getBaudRates() {
+        String[] s = {"9600", "14400", "19200", "38400", "57600", "115200"};
+        return s;
+    }
+
+    public void setBaudRate(String s) {
+        if (!s.equals("")) {
+            baudRate = Integer.parseInt(s);
+            status.set("baud rate changed to: " + s);
+        }
+    }
+
+    public void updateMatrixData(LEDMatrix m, long curTime) {
+        toSendMatrix = m;
+//        System.out.println("UPDATING ARRAY");
+    }
+
+    public SimpleStringProperty getStatus() {
+        return status;
+    }
 
 
-        if (serialConnected) {
+    public void disconnect() {
 
-            if (sendData) {
-                System.out.println("SENDING");
-                serialWriter.writeData("<");
-                for (int y = 0; y < leds.getStrips(); y++) {
-                    for (int x = 0; x < leds.getLedsPerStrip(); x++) {
-//                System.out.println(leds.getLED(x, y).toString());
+        System.out.println("Disconnecting " + arduinoPort.getPortName());
+        if (arduinoPort != null) {
+            try {
+                arduinoPort.removeEventListener();
 
-
-                        serialWriter.writeData(leds.getLEDString(x, y));
-                    }
+                if (arduinoPort.isOpened()) {
+                    arduinoPort.closePort();
                 }
 
-                serialWriter.writeData(">");
-                sendData = false;
-            }
-        }
-    }
-
-    public void connect(String portName) throws Exception {
-
-        System.out.println(portName);
-
-        CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
-        if (portIdentifier.isCurrentlyOwned()) {
-            System.out.println("Error: Port is currently in use");
-        } else {
-            CommPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
-
-
-            if (commPort instanceof SerialPort) {
-                SerialPort serialPort = (SerialPort) commPort;
-                serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-
-                InputStream in = serialPort.getInputStream();
-                OutputStream out = serialPort.getOutputStream();
-//                OutputStream out = new ByteArrayOutputStream(500);
-                PrintWriter t = new PrintWriter(out);
-
-
-                serialWriter = new SerialWriter(t);
-
-                (new Thread(new SerialReader(in))).start();
-                (new Thread(serialWriter)).start();
-
-
-            } else {
-                System.out.println("Error: Only serial ports are handled by this example.");
+                arduinoPort = null;
+            } catch (SerialPortException ex) {
+                System.out.println("COULD NOT DISCONNECT");
             }
         }
     }
 
 
-    public static class SerialReader implements Runnable {
-        InputStream in;
+    public class SerialWriter implements Runnable
 
-        public SerialReader(InputStream in) {
-            this.in = in;
-        }
+    {
+        private LEDMatrix tMatrix;
+
+        public SerialWriter() { }
 
         public void run() {
-            byte[] buffer = new byte[1024];
-            int len = -1;
-            try {
-                while ((len = this.in.read(buffer)) > -1) {
-
-                    String s = new String(buffer, 0, len);
-                    if (s.length() == 1) {
-                        System.out.println(Character.toString (s.charAt(0)));
-
-                    } else {
-                        System.out.print(s);
-
-                    }
-
-
-
-
-                    if (s.equals("b")) {
-                        System.out.println("B RECEIVED");
-                        serialConnected = true;
-                        sendData = true;
-
-
-
-
-                    }                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-    public static class SerialWriter implements Runnable {
-        PrintWriter out;
-
-        public SerialWriter(PrintWriter out) {
-            this.out = out;
-        }
-
-        public void run() {
-            try {
-                int c = 0;
-                while ((c = System.in.read()) > -1) {
-                    this.out.write(c);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        void writeData(String d) {
-
-            for (int i = 0; i < d.length(); i++) {
+            while (arduinoPort.isOpened()) {
                 try {
-                    this.out.write(d.charAt(i));
-                } catch (Exception e) {}
+//                    System.out.println(state);
+                    switch (state) {
+                        case "WAITING":
+
+                            if (lastReceivedByte == (byte) '!') {
+                                lastReceivedByte = '\0';
+                                state = "SENDING";
+                                tMatrix = toSendMatrix;
+                            }
+                            break;
+                        case "SENDING":
+                            try {
+                                arduinoPort.writeByte((byte) '<');
+                                for (int j = 0; j < tMatrix.getStrips(); j++) {
+                                    for (int i = 0; i < tMatrix.getLedsPerStrip(); i++) {
+                                        arduinoPort.writeByte((byte) (int) (tMatrix.getLED(i, j).getRed() * 255));
+                                        arduinoPort.writeByte((byte) (int) (tMatrix.getLED(i, j).getGreen() * 255));
+                                        arduinoPort.writeByte((byte) (int) (tMatrix.getLED(i, j).getBlue() * 255));
+                                    }
+                                }
+                                arduinoPort.writeByte((byte) '>');
+                            } catch (SerialPortException e) { }
+                            state = "WAITING";
+                            break;
+                    }
+                } catch (NullPointerException e) { }
             }
-
-
         }
     }
-
 }
-

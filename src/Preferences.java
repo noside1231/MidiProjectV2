@@ -1,14 +1,11 @@
 import Utilities.LabelCheckBox;
-import Utilities.NumberTextField;
 import Utilities.SliderTextField;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -27,7 +24,7 @@ public class Preferences extends Stage {
     int defaultScreenY = 800;
     int defaultFullscreen = 0;
     String defaultTitle = "untitled";
-    int defaultSerialEnabled = 0;
+    boolean defaultSerialEnabled = false;
 
     private SliderTextField stripsField;
     private SliderTextField ledsPerStripField;
@@ -35,10 +32,25 @@ public class Preferences extends Stage {
     private SliderTextField screenY;
     private LabelCheckBox fullscreen;
     private LabelCheckBox serialEnabled;
+
+    //serial
+    private ComboBox<String> serialPorts;
+    private String defaultSerialPort = "Select Serial Port";
+    private ComboBox<String> serialBaudRates;
+    private String defaultBaudRate = "Select Baud Rate";
+    private Label serialStatusLabel;
+
+
+
+    private ComboBox<String> screenSize;
+
     private VBox rootBox;
 
 
     private SimpleBooleanProperty saveButtonPressed;
+
+    private SimpleStringProperty serialPortValue;
+    private SimpleStringProperty baudRateValue;
 
     private boolean changed = false;
 
@@ -46,8 +58,9 @@ public class Preferences extends Stage {
 
     public Preferences() {
 
-        saveButtonPressed = new SimpleBooleanProperty();
-        saveButtonPressed.set(false);
+        serialPortValue = new SimpleStringProperty("");
+        baudRateValue = new SimpleStringProperty("");
+        saveButtonPressed = new SimpleBooleanProperty(false);
 
         preferencesObject = new JSONObject();
         initializePreferencesObject();
@@ -63,7 +76,18 @@ public class Preferences extends Stage {
         screenX = new SliderTextField(defaultScreenX, 500,2000, "Screen Width");
         screenY = new SliderTextField(defaultScreenY, 500, 2000, "Screen Height");
         fullscreen = new LabelCheckBox("Full Screen", false);
-        serialEnabled = new LabelCheckBox("Enable Serial", true);
+        serialEnabled = new LabelCheckBox("Enable Serial", false);
+
+        serialPorts = new ComboBox<>();
+        serialPorts.setOnAction(event -> serialPortChanged(serialPorts.getValue()));
+        rootBox.getChildren().add(serialPorts);
+
+        serialBaudRates = new ComboBox<>();
+        serialBaudRates.setOnAction(event -> baudRateChanged(serialBaudRates.getValue()));
+        rootBox.getChildren().add(serialBaudRates);
+
+        serialStatusLabel = new Label("not connected");
+        rootBox.getChildren().add(serialStatusLabel);
 
         ledsPerStripField.getValue().addListener(event -> setChanged());
         stripsField.getValue().addListener(event -> setChanged());
@@ -83,7 +107,7 @@ public class Preferences extends Stage {
                     ButtonType yesButton = new ButtonType("Yes");
                     ButtonType saveButton = new ButtonType("Save");
                     a.getButtonTypes().setAll(saveButton, yesButton, cancelButton);
-                    a.setTitle("Conformitaon Dialog");
+                    a.setTitle("Conformation Dialog");
                     a.setContentText("Changes not saved! Are you sure you want to close?");
                     Optional<ButtonType> result = a.showAndWait();
                     if (result.get() == yesButton) {
@@ -127,7 +151,7 @@ public class Preferences extends Stage {
         preferencesObject.put("screenY", Integer.toString(defaultScreenY));
         preferencesObject.put("fullscreen", Integer.toString(defaultFullscreen));
         preferencesObject.put("title", defaultTitle);
-        preferencesObject.put("serialenabled", defaultSerialEnabled);
+        preferencesObject.put("SerialEnabled", defaultSerialEnabled);
 
     }
 
@@ -137,7 +161,10 @@ public class Preferences extends Stage {
         screenX.setValue(Integer.parseInt(d.getString("screenX")));
         screenY.setValue(Integer.parseInt(d.getString("screenY")));
         fullscreen.setChecked(Integer.parseInt(d.getString("fullscreen")) == 1);
-        serialEnabled.setChecked(Integer.parseInt(d.getString("serialenabled")) == 1);
+//        serialEnabled.setChecked(d.getBoolean("SerialEnabled"));
+//
+//        defaultSerialPort = d.getString("DefaultSerialPort");
+//        defaultBaudRate = d.getString("DefaultBaudRate");
 
 
     }
@@ -148,8 +175,53 @@ public class Preferences extends Stage {
         preferencesObject.put("screenX", Integer.toString(screenX.getValue().get()));
         preferencesObject.put("screenY", Integer.toString(screenY.getValue().get()));
         preferencesObject.put("fullscreen", (fullscreen.getChecked().get() ? "1" : "0"));
-        preferencesObject.put("serialenabled", (serialEnabled.getChecked().get() ? "1" : "0"));
+//        preferencesObject.put("SerialEnabled", serialEnabled.getChecked().get());
+//
+//
+//        preferencesObject.put("DefaultSerialPort", defaultSerialPort);
+//        preferencesObject.put("DefaultBaudRate", defaultBaudRate);
         return preferencesObject;
+    }
+
+    public void setSerialPortList(ObservableList<String> s) {
+        serialPorts.getItems().add(defaultSerialPort);
+        serialPorts.getItems().addAll(s);
+        serialPorts.setValue(defaultSerialPort);
+    }
+
+    public void setSerialBaudRates(String[] s) {
+        serialBaudRates.getItems().add(defaultBaudRate);
+        serialBaudRates.getItems().addAll(s);
+        serialBaudRates.setValue(defaultBaudRate);
+    }
+
+    private void serialPortChanged(String s) {
+        if (s.equals(defaultSerialPort)) {
+            serialPortValue.set("");
+        } else {
+            serialPortValue.set(s);
+            serialPortValue.set("");
+        }
+    }
+
+    public SimpleStringProperty getSerialPortValue() {
+        return serialPortValue;
+    }
+
+    private void baudRateChanged(String s) {
+        if (s.equals(defaultBaudRate)) {
+            return;
+        }
+        baudRateValue.set(s);
+        baudRateValue.set("");
+    }
+
+    public SimpleStringProperty getBaudRateValue() {
+        return baudRateValue;
+    }
+
+    public void setSerialStatusLabel(String s) {
+        serialStatusLabel.setText(s);
     }
 }
 

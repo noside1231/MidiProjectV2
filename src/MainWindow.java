@@ -25,8 +25,6 @@ public class MainWindow extends Parent {
     static int screenX;
     static int screenY;
 
-    File fileOpen;
-
     //Window Elements
     Scene mainScene;
     BorderPane exteriorPane;
@@ -48,10 +46,8 @@ public class MainWindow extends Parent {
     MenuItem clearItem;
     MenuItem frameRateItem;
     MenuButton optionMenu;
-    Menu serialPortMenu;
     Menu midiMenu;
     CheckMenuItem[] midiHandlerItems;
-    CheckMenuItem[] serialPortItems;
     Label fileOpenLabel;
 
     DisplayCurrentNoteWindow displayCurrentNoteWindow;
@@ -61,7 +57,6 @@ public class MainWindow extends Parent {
     DisplayNoteWindow displayNoteWindow;
 
     //Notes
-//    Note[] notes;
     NoteContainer noteContainer;
 
     //Clipboard
@@ -85,8 +80,6 @@ public class MainWindow extends Parent {
     //Midi
     MidiHandler midiHandler;
 
-    SerialTest serialPort = new SerialTest();
-
     //preferences
     int noteAmount = 128;
     int ledsPerStrip = 30;
@@ -97,10 +90,6 @@ public class MainWindow extends Parent {
     SimpleBooleanProperty saveFileItemPressed;
     SimpleBooleanProperty saveFileAsItemPressed;
     SimpleBooleanProperty preferenceItemPressed;
-
-    boolean serialPortEnabled;
-
-
 
     public MainWindow(Stage mainWindow, JSONObject preferences) {
 
@@ -131,7 +120,7 @@ public class MainWindow extends Parent {
         preferenceItemPressed.set(false);
 
 
-        //Midi Hanlder
+        //Midi Handler
         midiHandler = new MidiHandler();
         midiHandler.getLastMessage().addListener(event -> triggerNote(midiHandler.getLastMessage().get()));
 
@@ -183,7 +172,6 @@ public class MainWindow extends Parent {
         preferencesItem.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.META_DOWN));
         preferencesItem.setOnAction(event -> setPreferenceItemPressed());
         frameRateItem = new MenuItem("FrameRate: ");
-        serialPortMenu = new Menu("Select Port:");
         midiMenu = new Menu("Midi Devices: ");
 
         midiHandlerItems = new CheckMenuItem[midiHandler.getMidiDevices().size()];
@@ -194,31 +182,10 @@ public class MainWindow extends Parent {
         }
         midiMenu.getItems().addAll(midiHandlerItems);
 
-
-        if (serialPortEnabled) {
-
-
-
-
-            ObservableList<String> tSlist = serialPort.getPortNames();
-
-            serialPortItems = new CheckMenuItem[tSlist.size()];
-            for (int i = 0; i < tSlist.size(); i++) {
-                int tI = i;
-                serialPortItems[i] = new CheckMenuItem(tSlist.get(i));
-                serialPortItems[i].selectedProperty().addListener(event -> selectSerialPort(serialPortItems[tI].getText()));
-
-            }
-            serialPortMenu.getItems().addAll(serialPortItems);
-        } else {
-            serialPortMenu.getItems().add(new MenuItem("Serial Output Disabled"));
-        }
-
-
         //File Open Label
         fileOpenLabel = new Label();
         //Add To Menu
-        optionMenu.getItems().addAll(preferencesItem, frameRateItem, midiMenu, serialPortMenu);
+        optionMenu.getItems().addAll(preferencesItem, frameRateItem, midiMenu);
         //Add Items To Toolbar
         toolbar.getItems().addAll(fileMenu, editMenu, optionMenu, fileOpenLabel);
 
@@ -303,10 +270,6 @@ public class MainWindow extends Parent {
             lightSelectionWindow.setDMXValues(mixer.updateDMX());
         }
 
-        if (serialPortEnabled) {
-            serialPort.updateMatrixData(getMixerMatrix(), now);
-        }
-
         //update note display
         displayNoteWindow.update(mixer.getCurrentlyTriggeredNotes(), noteContainer.getCurrentNoteIndex());
         frameRateItem.setText("Framerate: " + String.valueOf((int) frameRate));
@@ -365,7 +328,6 @@ public class MainWindow extends Parent {
     }
 
     public void stop() {
-        serialPort.disconnect();
         System.exit(0);
     }
 
@@ -542,19 +504,6 @@ public class MainWindow extends Parent {
         }
     }
 
-    void selectSerialPort(String s) {
-        System.out.println(s);
-
-
-        try {
-                serialPort.connectToPort(s);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-    }
 
     LEDMatrix getMixerMatrix() {
         return mixer.getMixerMatrix();
@@ -567,13 +516,6 @@ public class MainWindow extends Parent {
         if (Integer.parseInt(preferencesObject.getString("fullscreen")) == 1) {
             mainWindow.setFullScreen(true);
         }
-
-        if (Integer.parseInt(preferencesObject.getString("serialenabled")) == 1) {
-            serialPortEnabled = true;
-        } else {
-            serialPortEnabled = false;
-        }
-
 
     }
 

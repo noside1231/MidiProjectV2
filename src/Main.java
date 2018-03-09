@@ -1,5 +1,6 @@
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
@@ -18,6 +19,9 @@ public class Main extends Application {
     Stage w;
     Preferences preferencesWindow;
 
+    Serial serialPort;
+    ObservableList<String> serialPortList;
+    boolean serialEnabled;
 
 
     public static void main(String[] args) {
@@ -27,9 +31,21 @@ public class Main extends Application {
     @Override
     public void start(Stage window) throws Exception {
         currentFile = new JSONObject();
+
+        //serial port
+        serialPort = new Serial();
+        serialPortList = serialPort.getPortNames();
+
         preferencesWindow = new Preferences();
         preferencesWindow.initializePreferencesObject();
+        preferencesWindow.setSerialPortList(serialPortList);
+        preferencesWindow.setSerialBaudRates(serialPort.getBaudRates());
         preferencesWindow.getSaveButtonPressed().addListener(event -> savePreferences(preferencesWindow.getSaveButtonPressed().get()));
+        preferencesWindow.getBaudRateValue().addListener(event -> serialPort.setBaudRate(preferencesWindow.getBaudRateValue().get()));
+        preferencesWindow.getSerialPortValue().addListener(event -> serialPort.connectToPort(preferencesWindow.getSerialPortValue().get()));
+        serialPort.getStatus().addListener(event -> preferencesWindow.setSerialStatusLabel(serialPort.getStatus().get()));
+
+
         w = window;
         savePreferences(true);
 
@@ -62,7 +78,10 @@ public class Main extends Application {
                 }
                 mainWindow.update(now, frameRate);
 
-//                serialWriter.sendMatrixData(mainWindow.getMixerMatrix());
+                if (serialEnabled) {
+                    serialPort.updateMatrixData(mainWindow.getMixerMatrix(), now);
+                }
+
 
 
             }
@@ -75,6 +94,7 @@ public class Main extends Application {
             return;
         }
         currentFile.put("Preferences", preferencesWindow.saveData());
+        serialEnabled = currentFile.getJSONObject("Preferences").getBoolean("SerialEnabled");
         resetWindow();
 
     }
@@ -174,6 +194,10 @@ public class Main extends Application {
 
 
     }
+
+//    public ObservableList<String> getSerialPortNames() {
+//        return serialPortList;
+//    }
 
 
     }
