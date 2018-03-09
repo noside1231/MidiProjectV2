@@ -1,5 +1,6 @@
 import Utilities.MidiHandler;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -84,7 +85,7 @@ public class MainWindow extends Parent {
     //Midi
     MidiHandler midiHandler;
 
-    Serial serialPort = new Serial();
+    SerialTest serialPort = new SerialTest();
 
     //preferences
     int noteAmount = 128;
@@ -195,13 +196,17 @@ public class MainWindow extends Parent {
 
 
         if (serialPortEnabled) {
-            ArrayList<String> tSlist = serialPort.getPorts();
+
+
+
+
+            ObservableList<String> tSlist = serialPort.getPortNames();
 
             serialPortItems = new CheckMenuItem[tSlist.size()];
             for (int i = 0; i < tSlist.size(); i++) {
-                int tempI = i;
+                int tI = i;
                 serialPortItems[i] = new CheckMenuItem(tSlist.get(i));
-                serialPortItems[i].selectedProperty().addListener(event -> selectSerialPort(serialPortItems[tempI].getText(), serialPortItems[tempI].isSelected(), tempI));
+                serialPortItems[i].selectedProperty().addListener(event -> selectSerialPort(serialPortItems[tI].getText()));
 
             }
             serialPortMenu.getItems().addAll(serialPortItems);
@@ -299,7 +304,7 @@ public class MainWindow extends Parent {
         }
 
         if (serialPortEnabled) {
-            serialPort.sendMatrixData(getMixerMatrix());
+            serialPort.updateMatrixData(getMixerMatrix(), now);
         }
 
         //update note display
@@ -360,6 +365,7 @@ public class MainWindow extends Parent {
     }
 
     public void stop() {
+        serialPort.disconnect();
         System.exit(0);
     }
 
@@ -536,12 +542,12 @@ public class MainWindow extends Parent {
         }
     }
 
-    void selectSerialPort(String n, boolean val, int ind) {
-        System.out.println(n + val);
+    void selectSerialPort(String s) {
+        System.out.println(s);
 
 
         try {
-                serialPort.connect(n);
+                serialPort.connectToPort(s);
 
         } catch (Exception e) {
             e.printStackTrace();

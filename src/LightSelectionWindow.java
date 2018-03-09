@@ -1,11 +1,8 @@
-import Utilities.LabelCheckBox;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import org.json.JSONObject;
 
 /**
@@ -21,7 +18,7 @@ public class LightSelectionWindow extends TabPane {
     private DisplayMatrixWindow displayMatrixWindow;
     private DMXWindow dmxWindow;
     private KeyMapWindow keyMapWindow;
-    private Sequencer sequencer;
+    private SequencerWindow sequencerWindow;
 
     private SimpleObjectProperty<Integer[]> lastMatrixRectSelected;
     private SimpleStringProperty dmxChangedVal;
@@ -44,7 +41,7 @@ public class LightSelectionWindow extends TabPane {
         ledDisplayTab = new Tab("Led Strips");
         dmxTab = new Tab("DMX");
         keyMapTab = new Tab("Key Map");
-        sequencerTab = new Tab("Sequencer");
+        sequencerTab = new Tab("SequencerWindow");
 
         displayMatrixWindow = new DisplayMatrixWindow(ledsPerStrip, strips);
         displayMatrixWindow.setEditMode(true);
@@ -59,13 +56,13 @@ public class LightSelectionWindow extends TabPane {
 
         keyMapWindow = new KeyMapWindow();
 
-        sequencer = new Sequencer();
-        sequencer.getGetTriggeredNote().addListener(event -> sequencerTrigger(sequencer.getGetTriggeredNote().get()));
+        sequencerWindow = new SequencerWindow();
+        sequencerWindow.getGetTriggeredNote().addListener(event -> sequencerTrigger(sequencerWindow.getGetTriggeredNote().get()));
 
         ledDisplayTab.setContent(displayMatrixWindow);
         dmxTab.setContent(dmxWindow);
         keyMapTab.setContent(keyMapWindow);
-        sequencerTab.setContent(sequencer);
+        sequencerTab.setContent(sequencerWindow);
 
         getTabs().addAll(ledDisplayTab, dmxTab, keyMapTab, sequencerTab);
 
@@ -89,7 +86,7 @@ public class LightSelectionWindow extends TabPane {
 
         displayMatrixWindow.setScale(windowWidth, windowHeight);
         dmxWindow.setScale(windowWidth, windowHeight);
-        sequencer.setScale();
+        sequencerWindow.setScale();
     }
 
     private void dmxValueChanged(String s) {

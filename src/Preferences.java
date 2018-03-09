@@ -63,7 +63,7 @@ public class Preferences extends Stage {
         screenX = new SliderTextField(defaultScreenX, 500,2000, "Screen Width");
         screenY = new SliderTextField(defaultScreenY, 500, 2000, "Screen Height");
         fullscreen = new LabelCheckBox("Full Screen", false);
-        serialEnabled = new LabelCheckBox("Enable Serial", false);
+        serialEnabled = new LabelCheckBox("Enable Serial", true);
 
         ledsPerStripField.getValue().addListener(event -> setChanged());
         stripsField.getValue().addListener(event -> setChanged());

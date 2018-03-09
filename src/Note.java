@@ -208,7 +208,7 @@ public class Note {
     }
 
     public void setDMXTimes(String s) {
-        System.out.println(s);
+//        System.out.println(s);
         dmxChannels.setDMXTimes(s);
     }
 
@@ -280,11 +280,8 @@ public class Note {
 
     private void loadMultiTriggerData(JSONObject tFile) {
         for (int i = 0; i < multiTrigger.length; i++) {
-
-
             multiTrigger[i] = tFile.getBoolean(Integer.toString(i));
             if ( multiTrigger[i]) {
-                System.out.println("AA"+i);
             }
         }
     }
