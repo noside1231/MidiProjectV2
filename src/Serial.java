@@ -151,6 +151,7 @@ public class Serial {
                         case "WAITING":
 
                             if (lastReceivedByte == (byte) '!') {
+                                System.out.println("!");
                                 lastReceivedByte = '\0';
                                 state = "SENDING";
                                 tMatrix = toSendMatrix;

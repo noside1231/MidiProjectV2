@@ -22,63 +22,63 @@ import java.util.ArrayList;
  */
 public class MainWindow extends Parent {
 
-    static int screenX;
-    static int screenY;
+    private static int screenX;
+    private static int screenY;
 
     //Window Elements
-    Scene mainScene;
-    BorderPane exteriorPane;
+    private Scene mainScene;
+    private BorderPane exteriorPane;
 
 //    Preferences preferencesWindow;
 
     //Toolbar
-    ToolBar toolbar;
-    MenuButton fileMenu;
-    MenuItem newItem;
-    MenuItem openItem;
-    MenuItem saveItem;
-    MenuItem saveAsItem;
-    MenuItem quitItem;
-    MenuItem preferencesItem;
-    MenuButton editMenu;
-    MenuItem copyItem;
-    MenuItem pasteItem;
-    MenuItem clearItem;
-    MenuItem frameRateItem;
-    MenuButton optionMenu;
-    Menu midiMenu;
-    CheckMenuItem[] midiHandlerItems;
-    Label fileOpenLabel;
+    private ToolBar toolbar;
+    private MenuButton fileMenu;
+    private MenuItem newItem;
+    private MenuItem openItem;
+    private MenuItem saveItem;
+    private MenuItem saveAsItem;
+    private MenuItem quitItem;
+    private MenuItem preferencesItem;
+    private MenuButton editMenu;
+    private MenuItem copyItem;
+    private MenuItem pasteItem;
+    private MenuItem clearItem;
+    private MenuItem frameRateItem;
+    private MenuButton optionMenu;
+    private Menu midiMenu;
+    private CheckMenuItem[] midiHandlerItems;
+    private Label fileOpenLabel;
 
-    DisplayCurrentNoteWindow displayCurrentNoteWindow;
-    MatrixPresetContainer matrixPresetContainer;
+    private DisplayCurrentNoteWindow displayCurrentNoteWindow;
+    private MatrixPresetContainer matrixPresetContainer;
 
     //Note Key Selection
-    DisplayNoteWindow displayNoteWindow;
+    private DisplayNoteWindow displayNoteWindow;
 
     //Notes
-    NoteContainer noteContainer;
+    private NoteContainer noteContainer;
 
     //Clipboard
-    Note noteClipboard;
+    private Note noteClipboard;
 
     //Light Tab
-    LightSelectionWindow lightSelectionWindow;
+    private LightSelectionWindow lightSelectionWindow;
 
     //Presets
-    DMXPresetWindow dmxPresetWindow;
+    private DMXPresetWindow dmxPresetWindow;
 
     //Loaded File
 //    JSONObject currentFile;
 
     //Color Picker
-    ColorPickerWindow colorPickerWindow;
+    private ColorPickerWindow colorPickerWindow;
 
     //Mixer
-    Mixer mixer;
+    private Mixer mixer;
 
     //Midi
-    MidiHandler midiHandler;
+    private MidiHandler midiHandler;
 
     //preferences
     int noteAmount = 128;
@@ -86,10 +86,11 @@ public class MainWindow extends Parent {
     int strips = 5;
     boolean editMode = true;
     int dmxChannels = 50;
-    SimpleBooleanProperty openItemPressed;
-    SimpleBooleanProperty saveFileItemPressed;
-    SimpleBooleanProperty saveFileAsItemPressed;
-    SimpleBooleanProperty preferenceItemPressed;
+
+    private SimpleBooleanProperty openItemPressed;
+    private SimpleBooleanProperty saveFileItemPressed;
+    private SimpleBooleanProperty saveFileAsItemPressed;
+    private SimpleBooleanProperty preferenceItemPressed;
 
     public MainWindow(Stage mainWindow, JSONObject preferences) {
 
@@ -110,15 +111,10 @@ public class MainWindow extends Parent {
         mainScene = new Scene(exteriorPane, screenX, screenY);
         mainWindow.setResizable(false);
 
-        openItemPressed = new SimpleBooleanProperty();
-        openItemPressed.set(false);
-        saveFileItemPressed = new SimpleBooleanProperty();
-        saveFileItemPressed.set(false);
-        saveFileAsItemPressed = new SimpleBooleanProperty();
-        saveFileAsItemPressed.set(false);
-        preferenceItemPressed = new SimpleBooleanProperty();
-        preferenceItemPressed.set(false);
-
+        openItemPressed = new SimpleBooleanProperty(false);
+        saveFileItemPressed = new SimpleBooleanProperty(false);
+        saveFileAsItemPressed = new SimpleBooleanProperty(false);
+        preferenceItemPressed = new SimpleBooleanProperty(false);
 
         //Midi Handler
         midiHandler = new MidiHandler();
@@ -204,7 +200,7 @@ public class MainWindow extends Parent {
         displayCurrentNoteWindow.getFadeOutVal().addListener(event -> timesEntered(2, displayCurrentNoteWindow.getFadeOutVal().get()));
         displayCurrentNoteWindow.getEditModeVal().addListener(event -> setEditMode(displayCurrentNoteWindow.getEditModeVal().get()));
         displayCurrentNoteWindow.getEndTriggerVal().addListener(event -> noteContainer.setCurrentNoteEndTrigger(displayCurrentNoteWindow.getEndTriggerVal().get()));
-        displayCurrentNoteWindow.getMultiTriggerChangedVal().addListener(event ->noteContainer.setMultiTriggerVal(displayCurrentNoteWindow.getMultiTriggerChangedVal().get()));
+        displayCurrentNoteWindow.getMultiTriggerChangedVal().addListener(event -> noteContainer.setMultiTriggerVal(displayCurrentNoteWindow.getMultiTriggerChangedVal().get()));
 
         //Color Picker
         colorPickerWindow = new ColorPickerWindow();
@@ -259,7 +255,6 @@ public class MainWindow extends Parent {
     }
 
 
-
     public void update(long now, double frameRate) {
 
         //update mixer
@@ -275,7 +270,6 @@ public class MainWindow extends Parent {
         frameRateItem.setText("Framerate: " + String.valueOf((int) frameRate));
 
     }
-
 
 
     //Menu Item Handle Response

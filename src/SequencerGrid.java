@@ -15,6 +15,8 @@ import javafx.scene.shape.StrokeType;
  */
 public class SequencerGrid extends GridPane {
 
+    private int selectionBoxScaleX = 125;
+
     private Rectangle[][] noteRects;
     private NoteSelectionBox[] noteSelectionBoxes;
     private CheckBox[] noteCheckBoxes;
@@ -27,15 +29,21 @@ public class SequencerGrid extends GridPane {
     private MenuItem[] setBeatNotes;
 
     SimpleStringProperty lastClickedNote;
+    SimpleStringProperty lastSelectedNoteMap;
     Sequencer s;
 
     public SequencerGrid(Sequencer sequencer) {
         s = sequencer;
+        System.out.println("SHOWING SEQUENCER GRID: " + s.getID());
 
         lastClickedNote = new SimpleStringProperty("");
+        lastSelectedNoteMap = new SimpleStringProperty("");
         noteSelectionBoxes = new NoteSelectionBox[sequencer.getChannelAmount()];
         for (int i = 0; i < noteSelectionBoxes.length; i++) {
+            int ti = i;
             noteSelectionBoxes[i] = new NoteSelectionBox();
+            noteSelectionBoxes[i].setValue(sequencer.getNoteMapping()[i]);
+            noteSelectionBoxes[i].getCurrentSelection().addListener(event -> setLastSelectedNoteMap(ti, noteSelectionBoxes[ti].getCurrentSelection().get()));
             add(noteSelectionBoxes[i], 0, i);
         }
 
@@ -48,16 +56,11 @@ public class SequencerGrid extends GridPane {
 
         setBeatNotes = new MenuItem[6];
         setBeatNotes[0] = new MenuItem("Clear");
-//        setBeatNotes[0].setOnAction(event -> setBeatNoteRow(setBeatNotes[0].getText(), currentRow));
         for (int i =1; i < setBeatNotes.length; i++) {
-            int ti = i;
             setBeatNotes[i] = new MenuItem(Integer.toString((int)Math.pow(2, i-1)));
-//            setBeatNotes[i].setOnAction(event -> setBeatNoteRow(setBeatNotes[ti].getText(), currentRow));
         }
         noteRects = new Rectangle[sequencer.getChannelAmount()][sequencer.getNoteAmount()];
 
-        double rectScaleY = (getHeight()/(double)sequencer.getChannelAmount());
-        System.out.println(rectScaleY);
         for(int i = 0; i < sequencer.getChannelAmount(); i++) {
             for (int j = 0; j < sequencer.getNoteAmount(); j++) {
                 int tI = i;
@@ -67,7 +70,6 @@ public class SequencerGrid extends GridPane {
                 noteRects[i][j].setStrokeWidth(2);
                 noteRects[i][j].setStrokeType(StrokeType.INSIDE);
                 noteRects[i][j].setOnMouseClicked(event -> rectPressed(event, tI, tJ));
-
                 add(noteRects[i][j], j+2, i);
             }
         }
@@ -84,12 +86,20 @@ public class SequencerGrid extends GridPane {
                 rightClickOptionMenu.hide();
             }
         });
-
-
     }
 
     public SimpleStringProperty getLastClickedNote() {
+        System.out.println("LASTCLICKEDNOTE");
         return lastClickedNote;
+    }
+    public SimpleStringProperty getLastSelectedNoteMap() {
+        return lastSelectedNoteMap;
+    }
+
+    private void setLastSelectedNoteMap(int ind, int val) {
+        lastSelectedNoteMap.set(Integer.toString(ind)+";"+val);
+        lastSelectedNoteMap.set("");
+
     }
 
     private void rectPressed(MouseEvent e, int row, int col) {
@@ -98,6 +108,7 @@ public class SequencerGrid extends GridPane {
             currentRow = row;
             rightClickOptionMenu.show(this, e.getScreenX(), e.getScreenY());
         } else {
+            System.out.println(row + " " + col);
             lastClickedNote.set(Integer.toString(row)+";"+Integer.toString(col));
             lastClickedNote.set("");
             displayRects(currentCol);
@@ -127,20 +138,20 @@ public class SequencerGrid extends GridPane {
     }
 
     public void setScale(double w) {
+//        System.out.println("SETSCALE " + w);
         setMinWidth(w*(3/4.));
         setMaxWidth(w*(3/4.));
 
-        ColumnConstraints fieldConstraint = new ColumnConstraints(noteSelectionBoxes[0].getWidth());
+        ColumnConstraints fieldConstraint = new ColumnConstraints(selectionBoxScaleX);
         getColumnConstraints().add(fieldConstraint);
 
-        double rectScaleX =  (getMaxWidth()-noteSelectionBoxes[0].getWidth()-noteCheckBoxes[0].getWidth() - 5 - ((hgap+1)*(s.getNoteAmount()-1))) / s.getNoteAmount();
+        double rectScaleX =  (getMaxWidth()-selectionBoxScaleX-noteCheckBoxes[0].getWidth() - 5 - ((hgap+1)*(s.getNoteAmount()-1))) / s.getNoteAmount();
         for(int i = 0; i < s.getChannelAmount(); i++) {
             for (int j = 0; j < s.getNoteAmount(); j++) {
                 noteRects[i][j].setWidth(rectScaleX);
-                noteRects[i][j].setHeight(noteSelectionBoxes[0].getHeight());
+                noteRects[i][j].setHeight(20);
             }
         }
-
     }
 
 

@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MidiProjectV2Git:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/MidiProjectV2Git_jar</output-path>
+    <root id="archive" name="MidiProjectV2Git.jar">
+      <element id="module-output" name="MidiProjectV2Git" />
+      <element id="library" level="application" name="RXTXcomm" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/scream3r/jssc/2.8.0/jssc-2.8.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/json/json/20171018/json-20171018.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

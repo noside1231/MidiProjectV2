@@ -10,17 +10,19 @@ import java.io.*;
 public class Main extends Application {
 
 
-//    int screenWidth = 1280;
+    //    int screenWidth = 1280;
 //    int screenHeight = 800;
-    MainWindow mainWindow;
+    private FileManager fileManager;
+
+    private MainWindow mainWindow;
 
     JSONObject currentFile;
-    File fileOpen;
-    Stage w;
-    Preferences preferencesWindow;
+    //    File fileOpen;
+    private Stage w;
+    private Preferences preferencesWindow;
 
-    Serial serialPort;
-    ObservableList<String> serialPortList;
+    private Serial serialPort;
+    private ObservableList<String> serialPortList;
     boolean serialEnabled;
 
 
@@ -31,6 +33,9 @@ public class Main extends Application {
     @Override
     public void start(Stage window) throws Exception {
         currentFile = new JSONObject();
+
+
+        fileManager = new FileManager();
 
         //serial port
         serialPort = new Serial();
@@ -83,7 +88,6 @@ public class Main extends Application {
                 }
 
 
-
             }
         }.start();
 
@@ -101,6 +105,7 @@ public class Main extends Application {
 
     void resetWindow() {
         mainWindow = new MainWindow(w, currentFile.getJSONObject("Preferences"));
+        currentFile.put("WindowData", mainWindow.saveData());
         mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferences(mainWindow.getPreferenceItemPressed().get()));
         mainWindow.getOpenItemPressed().addListener(event -> openFile(mainWindow.getOpenItemPressed().get()));
         mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
@@ -112,95 +117,41 @@ public class Main extends Application {
         if (!t) {
             return;
         }
-        System.out.println("SAVE FILE backend");
-        if (fileOpen == null) {
-            saveFileAs(true);
-        } else {
-            writeFile(fileOpen);
-        }
-    }
 
+        currentFile.put("WindowData", mainWindow.saveData());
+        currentFile.put("Preferences", preferencesWindow.saveData());
+        String fName = fileManager.save(currentFile);
+        System.out.println(fName);
+
+    }
 
     void saveFileAs(boolean t) {
         if (!t) {
             return;
         }
-        System.out.println("SAVE FILE AS backend");
-        currentFile.put("WindowData", mainWindow.saveData());
-        FileChooser fc = new FileChooser();
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project File: .mpv2", "*.mpv2"));
-        File selectedFile = fc.showSaveDialog(new Stage());
-        if (selectedFile != null) {
-            fileOpen = selectedFile;
-            preferencesWindow.setFileName(fileOpen.getName());
-            writeFile(selectedFile);
-        }
-        resetWindow();
-    }
 
-    void writeFile(File f) {
-        try {
-            FileWriter fileWriter = new FileWriter(f);
-            fileWriter.write(currentFile.toString());
-            fileWriter.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        currentFile.put("WindowData", mainWindow.saveData());
+        currentFile.put("Preferences", preferencesWindow.saveData());
+
+        String fName = fileManager.saveAs(currentFile);
+        System.out.println(fName);
     }
 
     private void openFile(boolean t) {
 
-        System.out.println("OPEN" + t);
         if (!t) {
             return;
         }
-        System.out.println("OPEN FILE backend");
 
-        FileChooser fc = new FileChooser();
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project File: .mpv2", "*.mpv2"));
-        File selectedFile = fc.showOpenDialog(new Stage());
-
-        if (selectedFile != null) {
-            fileOpen = selectedFile;
-            readFile(selectedFile);
-            loadData();
-        }
-
-    }
-
-    private void readFile(File f) {
-        try {
-
-            InputStream is = new FileInputStream(f);
-            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
-            String line = buf.readLine();
-            StringBuilder sb = new StringBuilder();
-            while (line != null) {
-                sb.append(line).append("\n");
-                line = buf.readLine();
-            }
-            String fileString = sb.toString();
-            currentFile = new JSONObject(fileString);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadData() {
+        currentFile = fileManager.open();
         preferencesWindow.loadData(currentFile.getJSONObject("Preferences"));
         resetWindow();
         mainWindow.loadData(currentFile.getJSONObject("WindowData"));
 
-
     }
 
-//    public ObservableList<String> getSerialPortNames() {
-//        return serialPortList;
-//    }
 
-
-    }
+}
 
 
 

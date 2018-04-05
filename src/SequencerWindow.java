@@ -1,9 +1,11 @@
+import Utilities.NoteSelectionBox;
 import Utilities.SliderTextField;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -21,7 +23,13 @@ public class SequencerWindow extends HBox {
     private int defaultBPM;
 
     private SequencerContainer sequencers;
+
     private ComboBox<String> sequencerSelector;
+    private Button newSequencer;
+
+    private NoteSelectionBox[] noteSelectionBoxes;
+    private CheckBox[] noteCheckBoxes;
+
     private SequencerGrid sequencerGrid;
     private VBox fieldContainer;
     private SimpleIntegerProperty getTriggeredNote;
@@ -40,6 +48,7 @@ public class SequencerWindow extends HBox {
     private HBox bpmContainer;
     private HBox setNoteContainer;
     private HBox startStopContainer;
+    private HBox selectorContainer;
 
     private int measureBPMCount;
     private long measureBPMFirst;
@@ -61,21 +70,13 @@ public class SequencerWindow extends HBox {
         bpmAverge = defaultBPM;
 
         sequencers = new SequencerContainer();
-
         sequencerSelector = new ComboBox<>();
         sequencerSelector.getItems().add("1");
-        sequencerSelector.valueProperty().addListener(event -> {
-            sequencers.setCurrentSequencer(sequencerSelector.getValue());
-            sequencerGrid = new SequencerGrid(sequencers.getCurrentSequencer());
-        });
+        sequencerSelector.setValue("1");
+        sequencerSelector.valueProperty().addListener(event -> setSequencer(sequencerSelector.getValue()));
 
-        noteMapping = new int[rows];
-
-        for (int i = 0; i < noteMapping.length; i++) {
-            noteMapping[i] = 2;
-        }
-
-        getTriggeredNote = new SimpleIntegerProperty(0);
+        newSequencer = new Button("New Sequencer");
+        newSequencer.setOnAction(event -> addSequencer());
 
         fieldContainer = new VBox();
 
@@ -111,14 +112,22 @@ public class SequencerWindow extends HBox {
         setNoteContainer = new HBox();
         setNoteContainer.getChildren().addAll(halfNotesButton, doubleNotesButton);
 
-        sequencerGrid = new SequencerGrid(sequencers.getCurrentSequencer());
-        sequencerGrid.getLastClickedNote().addListener(event -> sequencers.setCurrentSequencerNotePressed(sequencerGrid.getLastClickedNote().get()));
-        sequencerGrid.displayRects(currentColumn);
+        selectorContainer = new HBox();
+        selectorContainer.getChildren().addAll(sequencerSelector, newSequencer);
 
-
-        fieldContainer.getChildren().addAll(bpmField, bpmContainer, startStopContainer, setNoteContainer);
-
+        fieldContainer.getChildren().addAll(bpmField, bpmContainer, startStopContainer, setNoteContainer, selectorContainer);
         fieldContainer.setSpacing(15);
+
+        noteMapping = new int[rows];
+
+        for (int i = 0; i < noteMapping.length; i++) {
+            noteMapping[i] = 2;
+        }
+
+        getTriggeredNote = new SimpleIntegerProperty(0);
+
+
+        initializeSequencer();
 
         getChildren().addAll(sequencerGrid, fieldContainer);
 
@@ -133,19 +142,16 @@ public class SequencerWindow extends HBox {
 
     public void advanceSequencer() {
         currentColumn++;
-        if (currentColumn >= cols) {
+        if (currentColumn >= sequencers.getCurrentSequencerNoteAmount()) {
             currentColumn = 0;
         }
         sequencerGrid.displayRects(currentColumn);
         for (int i = 0; i < sequencers.getCurrentSequencer().getChannelAmount(); i++) {
-            for (int j = 0; j < sequencers.getCurrentSequencer().getNoteAmount(); j++) {
-
-                if (sequencers.getCurrentSequencer().getNotes()[i][j]) {
-
-                    getTriggeredNote.set(sequencers.getCurrentSequencer().getNoteMapping()[i]);
-                    getTriggeredNote.set(-1);
-                }
+            if (sequencers.getCurrentSequencer().getNotes()[i][currentColumn]) {
+                getTriggeredNote.set(sequencers.getCurrentSequencer().getNoteMapping()[i]);
+                getTriggeredNote.set(-1);
             }
+
         }
     }
 
@@ -198,7 +204,6 @@ public class SequencerWindow extends HBox {
 
     }
 
-
     private void stopPressed() {
         sequencerTimer.stop();
         currentColumn = -1;
@@ -212,21 +217,40 @@ public class SequencerWindow extends HBox {
     }
 
     private void doubleNotes() {
-        cols = cols * 2;
-        if (cols > colsMax) {
-            cols = colsMax;
+        if (sequencers.getCurrentSequencerNoteAmount() < 64) {
+            sequencers.setCurrentSequencerNoteAmount(sequencers.getCurrentSequencerNoteAmount() * 2);
+            setSequencer(Integer.toString(sequencers.getCurrentSequencer().getID() + 1));
         }
-        currentColumn = -1;
-//        sequencerGrid.setColumns(cols);
     }
 
     private void halfNotes() {
-        cols = cols / 2;
-        if (cols < colsMin) {
-            cols = colsMin;
+        if (sequencers.getCurrentSequencerNoteAmount() > 1) {
+            sequencers.setCurrentSequencerNoteAmount(sequencers.getCurrentSequencerNoteAmount() / 2);
+            setSequencer(Integer.toString(sequencers.getCurrentSequencer().getID() + 1));
         }
+    }
+
+    private void addSequencer() {
+        sequencers.addSequencer(Integer.toString(sequencerSelector.getItems().size()));
+        sequencerSelector.getItems().add(Integer.toString(sequencerSelector.getItems().size() + 1));
+        sequencerSelector.setValue(Integer.toString(sequencerSelector.getItems().size()));
+        setSequencer(sequencerSelector.getValue());
+    }
+
+    private void setSequencer(String s) {
+        sequencers.setCurrentSequencer(s);
+        initializeSequencer();
+        getChildren().remove(0);
+        getChildren().add(0, sequencerGrid);
+        sequencerGrid.setScale(getWidth());
+    }
+
+    private void initializeSequencer() {
+        sequencerGrid = new SequencerGrid(sequencers.getCurrentSequencer());
+        sequencerGrid.getLastClickedNote().addListener(event -> sequencers.setCurrentSequencerNotePressed(sequencerGrid.getLastClickedNote().get()));
+        sequencerGrid.getLastSelectedNoteMap().addListener(event -> sequencers.setCurrentSequencerNoteMapping(sequencerGrid.getLastSelectedNoteMap().get()));
         currentColumn = -1;
-//        sequencerGrid.setColumns(cols);
+        sequencerGrid.displayRects(currentColumn);
     }
 
 

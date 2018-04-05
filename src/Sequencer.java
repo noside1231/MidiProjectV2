@@ -3,9 +3,9 @@
  */
 public class Sequencer {
 
+    private int maxNoteAmount = 64;
     private int id;
     private int noteAmount = 16;
-
     private int channels = 8;
 
     int noteMapping[];
@@ -15,10 +15,10 @@ public class Sequencer {
         id = d;
         noteMapping = new int[channels];
         for (int i =0; i < noteMapping.length; i++) {
-            noteMapping[i] = 2;
+            noteMapping[i] = -1;
         }
 
-        noteSelected = new boolean[channels][noteAmount];
+        noteSelected = new boolean[channels][maxNoteAmount];
         for (int i = 0; i < channels; i++) {
             for (int j = 0; j < noteAmount; j++) {
                 noteSelected[i][j] = false;
@@ -43,7 +43,15 @@ public class Sequencer {
         return noteMapping;
     }
 
-    public void setNoteMapping() {
+    public void setNoteMapping(String s) {
+        String a[] = s.split(";");
+        if (a.length == 2) {
+            System.out.println("SEQ " + id + " POS. " + s);
+            int i = Integer.parseInt(a[0]);
+            int j = Integer.parseInt(a[1]);
+            noteMapping[i] = j;
+        }
+
 
     }
 
@@ -51,6 +59,7 @@ public class Sequencer {
         String a[] = s.split(";");
 
         if (a.length == 2) {
+            System.out.println("SEQ " + id +" POS. " + s);
             int i = Integer.parseInt(a[0]);
             int j = Integer.parseInt(a[1]);
             noteSelected[i][j] = !noteSelected[i][j];
@@ -65,6 +74,8 @@ public class Sequencer {
         channels = i;
     }
 
-
+    public int getID() {
+        return id;
+    }
 
 }
