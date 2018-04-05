@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.json.JSONObject;
 
 /**
  * Created by edisongrauman on 2/26/18.
@@ -18,7 +19,6 @@ import javafx.util.Duration;
 public class SequencerWindow extends HBox {
 
     private int rows;
-    private int cols;
     private int currentColumn;
     private int defaultBPM;
 
@@ -54,11 +54,9 @@ public class SequencerWindow extends HBox {
 
     private final Timeline sequencerTimer;
 
-    int noteMapping[];
 
     public SequencerWindow() {
         currentColumn = -1;
-        cols = 16;
         rows = 8;
         defaultBPM = 120;
         bpmAverge = defaultBPM;
@@ -111,12 +109,6 @@ public class SequencerWindow extends HBox {
 
         fieldContainer.getChildren().addAll(bpmField, bpmContainer, startStopContainer, setNoteContainer, selectorContainer);
         fieldContainer.setSpacing(15);
-
-        noteMapping = new int[rows];
-
-        for (int i = 0; i < noteMapping.length; i++) {
-            noteMapping[i] = 2;
-        }
 
         getTriggeredNote = new SimpleIntegerProperty(0);
 
@@ -246,6 +238,10 @@ public class SequencerWindow extends HBox {
         sequencerGrid.getLastSelectedCheckbox().addListener(event -> sequencers.setCurrentSequencerActiveChannel(sequencerGrid.getLastSelectedCheckbox().get()));
         currentColumn = -1;
         sequencerGrid.displayRects(currentColumn);
+    }
+
+    public JSONObject saveData() {
+        return sequencers.saveData();
     }
 
 

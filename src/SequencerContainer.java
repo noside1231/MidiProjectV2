@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -47,6 +49,16 @@ public class SequencerContainer {
     public void addSequencer(String s) {
         sequencers.add(new Sequencer(Integer.parseInt(s)));
         setCurrentSequencer(s);
+    }
+
+    public JSONObject saveData() {
+        JSONObject tFile = new JSONObject();
+
+        for (int i = 0; i < sequencers.size(); i++) {
+            tFile.put(Integer.toString(i), sequencers.get(i).saveData());
+        }
+
+        return tFile;
     }
 
 

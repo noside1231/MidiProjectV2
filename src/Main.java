@@ -144,7 +144,7 @@ public class Main extends Application {
         }
 
         currentFile = fileManager.open();
-        preferencesWindow.loadData(currentFile.getJSONObject("Preferences"));
+//        preferencesWindow.loadData(currentFile.getJSONObject("Preferences"));
         resetWindow();
         mainWindow.loadData(currentFile.getJSONObject("WindowData"));
 

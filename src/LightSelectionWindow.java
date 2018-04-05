@@ -147,6 +147,7 @@ public class LightSelectionWindow extends TabPane {
     public JSONObject saveData() {
         JSONObject tFile = new JSONObject();
         tFile.put("KeyMap", keyMapWindow.saveData());
+        tFile.put("Sequencer", sequencerWindow.saveData());
         return tFile;
     }
 

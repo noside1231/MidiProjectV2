@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 /**
  * Created by edisongrauman on 3/6/18.
  */
@@ -93,6 +95,41 @@ public class Sequencer {
 
     public int getID() {
         return id;
+    }
+
+    public JSONObject saveData() {
+        JSONObject tFile = new JSONObject();
+        JSONObject rFile;
+        JSONObject cFile;
+
+        rFile = new JSONObject();
+        for(int i = 0; i < activeChannels.length; i++) {
+            rFile.put(Integer.toString(i), activeChannels[i]);
+        }
+        tFile.put("Active Channels", rFile);
+
+        rFile = new JSONObject();
+        for (int i = 0; i < noteMapping.length; i++) {
+            rFile.put(Integer.toString(i), noteMapping[i]);
+        }
+        tFile.put("Note Mapping", rFile);
+
+        rFile = new JSONObject();
+        for (int i = 0; i < channels; i++) {
+            cFile = new JSONObject();
+            for (int j = 0; j < maxNoteAmount; j++) {
+                cFile.put(Integer.toString(j), noteSelected[i][j]);
+                System.out.print(noteSelected[i][j]);
+            }
+            System.out.println();
+            rFile.put(Integer.toString(i), cFile);
+        }
+        tFile.put("Note Selection", rFile);
+
+        tFile.put("Note Amount", noteAmount);
+
+
+        return tFile;
     }
 
 }
