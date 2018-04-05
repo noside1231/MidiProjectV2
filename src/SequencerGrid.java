@@ -1,4 +1,5 @@
 import Utilities.NoteSelectionBox;
+import Utilities.SequencerGridContextMenu;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.CheckBox;
@@ -26,8 +27,7 @@ public class SequencerGrid extends GridPane {
 
     private int hgap = 2;
 
-    private ContextMenu rightClickOptionMenu;
-    private MenuItem[] setBeatNotes;
+    SequencerGridContextMenu sequencerGridContextMenu;
 
     SimpleStringProperty lastClickedNote;
     SimpleStringProperty lastSelectedNoteMap;
@@ -36,7 +36,27 @@ public class SequencerGrid extends GridPane {
 
     public SequencerGrid(Sequencer sequencer) {
         s = sequencer;
-        System.out.println("SHOWING SEQUENCER GRID: " + s.getID());
+
+        sequencerGridContextMenu = new SequencerGridContextMenu();
+        sequencerGridContextMenu.getLastSelectedMenuIndex().addListener(event -> {
+
+            System.out.println(sequencerGridContextMenu.getLastSelectedMenuIndex().get());
+            if (sequencerGridContextMenu.getLastSelectedMenuIndex().get() == 0) {
+                for (int i = 0; i < sequencer.getNoteAmount(); i++) {
+                    if (sequencer.getNotes()[currentRow][i]) {
+                        rectPressed(currentRow, i);
+                    }
+
+                }
+            } else if (sequencerGridContextMenu.getLastSelectedMenuIndex().get() > 0) {
+                for (int i = 0; i < sequencer.getNoteAmount(); i++) {
+                    if ((!sequencer.getNotes()[currentRow][i]) && (i % sequencerGridContextMenu.getLastSelectedMenuIndex().get() == 0)) {
+                        rectPressed(currentRow, i);
+                    }
+                }
+            }
+
+        });
 
         lastClickedNote = new SimpleStringProperty("");
         lastSelectedNoteMap = new SimpleStringProperty("");
@@ -60,11 +80,6 @@ public class SequencerGrid extends GridPane {
             add(noteCheckBoxes[i], 1, i);
         }
 
-        setBeatNotes = new MenuItem[6];
-        setBeatNotes[0] = new MenuItem("Clear");
-        for (int i =1; i < setBeatNotes.length; i++) {
-            setBeatNotes[i] = new MenuItem(Integer.toString((int)Math.pow(2, i-1)));
-        }
         noteRects = new Rectangle[sequencer.getChannelAmount()][sequencer.getNoteAmount()];
 
         for(int i = 0; i < sequencer.getChannelAmount(); i++) {
@@ -84,18 +99,15 @@ public class SequencerGrid extends GridPane {
         setVgap(2);
         displayRects(currentCol);
 
-        rightClickOptionMenu = new ContextMenu();
-        rightClickOptionMenu.getItems().addAll(setBeatNotes);
 
         setOnMouseClicked( event ->  {
             if (event.getButton() == MouseButton.PRIMARY) {
-                rightClickOptionMenu.hide();
+                sequencerGridContextMenu.hide();
             }
         });
     }
 
     public SimpleStringProperty getLastClickedNote() {
-        System.out.println("LASTCLICKEDNOTE");
         return lastClickedNote;
     }
     public SimpleStringProperty getLastSelectedNoteMap() {
@@ -120,13 +132,16 @@ public class SequencerGrid extends GridPane {
 
         if (e.getButton() == MouseButton.SECONDARY ) {
             currentRow = row;
-            rightClickOptionMenu.show(this, e.getScreenX(), e.getScreenY());
+            sequencerGridContextMenu.show(this, e.getScreenX(), e.getScreenY());
         } else {
-            System.out.println(row + " " + col);
-            lastClickedNote.set(Integer.toString(row)+";"+Integer.toString(col));
-            lastClickedNote.set("");
-            displayRects(currentCol);
+            rectPressed(row,col);
         }
+    }
+
+    private void rectPressed(int r, int c) {
+        lastClickedNote.set(Integer.toString(r)+";"+Integer.toString(c));
+        lastClickedNote.set("");
+        displayRects(currentCol);
     }
 
     public void displayRects(int i) {
