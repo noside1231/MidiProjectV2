@@ -1,4 +1,5 @@
 import Utilities.NoteSelectionBox;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
@@ -30,6 +31,7 @@ public class SequencerGrid extends GridPane {
 
     SimpleStringProperty lastClickedNote;
     SimpleStringProperty lastSelectedNoteMap;
+    SimpleStringProperty lastSelectedCheckbox;
     Sequencer s;
 
     public SequencerGrid(Sequencer sequencer) {
@@ -38,6 +40,8 @@ public class SequencerGrid extends GridPane {
 
         lastClickedNote = new SimpleStringProperty("");
         lastSelectedNoteMap = new SimpleStringProperty("");
+        lastSelectedCheckbox = new SimpleStringProperty("");
+
         noteSelectionBoxes = new NoteSelectionBox[sequencer.getChannelAmount()];
         for (int i = 0; i < noteSelectionBoxes.length; i++) {
             int ti = i;
@@ -49,8 +53,10 @@ public class SequencerGrid extends GridPane {
 
         noteCheckBoxes = new CheckBox[sequencer.getChannelAmount()];
         for (int i = 0; i < noteCheckBoxes.length; i++) {
+            int ti = i;
             noteCheckBoxes[i] = new CheckBox();
-            noteCheckBoxes[i].setSelected(true);
+            noteCheckBoxes[i].setSelected(sequencer.getActiveChannels()[i]);
+            noteCheckBoxes[i].selectedProperty().addListener(event -> setLastSelectedCheckbox(ti, noteCheckBoxes[ti].isSelected()));
             add(noteCheckBoxes[i], 1, i);
         }
 
@@ -94,6 +100,14 @@ public class SequencerGrid extends GridPane {
     }
     public SimpleStringProperty getLastSelectedNoteMap() {
         return lastSelectedNoteMap;
+    }
+    public SimpleStringProperty getLastSelectedCheckbox() {
+        return lastSelectedCheckbox;
+    }
+
+    private void setLastSelectedCheckbox(int ind, boolean b) {
+        lastSelectedCheckbox.set(Integer.toString(ind)+";"+ Boolean.toString(b));
+        lastSelectedCheckbox.set("");
     }
 
     private void setLastSelectedNoteMap(int ind, int val) {

@@ -27,9 +27,6 @@ public class SequencerWindow extends HBox {
     private ComboBox<String> sequencerSelector;
     private Button newSequencer;
 
-    private NoteSelectionBox[] noteSelectionBoxes;
-    private CheckBox[] noteCheckBoxes;
-
     private SequencerGrid sequencerGrid;
     private VBox fieldContainer;
     private SimpleIntegerProperty getTriggeredNote;
@@ -58,9 +55,6 @@ public class SequencerWindow extends HBox {
     private final Timeline sequencerTimer;
 
     int noteMapping[];
-
-    private int colsMax = 64;
-    private int colsMin = 2;
 
     public SequencerWindow() {
         currentColumn = -1;
@@ -147,7 +141,7 @@ public class SequencerWindow extends HBox {
         }
         sequencerGrid.displayRects(currentColumn);
         for (int i = 0; i < sequencers.getCurrentSequencer().getChannelAmount(); i++) {
-            if (sequencers.getCurrentSequencer().getNotes()[i][currentColumn]) {
+            if (sequencers.getCurrentSequencer().getNotes()[i][currentColumn] && sequencers.getCurrentSequencer().getActiveChannels()[i]) {
                 getTriggeredNote.set(sequencers.getCurrentSequencer().getNoteMapping()[i]);
                 getTriggeredNote.set(-1);
             }
@@ -249,6 +243,7 @@ public class SequencerWindow extends HBox {
         sequencerGrid = new SequencerGrid(sequencers.getCurrentSequencer());
         sequencerGrid.getLastClickedNote().addListener(event -> sequencers.setCurrentSequencerNotePressed(sequencerGrid.getLastClickedNote().get()));
         sequencerGrid.getLastSelectedNoteMap().addListener(event -> sequencers.setCurrentSequencerNoteMapping(sequencerGrid.getLastSelectedNoteMap().get()));
+        sequencerGrid.getLastSelectedCheckbox().addListener(event -> sequencers.setCurrentSequencerActiveChannel(sequencerGrid.getLastSelectedCheckbox().get()));
         currentColumn = -1;
         sequencerGrid.displayRects(currentColumn);
     }

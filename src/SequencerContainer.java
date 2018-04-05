@@ -40,6 +40,10 @@ public class SequencerContainer {
         sequencers.get(currentSequencer).setNotePressed(s);
     }
 
+    public void setCurrentSequencerActiveChannel(String s) {
+        sequencers.get(currentSequencer).setActiveChannel(s);
+    }
+
     public void addSequencer(String s) {
         sequencers.add(new Sequencer(Integer.parseInt(s)));
         setCurrentSequencer(s);

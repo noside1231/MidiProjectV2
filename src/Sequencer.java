@@ -9,6 +9,7 @@ public class Sequencer {
     private int channels = 8;
 
     int noteMapping[];
+    boolean activeChannels[];
     private boolean[][] noteSelected;
 
     public Sequencer(int d) {
@@ -18,6 +19,11 @@ public class Sequencer {
             noteMapping[i] = -1;
         }
 
+        activeChannels = new boolean[channels];
+        for (int i = 0; i < channels; i++) {
+            activeChannels[i] = true;
+        }
+
         noteSelected = new boolean[channels][maxNoteAmount];
         for (int i = 0; i < channels; i++) {
             for (int j = 0; j < noteAmount; j++) {
@@ -25,8 +31,18 @@ public class Sequencer {
             }
         }
 
+    }
 
+    public void setActiveChannel(String s) {
+        String a[] = s.split(";");
+        if (a.length == 2) {
 
+            int i = Integer.parseInt(a[0]);
+            boolean j = Boolean.parseBoolean(a[1]);
+
+            activeChannels[i] = j;
+
+        }
     }
 
     public void setNoteAmount(int s) {
@@ -42,6 +58,9 @@ public class Sequencer {
     public int[] getNoteMapping() {
         return noteMapping;
     }
+    public boolean[] getActiveChannels() {
+        return activeChannels;
+    }
 
     public void setNoteMapping(String s) {
         String a[] = s.split(";");
@@ -51,8 +70,6 @@ public class Sequencer {
             int j = Integer.parseInt(a[1]);
             noteMapping[i] = j;
         }
-
-
     }
 
     public void setNotePressed(String s) {
