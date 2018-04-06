@@ -103,6 +103,7 @@ public class Main extends Application {
     void resetWindow() {
         System.out.println("RESET");
         mainWindow = new MainWindow(w, currentFile.getJSONObject("Preferences"));
+        mainWindow.setTitle(fileManager.getCurrentFileTitle());
         mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferences(mainWindow.getPreferenceItemPressed().get()));
         mainWindow.getOpenItemPressed().addListener(event -> openFile(mainWindow.getOpenItemPressed().get()));
         mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
@@ -166,8 +167,6 @@ public class Main extends Application {
             System.out.println("COULD NOT LOAD DATA");
             return;
         }
-
-        mainWindow.setTitle(fileManager.getCurrentFileTitle());
     }
 
     private void newFile(boolean b) {
@@ -182,6 +181,7 @@ public class Main extends Application {
             preferencesWindow.setLedsPerStrip(Integer.parseInt(s[0]));
             preferencesWindow.setStrips(Integer.parseInt(s[1]));
             savePreferences(true);
+            fileManager.resetCurrentFile();
             resetWindow();
 
         }

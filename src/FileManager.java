@@ -61,7 +61,10 @@ public class FileManager {
     }
 
     public String getCurrentFileTitle() {
-        return currentFile.getName();
+        if (currentFile == null) {
+            return "Untitled";
+        }
+        return currentFile.getName().split("mpv2")[0].substring(0,currentFile.getName().split("mpv2")[0].length()-1);
     }
 
     public void resetCurrentFile() {
