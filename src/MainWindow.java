@@ -68,9 +68,6 @@ public class MainWindow extends Parent {
     //Presets
     private DMXPresetWindow dmxPresetWindow;
 
-    //Loaded File
-//    JSONObject currentFile;
-
     //Color Picker
     private ColorPickerWindow colorPickerWindow;
 
@@ -80,17 +77,18 @@ public class MainWindow extends Parent {
     //Midi
     private MidiHandler midiHandler;
 
-    //preferences
-    int noteAmount = 128;
-    int ledsPerStrip = 30;
-    int strips = 5;
-    boolean editMode = true;
-    int dmxChannels = 50;
+    //default preferences
+    private int noteAmount = 128;
+    private int ledsPerStrip = 30;
+    private int strips = 5;
+    private boolean editMode = true;
+    private int dmxChannels = 50;
 
     private SimpleBooleanProperty openItemPressed;
     private SimpleBooleanProperty saveFileItemPressed;
     private SimpleBooleanProperty saveFileAsItemPressed;
     private SimpleBooleanProperty preferenceItemPressed;
+    private SimpleBooleanProperty newItemPressed;
     private Stage curStage;
 
     public MainWindow(Stage mainWindow, JSONObject preferences) {
@@ -117,6 +115,7 @@ public class MainWindow extends Parent {
         saveFileItemPressed = new SimpleBooleanProperty(false);
         saveFileAsItemPressed = new SimpleBooleanProperty(false);
         preferenceItemPressed = new SimpleBooleanProperty(false);
+        newItemPressed = new SimpleBooleanProperty(false);
 
         //Midi Handler
         midiHandler = new MidiHandler();
@@ -280,14 +279,19 @@ public class MainWindow extends Parent {
 
     }
 
-
     //Menu Item Handle Response
     void newFile() {
+        newItemPressed.set(true);
+        newItemPressed.set(false);
         System.out.println("NEW FILE");
     }
 
+    SimpleBooleanProperty getNewItemPressed() {
+        return newItemPressed;
+    }
 
     void setOpenItemPressed() {
+        System.out.println("PRESSED");
         openItemPressed.set(true);
         openItemPressed.set(false);
     }
@@ -350,6 +354,7 @@ public class MainWindow extends Parent {
     }
 
     void noteButtonPressed(int ind) {
+        noteContainer.setCurrentNoteSelectAll(false);
         noteContainer.setCurrentNoteIndex(ind);
         setDisplay();
 

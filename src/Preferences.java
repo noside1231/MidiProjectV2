@@ -223,5 +223,12 @@ public class Preferences extends Stage {
     public void setSerialStatusLabel(String s) {
         serialStatusLabel.setText(s);
     }
+
+    public void setStrips(int i) {
+        stripsField.setValue(i);
+    }
+    public void setLedsPerStrip(int i) {
+        ledsPerStripField.setValue(i);
+    }
 }
 

@@ -64,6 +64,10 @@ public class FileManager {
         return currentFile.getName();
     }
 
+    public void resetCurrentFile() {
+        currentFile = null;
+    }
+
     public JSONObject open() {
 
         FileChooser fc = new FileChooser();

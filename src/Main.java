@@ -14,6 +14,8 @@ public class Main extends Application {
 
     private MainWindow mainWindow;
 
+    private NewFileWindow newFileWindow;
+
     JSONObject currentFile;
 
     private Stage w;
@@ -36,6 +38,8 @@ public class Main extends Application {
         //serial port
         serialPort = new Serial();
         serialPortList = serialPort.getPortNames();
+
+        newFileWindow = new NewFileWindow();
 
         preferencesWindow = new Preferences();
         preferencesWindow.initializePreferencesObject();
@@ -103,6 +107,7 @@ public class Main extends Application {
         mainWindow.getOpenItemPressed().addListener(event -> openFile(mainWindow.getOpenItemPressed().get()));
         mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
         mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(mainWindow.getSaveFileAsItemPressed().get()));
+        mainWindow.getNewItemPressed().addListener(event -> newFile(mainWindow.getNewItemPressed().get()));
 
     }
 
@@ -163,6 +168,25 @@ public class Main extends Application {
         }
 
         mainWindow.setTitle(fileManager.getCurrentFileTitle());
+    }
+
+    private void newFile(boolean b) {
+        if (!b) {
+            return;
+        }
+
+        String a = newFileWindow.showNewFileWindow().get();
+        if (!a.isEmpty()) {
+            String[] s = a.split(";");
+            preferencesWindow.initializePreferencesObject();
+            preferencesWindow.setLedsPerStrip(Integer.parseInt(s[0]));
+            preferencesWindow.setStrips(Integer.parseInt(s[1]));
+            savePreferences(true);
+            resetWindow();
+
+        }
+
+
     }
 
 
