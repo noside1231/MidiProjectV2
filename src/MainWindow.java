@@ -205,6 +205,11 @@ public class MainWindow extends Parent {
         //Color Picker
         colorPickerWindow = new ColorPickerWindow();
         colorPickerWindow.getColor().addListener(event -> updateSelectedColor(colorPickerWindow.getColor().get()));
+        colorPickerWindow.getPaletteChanged().addListener(event -> {
+            if (colorPickerWindow.getPaletteChanged().get()) {
+                lightSelectionWindow.updateContextMenuPalette(colorPickerWindow.getTopPalette());
+            }
+        } );
         exteriorPane.setLeft(colorPickerWindow);
 
         //Lights
@@ -215,6 +220,8 @@ public class MainWindow extends Parent {
         lightSelectionWindow.getSequencerTriggeredNote().addListener(event -> triggerNote(lightSelectionWindow.getSequencerTriggeredNote().get()));
         lightSelectionWindow.getMatrixContextMenuVal().addListener(event -> handleMatrixContextMenu(lightSelectionWindow.getMatrixContextMenuVal().get()));
         lightSelectionWindow.getEditModeVal().addListener(event -> setEditMode(lightSelectionWindow.getEditModeVal().get()));
+        lightSelectionWindow.updateContextMenuPalette(colorPickerWindow.getTopPalette());
+
 
         //DMX Presets
         dmxPresetWindow = new DMXPresetWindow();
@@ -473,6 +480,8 @@ public class MainWindow extends Parent {
             case "Set":
                 colorPickerWindow.setColor();
                 break;
+            case "Palette":
+                colorPickerWindow.setColor(Integer.parseInt(a[1]));
             default:
                 break;
         }

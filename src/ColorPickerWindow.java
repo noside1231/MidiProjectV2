@@ -1,4 +1,5 @@
 import Utilities.ColorPickerSlider;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
@@ -26,11 +27,13 @@ public class ColorPickerWindow extends VBox{
     private Palette palette;
 
     private SimpleObjectProperty<Color> selectedColor;
+    private SimpleBooleanProperty paletteChanged;
 
 
     public ColorPickerWindow() {
         tabPane = new TabPane();
         selectedColor = new SimpleObjectProperty<>();
+        paletteChanged = new SimpleBooleanProperty(false);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         colorPickerSliderTab = new Tab("Color Slider");
         colorPickerPaletteTab = new Tab("Palette");
@@ -38,6 +41,7 @@ public class ColorPickerWindow extends VBox{
 
         s = new ColorPickerSlider();
         palette = new Palette(3,6);
+        palette.getPaletteChanged().addListener(event -> setPaletteChanged(palette.getPaletteChanged().get()));
 
         s.getColor().addListener(event -> setPreviewColor(s.getColor().getValue()));
 
@@ -62,6 +66,17 @@ public class ColorPickerWindow extends VBox{
     public SimpleObjectProperty<Color> getColor() {
         return selectedColor;
     }
+    public SimpleBooleanProperty getPaletteChanged() {
+        return paletteChanged;
+    }
+
+    private void setPaletteChanged(boolean b) {
+        paletteChanged.set(b);
+    }
+
+    public Color[] getTopPalette() {
+        return palette.getTopPalette();
+    }
 
     public void setScale() {
         palette.setScale();
@@ -70,10 +85,15 @@ public class ColorPickerWindow extends VBox{
 
     }
 
-    void setColor() {
+    public void setColor() {
         Color tSelectedColor = (Color)previewColor.getFill();
         selectedColor.set(Color.BLACK);
         selectedColor.set(tSelectedColor);
+    }
+
+    public void setColor(int i) {
+        selectedColor.set(Color.BLACK);
+        selectedColor.set(getTopPalette()[i]);
     }
 
     private void setPreviewColor(Color c) {

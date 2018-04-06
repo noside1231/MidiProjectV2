@@ -123,4 +123,9 @@ public class DisplayMatrixWindow extends GridPane {
     public SimpleStringProperty getLastContextMenuVal() {
         return lastContextMenuVal;
     }
+
+    public void updateContextMenuPalette(Color[] c) {
+        rightClickOptionMenu.updatePalette(c);
+
+    }
 }

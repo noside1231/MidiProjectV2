@@ -3,6 +3,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 import org.json.JSONObject;
 
 /**
@@ -149,6 +150,10 @@ public class LightSelectionWindow extends TabPane {
         tFile.put("KeyMap", keyMapWindow.saveData());
         tFile.put("Sequencer", sequencerWindow.saveData());
         return tFile;
+    }
+
+    public void updateContextMenuPalette(Color[] c) {
+        displayMatrixWindow.updateContextMenuPalette(c);
     }
 
 }

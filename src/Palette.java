@@ -1,3 +1,4 @@
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -18,6 +19,8 @@ public class Palette extends VBox {
     private int yAmt;
 
     private SimpleObjectProperty<Color> selectedColor;
+    private SimpleBooleanProperty paletteChanged;
+
     private Color previewColor;
 
     private Rectangle[][] rectangleOptions;
@@ -29,6 +32,7 @@ public class Palette extends VBox {
         previewColor = Color.BLACK;
         rectRows = new HBox[yAmt];
         selectedColor = new SimpleObjectProperty<>();
+        paletteChanged = new SimpleBooleanProperty(false);
         rectangleOptions = new Rectangle[xAmt][yAmt];
         for (int y = 0; y < yAmt; y++) {
             rectRows[y] = new HBox();
@@ -73,7 +77,13 @@ public class Palette extends VBox {
             setSelectedColor(x, y);
         } else if (event.getButton() == MouseButton.SECONDARY) {
             rectangleOptions[x][y].setFill(previewColor);
+            paletteChanged.set(true);
+            paletteChanged.set(false);
         }
+    }
+
+    public SimpleBooleanProperty getPaletteChanged() {
+        return paletteChanged;
     }
 
     public void setPreviewColor(Color c) {
@@ -101,6 +111,16 @@ public class Palette extends VBox {
                 setPaletteColor(x, y, Color.valueOf(tCol));
             }
         }
+    }
+
+    public Color[] getTopPalette() {
+        Color[] c = new Color[xAmt];
+
+        for(int i  = 0; i < c.length; i++) {
+            c[i] = (Color)rectangleOptions[i][0].getFill();
+        }
+
+        return c;
     }
 
 }
