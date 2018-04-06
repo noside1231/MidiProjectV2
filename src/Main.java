@@ -114,6 +114,7 @@ public class Main extends Application {
         currentFile.put("WindowData", mainWindow.saveData());
         currentFile.put("Preferences", preferencesWindow.saveData());
         String fName = fileManager.save(currentFile);
+        mainWindow.setTitle(fileManager.getCurrentFileTitle());
         System.out.println(fName);
 
     }
@@ -127,6 +128,7 @@ public class Main extends Application {
         currentFile.put("Preferences", preferencesWindow.saveData());
 
         String fName = fileManager.saveAs(currentFile);
+        mainWindow.setTitle(fileManager.getCurrentFileTitle());
         System.out.println(fName);
     }
 
@@ -160,6 +162,7 @@ public class Main extends Application {
             return;
         }
 
+        mainWindow.setTitle(fileManager.getCurrentFileTitle());
     }
 
 

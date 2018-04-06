@@ -60,6 +60,10 @@ public class FileManager {
         }
     }
 
+    public String getCurrentFileTitle() {
+        return currentFile.getName();
+    }
+
     public JSONObject open() {
 
         FileChooser fc = new FileChooser();

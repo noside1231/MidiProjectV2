@@ -91,9 +91,11 @@ public class MainWindow extends Parent {
     private SimpleBooleanProperty saveFileItemPressed;
     private SimpleBooleanProperty saveFileAsItemPressed;
     private SimpleBooleanProperty preferenceItemPressed;
+    private Stage curStage;
 
     public MainWindow(Stage mainWindow, JSONObject preferences) {
 
+        curStage = mainWindow;
         setPreferences(mainWindow, preferences);
 
         screenX = Integer.parseInt(preferences.getString("screenX"));
@@ -286,7 +288,6 @@ public class MainWindow extends Parent {
 
 
     void setOpenItemPressed() {
-        System.out.println("OPENITEMPRESSED");
         openItemPressed.set(true);
         openItemPressed.set(false);
     }
@@ -296,8 +297,6 @@ public class MainWindow extends Parent {
     }
 
     void setSaveFileItemPressed() {
-        System.out.println("SAVEITEMPRESSED");
-
         saveFileItemPressed.set(true);
         saveFileItemPressed.set(false);
     }
@@ -517,12 +516,16 @@ public class MainWindow extends Parent {
 
     void setPreferences(Stage mainWindow, JSONObject preferencesObject) {
 
-        mainWindow.setTitle(preferencesObject.getString("title"));
+//        mainWindow.setTitle(preferencesObject.getString("title"));
 
         if (Integer.parseInt(preferencesObject.getString("fullscreen")) == 1) {
             mainWindow.setFullScreen(true);
         }
 
+    }
+
+    public void setTitle(String s) {
+            curStage.setTitle(s);
     }
 
     void initializeKeyMap() {
