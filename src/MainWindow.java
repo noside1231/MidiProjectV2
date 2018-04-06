@@ -279,6 +279,7 @@ public class MainWindow extends Parent {
 
 
     void setOpenItemPressed() {
+        System.out.println("OPENITEMPRESSED");
         openItemPressed.set(true);
         openItemPressed.set(false);
     }
@@ -288,6 +289,8 @@ public class MainWindow extends Parent {
     }
 
     void setSaveFileItemPressed() {
+        System.out.println("SAVEITEMPRESSED");
+
         saveFileItemPressed.set(true);
         saveFileItemPressed.set(false);
     }

@@ -12,15 +12,13 @@ public class FileManager {
     private File currentFile;
 
     public FileManager() {
-
         currentFile = null;
-
     }
 
 
     public String save(JSONObject data) {
 
-    if (currentFile != null) {
+    if (currentFile == null) {
         return saveAs(data);
     }
 
@@ -69,6 +67,7 @@ public class FileManager {
         File file = fc.showOpenDialog(new Stage());
 
         if (file == null) {
+            System.out.println("EMPTY");
             return null;
         }
 
@@ -84,9 +83,11 @@ public class FileManager {
             String fileString = sb.toString();
 
             currentFile = file;
+            System.out.println("FINE");
             return new JSONObject(fileString);
 
         } catch (Exception e) {
+            System.out.println("EXCEPT");
             e.printStackTrace();
             return null;
         }

@@ -10,21 +10,18 @@ import java.io.*;
 public class Main extends Application {
 
 
-    //    int screenWidth = 1280;
-//    int screenHeight = 800;
     private FileManager fileManager;
 
     private MainWindow mainWindow;
 
     JSONObject currentFile;
-    //    File fileOpen;
+
     private Stage w;
     private Preferences preferencesWindow;
 
     private Serial serialPort;
     private ObservableList<String> serialPortList;
     boolean serialEnabled;
-
 
     public static void main(String[] args) {
         launch(args);
@@ -33,7 +30,6 @@ public class Main extends Application {
     @Override
     public void start(Stage window) throws Exception {
         currentFile = new JSONObject();
-
 
         fileManager = new FileManager();
 
@@ -53,9 +49,6 @@ public class Main extends Application {
 
         w = window;
         savePreferences(true);
-
-        resetWindow();
-
 
         //Animation Timer
         new AnimationTimer() {
@@ -104,8 +97,8 @@ public class Main extends Application {
     }
 
     void resetWindow() {
+        System.out.println("RESET");
         mainWindow = new MainWindow(w, currentFile.getJSONObject("Preferences"));
-        currentFile.put("WindowData", mainWindow.saveData());
         mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferences(mainWindow.getPreferenceItemPressed().get()));
         mainWindow.getOpenItemPressed().addListener(event -> openFile(mainWindow.getOpenItemPressed().get()));
         mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
@@ -138,15 +131,34 @@ public class Main extends Application {
     }
 
     private void openFile(boolean t) {
-
+        System.out.println("OPENNNN" + t);
         if (!t) {
             return;
         }
 
-        currentFile = fileManager.open();
-//        preferencesWindow.loadData(currentFile.getJSONObject("Preferences"));
+        JSONObject tFile = fileManager.open();
+
+        if (tFile == null) {
+            System.out.println("NULL");
+            return;
+        }
+
+        currentFile = tFile;
+        try {
+            preferencesWindow.loadData(currentFile.getJSONObject("Preferences"));
+        } catch (Exception e) {
+            System.out.println("COULD NOT LOAD DATA");
+            return;
+        }
+
         resetWindow();
-        mainWindow.loadData(currentFile.getJSONObject("WindowData"));
+
+        try {
+            mainWindow.loadData(currentFile.getJSONObject("WindowData"));
+        } catch (Exception e) {
+            System.out.println("COULD NOT LOAD DATA");
+            return;
+        }
 
     }
 

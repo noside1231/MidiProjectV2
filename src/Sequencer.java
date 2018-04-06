@@ -119,9 +119,7 @@ public class Sequencer {
             cFile = new JSONObject();
             for (int j = 0; j < maxNoteAmount; j++) {
                 cFile.put(Integer.toString(j), noteSelected[i][j]);
-                System.out.print(noteSelected[i][j]);
             }
-            System.out.println();
             rFile.put(Integer.toString(i), cFile);
         }
         tFile.put("Note Selection", rFile);

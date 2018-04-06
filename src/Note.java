@@ -115,7 +115,7 @@ public class Note {
 
     public void setPresetProperty(String p) {
 
-        printPresetArray();
+//        printPresetArray();
 
         String[] add = p.split(";");
 
