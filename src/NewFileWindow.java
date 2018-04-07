@@ -27,7 +27,6 @@ public class NewFileWindow extends TextInputDialog {
         setTitle("New File");
         setHeaderText("Enter Strip Sizes");
 
-
         ledsPerStripField = new SliderTextField(defaultLedsPerStrip, 0, 100, "Leds Per Strip");
         stripsField = new SliderTextField(defaultStrips, 0, 100, "Strips");
         stripContainer = new HBox(stripsField, ledsPerStripField);

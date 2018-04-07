@@ -19,7 +19,7 @@ public class Main extends Application {
     JSONObject currentFile;
 
     private Stage w;
-    private Preferences preferencesWindow;
+    private PreferencesWindow preferencesWindow;
 
     private Serial serialPort;
     private ObservableList<String> serialPortList;
@@ -41,7 +41,7 @@ public class Main extends Application {
 
         newFileWindow = new NewFileWindow();
 
-        preferencesWindow = new Preferences();
+        preferencesWindow = new PreferencesWindow();
         preferencesWindow.initializePreferencesObject();
         preferencesWindow.setSerialPortList(serialPortList);
         preferencesWindow.setSerialBaudRates(serialPort.getBaudRates());
@@ -104,7 +104,7 @@ public class Main extends Application {
         System.out.println("RESET");
         mainWindow = new MainWindow(w, currentFile.getJSONObject("Preferences"));
         mainWindow.setTitle(fileManager.getCurrentFileTitle());
-        mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferences(mainWindow.getPreferenceItemPressed().get()));
+        mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferencesWindow(mainWindow.getPreferenceItemPressed().get(), currentFile.getJSONObject("Preferences")));
         mainWindow.getOpenItemPressed().addListener(event -> openFile(mainWindow.getOpenItemPressed().get()));
         mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
         mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(mainWindow.getSaveFileAsItemPressed().get()));
