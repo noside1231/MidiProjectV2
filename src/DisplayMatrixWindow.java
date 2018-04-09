@@ -1,18 +1,16 @@
 import Utilities.DisplayMatrixContextMenu;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
@@ -84,8 +82,8 @@ public class DisplayMatrixWindow extends GridPane {
         System.out.println(w + " " + h);
         setPrefWidth(w);
         setMaxWidth(w);
-        setPrefHeight(h);
-        setMaxHeight(h);
+//        setPrefHeight(h);
+//        setMaxHeight(h);
         setAlignment(Pos.CENTER);
 
         double displayMatrixRectangleScaleX = Math.floor(getWidth() / ledsPerStrip);
@@ -94,7 +92,7 @@ public class DisplayMatrixWindow extends GridPane {
         for (int y = 0; y < strips; y++) {
             for (int x = 0; x < ledsPerStrip; x++) {
                 displayRects[x][y].setWidth(displayMatrixRectangleScaleX);
-                displayRects[x][y].setHeight(displayMatrixRectangleScaleY);
+                displayRects[x][y].setHeight(Math.min(45,displayMatrixRectangleScaleX));
             }
         }
     }

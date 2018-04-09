@@ -72,7 +72,7 @@ public class EditMatrixWindow extends VBox {
     }
 
     public void setScale(int w, int h) {
-//        displayMatrixWindow.setScale(w, h);
+        displayMatrixWindow.setScale(w, h);
         colorPickerWindow.setScale();
     }
 

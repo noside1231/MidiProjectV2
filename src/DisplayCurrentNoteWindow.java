@@ -4,10 +4,14 @@ import Utilities.NumberTextField;
 import Utilities.NumberTextFieldDecimal;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 
 /**
  * Created by edisongrauman on 2/25/18.
@@ -53,7 +57,12 @@ public class DisplayCurrentNoteWindow extends HBox {
         noteSelectionField = new NumberTextField(1, 1, 128);
         goLeftButton = new Button("<");
         goRightButton = new Button(">");
+
         currentNoteLabel = new Label("Current Note: ");
+        currentNoteLabel.setMinWidth(100);
+        currentNoteLabel.setPrefWidth(100);
+        currentNoteLabel.setTextAlignment(TextAlignment.LEFT);
+        currentNoteLabel.setFont(Font.font("Arial", FontWeight.EXTRA_BOLD, 14));
 
         fadeInVal = new SimpleFloatProperty(0);
         holdVal = new SimpleFloatProperty(0);
@@ -79,13 +88,19 @@ public class DisplayCurrentNoteWindow extends HBox {
 
 
         noteSelectionContainer = new HBox();
-        noteSelectionContainer.getChildren().addAll(goLeftButton, goRightButton, noteSelectionField, currentNoteLabel);
+        noteSelectionContainer.getChildren().addAll(goLeftButton, noteSelectionField, goRightButton, currentNoteLabel);
+        noteSelectionContainer.setSpacing(5);
+//        currentNoteLabel.setAlignment(Pos.CENTER_LEFT);
+
+        noteSelectionContainer.setAlignment(Pos.CENTER);
 
         timeContainer = new HBox();
         timeContainer.getChildren().addAll(fadeInField, holdField, fadeOutField);
 
 
-        getChildren().addAll(noteSelectionContainer, timeContainer, endTrigger, triggerButton, editMode);
+        getChildren().addAll(noteSelectionContainer, triggerButton, timeContainer, endTrigger, editMode);
+        setSpacing(20);
+        setAlignment(Pos.CENTER);
 
     }
 

@@ -48,6 +48,8 @@ public class DisplayDMXWindow extends ScrollPane{
         sliderContainer.getChildren().addAll(tSliders);
         setContent(sliderContainer);
         setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        setPadding(new Insets(10,10,10,10));
+        setFitToHeight(true);
 
 
     }
@@ -86,11 +88,12 @@ public class DisplayDMXWindow extends ScrollPane{
     }
 
     public void setScale(int w, int h) {
-        setPrefHeight(h);
-        setPrefWidth(w);
-
+//        setPrefHeight(h);
+//        setPrefWidth(w);
+        setMinHeight(h/3);
+//
         for (int i = 0; i< tSliders.length; i++) {
-            tSliders[i].setScale(getHeight());
+            tSliders[i].setScale(getHeight()*2);
         }
 
     }

@@ -92,7 +92,6 @@ public class MainWindow extends Parent {
         strips = Integer.parseInt(preferences.getString("strips"));
         ledsPerStrip = Integer.parseInt(preferences.getString("ledsperstrip"));
 
-
         exteriorPane = new BorderPane();
         exteriorPane.setMaxHeight(screenY);
         exteriorPane.setMaxWidth(screenX);
@@ -191,7 +190,6 @@ public class MainWindow extends Parent {
         tabSelectionWindow.getSequencerTriggeredNote().addListener(event -> triggerNote(tabSelectionWindow.getSequencerTriggeredNote().get()));
         tabSelectionWindow.getMatrixContextMenuVal().addListener(event -> handleMatrixContextMenu(tabSelectionWindow.getMatrixContextMenuVal().get()));
         tabSelectionWindow.getEditModeVal().addListener(event -> setEditMode(tabSelectionWindow.getEditModeVal().get()));
-
         tabSelectionWindow.getNoteChangedVal().addListener(event -> noteButtonPressed(tabSelectionWindow.getNoteChangedVal().get()));
         tabSelectionWindow.getTriggerVal().addListener(event -> triggerNote(tabSelectionWindow.getTriggerVal().get()));
         tabSelectionWindow.getFadeInVal().addListener(event -> timesEntered(0, tabSelectionWindow.getFadeInVal().get()));
@@ -199,16 +197,10 @@ public class MainWindow extends Parent {
         tabSelectionWindow.getFadeOutVal().addListener(event -> timesEntered(2, tabSelectionWindow.getFadeOutVal().get()));
         tabSelectionWindow.getEditModeVal().addListener(event -> setEditMode(tabSelectionWindow.getEditModeVal().get()));
         tabSelectionWindow.getEndTriggerVal().addListener(event -> noteContainer.setCurrentNoteEndTrigger(tabSelectionWindow.getEndTriggerVal().get()));
-
         tabSelectionWindow.getSelectedColor().addListener(event -> updateSelectedColor(tabSelectionWindow.getSelectedColor().get()));
-
         tabSelectionWindow.getLastChangedPresetProperty().addListener(event -> noteContainer.setCurrentNotePresetProperty(tabSelectionWindow.getLastChangedPresetProperty().get()));
         tabSelectionWindow.getLastSelectedPresetValue().addListener(event -> noteContainer.setCurrentNoteCurrentPreset(tabSelectionWindow.getLastSelectedPresetValue().get()));
-
-        tabSelectionWindow.getMultiTriggerChangedVal().addListener(event -> {
-            noteContainer.setMultiTriggerVal(tabSelectionWindow.getMultiTriggerChangedVal().get());
-        });
-
+        tabSelectionWindow.getMultiTriggerChangedVal().addListener(event -> noteContainer.setMultiTriggerVal(tabSelectionWindow.getMultiTriggerChangedVal().get()));
         tabSelectionWindow.getDMXChangedTimes().addListener(event -> noteContainer.setCurrentNoteDMXTimes(tabSelectionWindow.getDMXChangedTimes().get()));
 
         //Mixer
@@ -231,7 +223,6 @@ public class MainWindow extends Parent {
 
     }
 
-
     public void update(long now, double frameRate) {
 
         //update mixer
@@ -245,7 +236,6 @@ public class MainWindow extends Parent {
         //update note display
         displayNoteWindow.update(mixer.getCurrentlyTriggeredNotes(), noteContainer.getCurrentNoteIndex());
         frameRateItem.setText("Framerate: " + String.valueOf((int) frameRate));
-
     }
 
     //Menu Item Handle Response

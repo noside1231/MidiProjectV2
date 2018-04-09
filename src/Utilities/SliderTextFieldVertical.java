@@ -38,6 +38,7 @@ public class SliderTextFieldVertical extends VBox {
         getChildren().addAll(l, s, n);
         alignmentProperty().set(Pos.TOP_RIGHT);
         setAlignment(Pos.CENTER);
+        setSpacing(5);
     }
 
     public void setValue(int value) {

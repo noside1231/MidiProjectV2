@@ -38,7 +38,10 @@ public class DMXSlider extends VBox {
         active.setOnAction(event -> checkBoxChecked());
 
         getChildren().addAll(s, active);
-//        setAlignment(Pos.CENTER);
+        setAlignment(Pos.CENTER);
+        setPadding(new Insets(10,2,10,2));
+        setSpacing(5);
+
         setOnMousePressed(event -> setSelected(true));
 
         setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
@@ -104,6 +107,7 @@ public class DMXSlider extends VBox {
 
     public void setScale(double h) {
         setPrefHeight(h);
+        setMaxHeight(h);
         setAlignment(Pos.CENTER);
     }
 

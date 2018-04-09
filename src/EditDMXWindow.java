@@ -1,3 +1,4 @@
+import PresetWindows.MultiTriggerWindow;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.VBox;
 
@@ -8,6 +9,7 @@ public class EditDMXWindow extends VBox {
 
     private DisplayDMXWindow displayDMXWindow;
     private DMXPresetWindow dmxPresetWindow;
+    private MultiTriggerWindow multiTriggerWindow;
 
     private SimpleStringProperty dmxChangedTimes;
 
