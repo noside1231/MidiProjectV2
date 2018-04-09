@@ -244,5 +244,13 @@ public class SequencerWindow extends HBox {
         return sequencers.saveData();
     }
 
+    public void loadData(JSONObject tFile) {
+        sequencers.loadData(tFile);
+        for (int i = 1; i < tFile.getInt("amt"); i++) {
+            sequencerSelector.getItems().add(Integer.toString(i+1));
+        }
+        setSequencer("1");
+    }
+
 
 }

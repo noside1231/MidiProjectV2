@@ -1,18 +1,22 @@
 package PresetWindows;
 
 import Utilities.SliderTextField;
+import com.sun.javafx.font.freetype.HBGlyphLayout;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
  * Created by edisongrauman on 1/18/18.
  */
-public class FlashPresetWindow extends VBox {
+public class FlashPresetWindow extends HBox {
 
     SliderTextField FlashDurationField;
     SliderTextField FlashRateField;
     SimpleStringProperty lastChanged;
     String presetName;
+
+    private VBox sliderContainer;
 
     public FlashPresetWindow(String p) {
         presetName = p;
@@ -26,7 +30,8 @@ public class FlashPresetWindow extends VBox {
         FlashDurationField.getValue().addListener(event -> presetChanged(FlashDurationField.getName(), FlashDurationField.getValue().get()));
         FlashRateField.getValue().addListener(event -> presetChanged(FlashRateField.getName(), FlashRateField.getValue().get()));
 
-        getChildren().addAll(FlashDurationField, FlashRateField);
+        sliderContainer = new VBox(FlashDurationField, FlashRateField);
+        getChildren().add(sliderContainer);
 
     }
 

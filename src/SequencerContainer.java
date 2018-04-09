@@ -54,12 +54,24 @@ public class SequencerContainer {
     public JSONObject saveData() {
         JSONObject tFile = new JSONObject();
 
-        for (int i = 0; i < sequencers.size(); i++) {
+        int i;
+        for (i = 0; i < sequencers.size(); i++) {
             tFile.put(Integer.toString(i), sequencers.get(i).saveData());
         }
+        tFile.put("amt", i);
 
         return tFile;
     }
 
+    public void loadData(JSONObject tFile) {
 
+        sequencers.get(currentSequencer).loadData(tFile.getJSONObject("0"));
+
+        for (int i = 1; i < tFile.getInt("amt"); i++) {
+            addSequencer(Integer.toString(i+1));
+            sequencers.get(currentSequencer).loadData(tFile.getJSONObject(Integer.toString(i)));
+        }
+
+
+    }
 }

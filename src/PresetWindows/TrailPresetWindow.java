@@ -3,12 +3,13 @@ package PresetWindows;
 import Utilities.LabelCheckBox;
 import Utilities.SliderTextField;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
  * Created by edisongrauman on 1/18/18.
  */
-public class TrailPresetWindow extends VBox {
+public class TrailPresetWindow extends HBox {
 
     SliderTextField speedXField;
     SliderTextField speedYField;
@@ -21,11 +22,15 @@ public class TrailPresetWindow extends VBox {
     SimpleStringProperty lastChanged;
     String presetName;
 
+    private VBox sliderContainer;
+    private VBox checkboxContainer;
+
     public TrailPresetWindow(String p, int ledsPerStrip, int strips) {
         presetName = p;
 
         lastChanged = new SimpleStringProperty();
         presetChanged("",0);
+
 
         speedXField = new SliderTextField(0,-100, 100, "SpeedX");
         speedYField = new SliderTextField(0,-100, 100, "SpeedY");
@@ -47,8 +52,10 @@ public class TrailPresetWindow extends VBox {
         bounceField.getChecked().addListener(event -> presetChanged(bounceField.getName(), bounceField.getChecked().get() ? 1 : 0));
         halfField.getChecked().addListener(event -> presetChanged(bounceField.getName(), bounceField.getChecked().get() ? 1 : 0));
 
+        sliderContainer = new VBox(speedXField, speedYField, lengthXField, lengthYField, skipXField, skipYField);
+        checkboxContainer = new VBox(bounceField, halfField);
 
-        getChildren().addAll(speedXField, speedYField, lengthXField, lengthYField, skipXField, skipYField, bounceField, halfField);
+        getChildren().addAll(sliderContainer, checkboxContainer);
 
     }
 

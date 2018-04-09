@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * Created by edisongrauman on 2/28/18.
  */
-public class NoteContainer extends HBox {
+public class NoteContainer {
 
     private Note[] notes;
     private int noteAmount;

@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
@@ -31,8 +32,14 @@ public class DisplayNoteWindow extends HBox {
             noteRects[i].setStrokeType(StrokeType.INSIDE);
             noteRects[i].setStrokeWidth(.5);
             noteRects[i].setStroke(Color.WHITE);
-            int tempInd = i;
-            noteRects[i].setOnMouseClicked(event -> rectanglePressed(tempInd));
+            int ti = i;
+            noteRects[i].setOnMouseClicked(event -> rectanglePressed(ti));
+            noteRects[i].setOnMouseEntered(event -> { //FIX FOR DRAG
+                if (event.isPrimaryButtonDown()) {
+                    rectanglePressed(ti);
+                }
+                event.consume();
+            });
         }
         rectanglePressed(0);
         getChildren().addAll(noteRects);
@@ -55,7 +62,7 @@ public class DisplayNoteWindow extends HBox {
         double noteRectScaleX = getWidth()/noteAmount;
         for (int i = 0; i < noteAmount; i++) {
             noteRects[i].setWidth(noteRectScaleX);
-            noteRects[i].setHeight(h/6);
+            noteRects[i].setHeight(h/8);
         }
     }
 

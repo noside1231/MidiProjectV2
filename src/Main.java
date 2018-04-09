@@ -104,7 +104,8 @@ public class Main extends Application {
         System.out.println("RESET");
         mainWindow = new MainWindow(w, currentFile.getJSONObject("Preferences"));
         mainWindow.setTitle(fileManager.getCurrentFileTitle());
-        mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferencesWindow(mainWindow.getPreferenceItemPressed().get(), currentFile.getJSONObject("Preferences")));
+        mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferencesWindow(mainWindow.getPreferenceItemPressed().get(),
+                currentFile.getJSONObject("Preferences"),serialPort.getCurrentSerialInfo()));
         mainWindow.getOpenItemPressed().addListener(event -> openFile(mainWindow.getOpenItemPressed().get()));
         mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
         mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(mainWindow.getSaveFileAsItemPressed().get()));
@@ -155,7 +156,7 @@ public class Main extends Application {
         try {
             preferencesWindow.loadData(currentFile.getJSONObject("Preferences"));
         } catch (Exception e) {
-            System.out.println("COULD NOT LOAD DATA");
+            System.out.println("COULD NOT LOAD PREFERENCES DATA");
             return;
         }
 
@@ -164,7 +165,7 @@ public class Main extends Application {
         try {
             mainWindow.loadData(currentFile.getJSONObject("WindowData"));
         } catch (Exception e) {
-            System.out.println("COULD NOT LOAD DATA");
+            System.out.println("COULD NOT LOAD WINDOW DATA");
             return;
         }
     }

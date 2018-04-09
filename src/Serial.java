@@ -11,7 +11,8 @@ import static jssc.SerialPort.MASK_RXCHAR;
 
 public class Serial {
 
-    private SerialPort arduinoPort = null;
+    private SerialPort arduinoPort;
+
     private ObservableList<String> portList;
     private String state;
 
@@ -23,11 +24,12 @@ public class Serial {
     private byte lastReceivedByte;
     private long curTime;
 
-    int baudRate;
+    private int baudRate;
 
     SimpleStringProperty status;
 
     public Serial() {
+        arduinoPort = new SerialPort(""); //REMOVE IF SERIAL DOESNT WORK
         status = new SimpleStringProperty("");
         status.set("");
 
@@ -42,12 +44,12 @@ public class Serial {
 
     private void detectPorts() {
         portList = FXCollections.observableArrayList();
+        System.out.println(SerialPortList.getPortNames());
         String[] serialPortNames = SerialPortList.getPortNames();
         for (String name : serialPortNames) {
-//            System.out.println(name);
+            System.out.println(name);
             portList.add(name);
         }
-
     }
 
     public boolean connectToPort(String port) {
@@ -105,6 +107,10 @@ public class Serial {
             baudRate = Integer.parseInt(s);
             status.set("baud rate changed to: " + s);
         }
+    }
+
+    public String getCurrentSerialInfo() {
+        return arduinoPort.getPortName()+";"+Integer.toString(baudRate);
     }
 
     public void updateMatrixData(LEDMatrix m, long curTime) {

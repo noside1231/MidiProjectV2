@@ -35,6 +35,9 @@ public class DMXChannelContainer {
     }
 
     public void setDMXTimes(String s) {
+        if (s.equals("")) {
+            return;
+        }
         String[] a = s.split(";");
         if (a[0].equals("0")) {
             channels[currentChannel].setStartVal(Integer.parseInt(a[1]));

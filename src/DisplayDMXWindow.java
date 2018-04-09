@@ -14,7 +14,8 @@ import javafx.scene.shape.Rectangle;
 /**
  * Created by edisongrauman on 2/21/18.
  */
-public class DMXWindow extends ScrollPane{
+public class DisplayDMXWindow extends ScrollPane{
+
 
     private HBox sliderContainer;
     private int dmxChannels;
@@ -22,7 +23,7 @@ public class DMXWindow extends ScrollPane{
     private SimpleIntegerProperty selectedChannel;
     private DMXSlider[] tSliders;
 
-    public DMXWindow(int ch) {
+    public DisplayDMXWindow(int ch) {
         dmxChannels = ch;
         sliderContainer = new HBox();
         sliderContainer.setSpacing(10);

@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 /**
  * Created by edisongrauman on 2/25/18.
  */
-public class DisplayCurrentNoteWindow extends VBox {
+public class DisplayCurrentNoteWindow extends HBox {
 
     private HBox timeContainer;
     private HBox noteSelectionContainer;
@@ -29,8 +29,6 @@ public class DisplayCurrentNoteWindow extends VBox {
     private Button goRightButton;
     private Button triggerButton;
 
-    private MultiTriggerWindow multiTriggerWindow;
-
     private SimpleIntegerProperty noteChangedVal;
     private SimpleBooleanProperty endTriggerVal;
     private SimpleBooleanProperty triggerVal;
@@ -39,7 +37,6 @@ public class DisplayCurrentNoteWindow extends VBox {
     private SimpleFloatProperty holdVal;
     private SimpleFloatProperty fadeOutVal;
     private SimpleBooleanProperty editModeVal;
-    private SimpleStringProperty multiTriggerChanged;
 
     public DisplayCurrentNoteWindow() {
 
@@ -47,7 +44,6 @@ public class DisplayCurrentNoteWindow extends VBox {
         endTriggerVal = new SimpleBooleanProperty(false);
         triggerVal = new SimpleBooleanProperty(false);
         editModeVal = new SimpleBooleanProperty(true);
-        multiTriggerChanged = new SimpleStringProperty("");
 
         fadeInField = new NumberTextFieldDecimal();
         fadeOutField = new NumberTextFieldDecimal();
@@ -64,7 +60,6 @@ public class DisplayCurrentNoteWindow extends VBox {
         fadeOutVal = new SimpleFloatProperty(0);
 
         triggerButton = new Button("Trigger");
-        multiTriggerWindow = new MultiTriggerWindow();
 
         editMode = new LabelCheckBox("Edit Mode", true);
         editMode.getChecked().addListener(event -> editModeToggled(editMode.getChecked().get()));
@@ -81,7 +76,6 @@ public class DisplayCurrentNoteWindow extends VBox {
         fadeInField.getValue().addListener(event -> setTime(0, fadeInField.getValue().get()));
         holdField.getValue().addListener(event -> setTime(1, holdField.getValue().get()));
         fadeOutField.getValue().addListener(event -> setTime(2, fadeOutField.getValue().get()));
-        multiTriggerWindow.getLastChanged().addListener(event -> multiTriggerChanged.set(multiTriggerWindow.getLastChanged().get()));
 
 
         noteSelectionContainer = new HBox();
@@ -91,9 +85,8 @@ public class DisplayCurrentNoteWindow extends VBox {
         timeContainer.getChildren().addAll(fadeInField, holdField, fadeOutField);
 
 
-        getChildren().addAll(noteSelectionContainer, timeContainer, multiTriggerWindow, endTrigger, triggerButton, editMode);
+        getChildren().addAll(noteSelectionContainer, timeContainer, endTrigger, triggerButton, editMode);
 
-        setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
     public void setValues(Note curNote) {
@@ -104,7 +97,6 @@ public class DisplayCurrentNoteWindow extends VBox {
         endTrigger.setChecked(curNote.getEndTrigger());
         noteSelectionField.setValue(curNote.getID()+1);
         currentNoteLabel.setText(curNote.getPianoNoteString());
-        multiTriggerWindow.resetFields(curNote.getID(), curNote.getMultiTrigger());
     }
 
     private void setTime(int ind, float val) {
@@ -168,9 +160,6 @@ public class DisplayCurrentNoteWindow extends VBox {
         return editModeVal;
     }
 
-    public SimpleStringProperty getMultiTriggerChangedVal() {
-        return multiTriggerChanged;
-    }
 
     private void editModeToggled(boolean b) {
         editModeVal.set(b);

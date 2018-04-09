@@ -37,6 +37,7 @@ public class DisplayMatrixWindow extends GridPane {
     private SimpleStringProperty lastContextMenuVal;
 
     public DisplayMatrixWindow(int lPS, int s) {
+        System.out.println("CREATING");
         strips = s;
         ledsPerStrip = lPS;
 
@@ -53,6 +54,8 @@ public class DisplayMatrixWindow extends GridPane {
                 displayRects[x][y].setStroke(Color.WHITE);
                 displayRects[x][y].setStrokeType(StrokeType.INSIDE);
                 displayRects[x][y].setStrokeWidth(deselectedStrokeWidth);
+                displayRects[x][y].setHeight(30);
+                displayRects[x][y].setWidth(30);
                 int tempX = x;
                 int tempY = y;
                 displayRects[x][y].setOnMouseClicked(event -> rectanglePressed(event, tempX, tempY));
@@ -73,10 +76,12 @@ public class DisplayMatrixWindow extends GridPane {
         if (event.getButton() == MouseButton.PRIMARY) {
             rightClickOptionMenu.hide();
             lastClicked.set(new Integer[]{x, y});
+            System.out.println(x + y);
         }
     }
 
     public void setScale(int w, int h) {
+        System.out.println(w + " " + h);
         setPrefWidth(w);
         setMaxWidth(w);
         setPrefHeight(h);

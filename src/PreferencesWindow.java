@@ -25,7 +25,6 @@ public class PreferencesWindow extends TextInputDialog {
     int defaultScreenX = 1280;
     int defaultScreenY = 800;
     int defaultFullscreen = 0;
-    String defaultTitle = "untitled";
     boolean defaultSerialEnabled = false;
 
     private SliderTextField stripsField;
@@ -128,21 +127,32 @@ public class PreferencesWindow extends TextInputDialog {
         return saveButtonPressed;
     }
 
-    public void showPreferencesWindow(boolean b, JSONObject d) {
+    public void showPreferencesWindow(boolean b, JSONObject d, String serialInfo) {
         if (!b) {
             return;
         }
 
         loadData(d);
+
+        String[] s = serialInfo.split(";");
+        System.out.println(serialInfo);
+        if (s[0].equals("")) {
+            serialPorts.setValue(defaultSerialPort);
+        } else {
+            serialPorts.setValue(s[0]);
+        }
+
+        if (s[1].equals("0")) {
+            serialBaudRates.setValue(defaultBaudRate);
+        } else {
+            serialBaudRates.setValue(s[1]);
+        }
+
         showAndWait();
     }
 
     private void setChanged() {
         changed = true;
-    }
-
-    public void setFileName(String fn) {
-        preferencesObject.put("title", fn);
     }
 
     public void initializePreferencesObject() {
@@ -151,7 +161,6 @@ public class PreferencesWindow extends TextInputDialog {
         preferencesObject.put("screenX", Integer.toString(defaultScreenX));
         preferencesObject.put("screenY", Integer.toString(defaultScreenY));
         preferencesObject.put("fullscreen", Integer.toString(defaultFullscreen));
-        preferencesObject.put("title", defaultTitle);
         preferencesObject.put("SerialEnabled", defaultSerialEnabled);
     }
 

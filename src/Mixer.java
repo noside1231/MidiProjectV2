@@ -101,11 +101,10 @@ public class Mixer {
         return triggerMultiList;
     }
 
-
-    void resetNote(int i) {
+    void resetNote(int id) {
         for (int j = 0; j < currentlyTriggeredNotes.size(); j++) {
-            if (i == currentlyTriggeredNotes.get(i).getNote().getID()) {
-                currentlyTriggeredNotes.get(i).resetTrigger(currentTime);
+            if (id == currentlyTriggeredNotes.get(j).getNote().getID()) {
+                currentlyTriggeredNotes.get(j).resetTrigger(currentTime);
                 return;
             }
         }

@@ -114,10 +114,14 @@ public class Note {
     }
 
     public void setPresetProperty(String p) {
-
+        System.out.println("P: " + p);
 //        printPresetArray();
 
         String[] add = p.split(";");
+
+        if (add.length != 4) {
+            return;
+        } //fix preset clearing!
 
         if (presetContainer.size() == 0) {
             presetContainer.add(p);

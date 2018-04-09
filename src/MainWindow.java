@@ -1,6 +1,5 @@
 import Utilities.MidiHandler;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,7 +13,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
-import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -28,8 +26,7 @@ public class MainWindow extends Parent {
     //Window Elements
     private Scene mainScene;
     private BorderPane exteriorPane;
-
-//    Preferences preferencesWindow;
+    private VBox mainWindowContainer;
 
     //Toolbar
     private ToolBar toolbar;
@@ -50,9 +47,6 @@ public class MainWindow extends Parent {
     private CheckMenuItem[] midiHandlerItems;
     private Label fileOpenLabel;
 
-    private DisplayCurrentNoteWindow displayCurrentNoteWindow;
-    private MatrixPresetContainer matrixPresetContainer;
-
     //Note Key Selection
     private DisplayNoteWindow displayNoteWindow;
 
@@ -63,13 +57,10 @@ public class MainWindow extends Parent {
     private Note noteClipboard;
 
     //Light Tab
-    private LightSelectionWindow lightSelectionWindow;
+    private TabSelectionWindow tabSelectionWindow;
 
     //Presets
     private DMXPresetWindow dmxPresetWindow;
-
-    //Color Picker
-    private ColorPickerWindow colorPickerWindow;
 
     //Mixer
     private Mixer mixer;
@@ -107,6 +98,7 @@ public class MainWindow extends Parent {
         exteriorPane.setMaxWidth(screenX);
         exteriorPane.setStyle("-fx-background-color: #FFFFFF;");
 
+        mainWindowContainer = new VBox();
 
         mainScene = new Scene(exteriorPane, screenX, screenY);
         mainWindow.setResizable(false);
@@ -120,7 +112,6 @@ public class MainWindow extends Parent {
         //Midi Handler
         midiHandler = new MidiHandler();
         midiHandler.getLastMessage().addListener(event -> triggerNote(midiHandler.getLastMessage().get()));
-
 
         //Initialize Clipboard
         noteClipboard = new Note(-1, strips, ledsPerStrip, dmxChannels);
@@ -192,64 +183,42 @@ public class MainWindow extends Parent {
 
         noteContainer = new NoteContainer(noteAmount, strips, ledsPerStrip, dmxChannels);
 
-        //Current Note
-        displayCurrentNoteWindow = new DisplayCurrentNoteWindow();
-        displayCurrentNoteWindow.getNoteChangedVal().addListener(event -> noteButtonPressed(displayCurrentNoteWindow.getNoteChangedVal().get()));
-        displayCurrentNoteWindow.getTriggerVal().addListener(event -> triggerNote(displayCurrentNoteWindow.getTriggerVal().get()));
-        displayCurrentNoteWindow.getFadeInVal().addListener(event -> timesEntered(0, displayCurrentNoteWindow.getFadeInVal().get()));
-        displayCurrentNoteWindow.getHoldVal().addListener(event -> timesEntered(1, displayCurrentNoteWindow.getHoldVal().get()));
-        displayCurrentNoteWindow.getFadeOutVal().addListener(event -> timesEntered(2, displayCurrentNoteWindow.getFadeOutVal().get()));
-        displayCurrentNoteWindow.getEditModeVal().addListener(event -> setEditMode(displayCurrentNoteWindow.getEditModeVal().get()));
-        displayCurrentNoteWindow.getEndTriggerVal().addListener(event -> noteContainer.setCurrentNoteEndTrigger(displayCurrentNoteWindow.getEndTriggerVal().get()));
-        displayCurrentNoteWindow.getMultiTriggerChangedVal().addListener(event -> noteContainer.setMultiTriggerVal(displayCurrentNoteWindow.getMultiTriggerChangedVal().get()));
+        //Tabs
+        tabSelectionWindow = new TabSelectionWindow(ledsPerStrip, strips, dmxChannels);
+        tabSelectionWindow.getLastPressed().addListener(event -> displayMatrixRectanglesPressed(tabSelectionWindow.getLastPressed().get()));
+        tabSelectionWindow.getDmxChangedVal().addListener(event -> setNoteDMX(tabSelectionWindow.getDmxChangedVal().get()));
+        tabSelectionWindow.getSelectedDmxChannel().addListener(event -> setSelectedDmxChannel(tabSelectionWindow.getSelectedDmxChannel().get()));
+        tabSelectionWindow.getSequencerTriggeredNote().addListener(event -> triggerNote(tabSelectionWindow.getSequencerTriggeredNote().get()));
+        tabSelectionWindow.getMatrixContextMenuVal().addListener(event -> handleMatrixContextMenu(tabSelectionWindow.getMatrixContextMenuVal().get()));
+        tabSelectionWindow.getEditModeVal().addListener(event -> setEditMode(tabSelectionWindow.getEditModeVal().get()));
 
-        //Color Picker
-        colorPickerWindow = new ColorPickerWindow();
-        colorPickerWindow.getColor().addListener(event -> updateSelectedColor(colorPickerWindow.getColor().get()));
-        colorPickerWindow.getPaletteChanged().addListener(event -> {
-            if (colorPickerWindow.getPaletteChanged().get()) {
-                lightSelectionWindow.updateContextMenuPalette(colorPickerWindow.getTopPalette());
-            }
-        } );
-        exteriorPane.setLeft(colorPickerWindow);
+        tabSelectionWindow.getNoteChangedVal().addListener(event -> noteButtonPressed(tabSelectionWindow.getNoteChangedVal().get()));
+        tabSelectionWindow.getTriggerVal().addListener(event -> triggerNote(tabSelectionWindow.getTriggerVal().get()));
+        tabSelectionWindow.getFadeInVal().addListener(event -> timesEntered(0, tabSelectionWindow.getFadeInVal().get()));
+        tabSelectionWindow.getHoldVal().addListener(event -> timesEntered(1, tabSelectionWindow.getHoldVal().get()));
+        tabSelectionWindow.getFadeOutVal().addListener(event -> timesEntered(2, tabSelectionWindow.getFadeOutVal().get()));
+        tabSelectionWindow.getEditModeVal().addListener(event -> setEditMode(tabSelectionWindow.getEditModeVal().get()));
+        tabSelectionWindow.getEndTriggerVal().addListener(event -> noteContainer.setCurrentNoteEndTrigger(tabSelectionWindow.getEndTriggerVal().get()));
 
-        //Lights
-        lightSelectionWindow = new LightSelectionWindow(ledsPerStrip, strips, dmxChannels);
-        lightSelectionWindow.getLastPressed().addListener(event -> displayMatrixRectanglesPressed(lightSelectionWindow.getLastPressed().get()));
-        lightSelectionWindow.getDmxChangedVal().addListener(event -> setNoteDMX(lightSelectionWindow.getDmxChangedVal().get()));
-        lightSelectionWindow.getSelectedDmxChannel().addListener(event -> setSelectedDmxChannel(lightSelectionWindow.getSelectedDmxChannel().get()));
-        lightSelectionWindow.getSequencerTriggeredNote().addListener(event -> triggerNote(lightSelectionWindow.getSequencerTriggeredNote().get()));
-        lightSelectionWindow.getMatrixContextMenuVal().addListener(event -> handleMatrixContextMenu(lightSelectionWindow.getMatrixContextMenuVal().get()));
-        lightSelectionWindow.getEditModeVal().addListener(event -> setEditMode(lightSelectionWindow.getEditModeVal().get()));
-        lightSelectionWindow.updateContextMenuPalette(colorPickerWindow.getTopPalette());
+        tabSelectionWindow.getSelectedColor().addListener(event -> updateSelectedColor(tabSelectionWindow.getSelectedColor().get()));
 
+        tabSelectionWindow.getLastChangedPresetProperty().addListener(event -> noteContainer.setCurrentNotePresetProperty(tabSelectionWindow.getLastChangedPresetProperty().get()));
+        tabSelectionWindow.getLastSelectedPresetValue().addListener(event -> noteContainer.setCurrentNoteCurrentPreset(tabSelectionWindow.getLastSelectedPresetValue().get()));
 
-        //DMX Presets
-        dmxPresetWindow = new DMXPresetWindow();
-        dmxPresetWindow.getChangedValues().addListener(event -> noteContainer.setCurrentNoteDMXTimes(dmxPresetWindow.getChangedValues().get()));
-//        dmxPresetWindow.getChangedValues().addListener(event -> noteContainer.setCurrentNoteDMXValue());
+        tabSelectionWindow.getMultiTriggerChangedVal().addListener(event -> {
+            noteContainer.setMultiTriggerVal(tabSelectionWindow.getMultiTriggerChangedVal().get());
+        });
 
-        //Matrix Presets
-        matrixPresetContainer = new MatrixPresetContainer(ledsPerStrip, strips);
-        matrixPresetContainer.getLastChangedPresetProperty().addListener(event -> noteContainer.setCurrentNotePresetProperty(matrixPresetContainer.getLastChangedPresetProperty().get()));
-        matrixPresetContainer.getLastSelectedPresetValue().addListener(event -> noteContainer.setCurrentNoteCurrentPreset(matrixPresetContainer.getLastSelectedPresetValue().get()));
+        tabSelectionWindow.getDMXChangedTimes().addListener(event -> noteContainer.setCurrentNoteDMXTimes(tabSelectionWindow.getDMXChangedTimes().get()));
 
         //Mixer
         mixer = new Mixer(strips, ledsPerStrip, dmxChannels);
         mixer.getTriggerMultiList().addListener(event -> triggerNotes(mixer.getTriggerMultiList().get()));
 
-
         //Display top panes
-        VBox verticalMiddleContainer = new VBox();
-        HBox middleContainer = new HBox();
-
-
-        middleContainer.getChildren().addAll(displayCurrentNoteWindow, matrixPresetContainer, dmxPresetWindow, colorPickerWindow);
-        verticalMiddleContainer.getChildren().addAll(displayNoteWindow, middleContainer);
-
-        exteriorPane.setCenter(verticalMiddleContainer);
-        exteriorPane.setBottom(lightSelectionWindow);
+        mainWindowContainer.getChildren().addAll(displayNoteWindow, tabSelectionWindow);
         exteriorPane.setTop(toolbar);
+        exteriorPane.setCenter(mainWindowContainer);
 
         //keymap
         initializeKeyMap();
@@ -269,8 +238,8 @@ public class MainWindow extends Parent {
         Led[][] lastUpdatedMixer = mixer.update(now);
 
         if (!editMode) {
-            lightSelectionWindow.setLEDDisplay(lastUpdatedMixer);
-            lightSelectionWindow.setDMXValues(mixer.updateDMX());
+            tabSelectionWindow.setLEDDisplay(lastUpdatedMixer);
+            tabSelectionWindow.setDMXValues(mixer.updateDMX());
         }
 
         //update note display
@@ -369,20 +338,19 @@ public class MainWindow extends Parent {
 
     void setScales() {
         displayNoteWindow.setScale(screenX, screenY);
-        lightSelectionWindow.setScale(screenX, screenY);
-        colorPickerWindow.setScale();
+        tabSelectionWindow.setScale(screenX, screenY);
 
     }
 
     void setDisplay() {
 
-        lightSelectionWindow.setLEDDisplay(noteContainer.getCurrentNoteLEDS());
-        lightSelectionWindow.setDMXValues(noteContainer.getCurrentNoteDMXChannels());
-        dmxPresetWindow.setValues(noteContainer.getCurrentNoteDMXChannels());
-        displayCurrentNoteWindow.setValues(noteContainer.getCurrentNote());
+        tabSelectionWindow.setLEDDisplay(noteContainer.getCurrentNoteLEDS());
+        tabSelectionWindow.setDMXValues(noteContainer.getCurrentNoteDMXChannels());
+        tabSelectionWindow.setTabFieldValues(noteContainer.getCurrentNote());
+        tabSelectionWindow.setDMXPresetValues(noteContainer.getCurrentNoteDMXChannels());
 
-        if (noteContainer.getCurrentNoteIndex() != matrixPresetContainer.getCurrentlyDisplayingNote()) {
-            matrixPresetContainer.setPresetDisplay(noteContainer.getCurrentNotePresetContainer(), noteContainer.getCurrentNoteCurrentPreset(), noteContainer.getCurrentNoteIndex());
+        if (noteContainer.getCurrentNoteIndex() != tabSelectionWindow.getCurrentDisplayedPresetInd()) {
+            tabSelectionWindow.setMatrixPresets(noteContainer.getCurrentNotePresetContainer(), noteContainer.getCurrentNoteCurrentPreset(), noteContainer.getCurrentNoteIndex());
         }
     }
 
@@ -393,8 +361,7 @@ public class MainWindow extends Parent {
 
     void loadData(JSONObject currentFile) {
         noteContainer.loadData(currentFile.getJSONObject("Notes"));
-        colorPickerWindow.loadData(currentFile.getJSONObject("Palette"));
-        lightSelectionWindow.loadData(currentFile.getJSONObject("LightSelectionWindow"));
+        tabSelectionWindow.loadData(currentFile.getJSONObject("TabSelectionWindow"));
         noteButtonPressed(1);
         noteButtonPressed(0); //refresh current note display
     }
@@ -404,8 +371,8 @@ public class MainWindow extends Parent {
         JSONObject tFile = new JSONObject();
 
         tFile.put("Notes", noteContainer.saveData());
-        tFile.put("Palette", colorPickerWindow.saveData());
-        tFile.put("LightSelectionWindow", lightSelectionWindow.saveData());
+//        tFile.put("Palette", colorPickerWindow.saveData());
+        tFile.put("TabSelectionWindow", tabSelectionWindow.saveData());
 
         return tFile;
 
@@ -482,10 +449,10 @@ public class MainWindow extends Parent {
                 noteContainer.setCurrentNoteSelectColumn(Integer.parseInt(a[1]));
                 break;
             case "Set":
-                colorPickerWindow.setColor();
+                tabSelectionWindow.setColorFromPalette();
                 break;
             case "Palette":
-                colorPickerWindow.setColor(Integer.parseInt(a[1]));
+                tabSelectionWindow.setColorFromPalette(Integer.parseInt(a[1]));
             default:
                 break;
         }
@@ -494,8 +461,7 @@ public class MainWindow extends Parent {
 
     void setEditMode(boolean t) {
         editMode = t;
-        displayCurrentNoteWindow.setEditMode(t);
-        lightSelectionWindow.setEditMode(t);
+        tabSelectionWindow.setEditMode(t);
         if (t) {
             setDisplay();
         }
@@ -521,8 +487,6 @@ public class MainWindow extends Parent {
 
     void setPreferences(Stage mainWindow, JSONObject preferencesObject) {
 
-//        mainWindow.setTitle(preferencesObject.getString("title"));
-
         if (Integer.parseInt(preferencesObject.getString("fullscreen")) == 1) {
             mainWindow.setFullScreen(true);
         }
@@ -539,57 +503,57 @@ public class MainWindow extends Parent {
 
             if (event.getCode() == KeyCode.A) {
                 if (event.isAltDown()) {
-                    lightSelectionWindow.setKeyMapValue("A", noteContainer.getCurrentNoteIndex());
+                    tabSelectionWindow.setKeyMapValue("A", noteContainer.getCurrentNoteIndex());
                 } else {
-                    triggerNote(lightSelectionWindow.getKeyMap("A"), false);
+                    triggerNote(tabSelectionWindow.getKeyMap("A"), false);
                 }
             } else if (event.getCode() == KeyCode.S) {
                 if (event.isAltDown()) {
-                    lightSelectionWindow.setKeyMapValue("S", noteContainer.getCurrentNoteIndex());
+                    tabSelectionWindow.setKeyMapValue("S", noteContainer.getCurrentNoteIndex());
                 } else {
-                    triggerNote(lightSelectionWindow.getKeyMap("S"), false);
+                    triggerNote(tabSelectionWindow.getKeyMap("S"), false);
                 }
             } else if (event.getCode() == KeyCode.D) {
                 if (event.isAltDown()) {
-                    lightSelectionWindow.setKeyMapValue("D", noteContainer.getCurrentNoteIndex());
+                    tabSelectionWindow.setKeyMapValue("D", noteContainer.getCurrentNoteIndex());
                 } else {
-                    triggerNote(lightSelectionWindow.getKeyMap("D"), false);
+                    triggerNote(tabSelectionWindow.getKeyMap("D"), false);
                 }
             } else if (event.getCode() == KeyCode.F) {
                 if (event.isAltDown()) {
-                    lightSelectionWindow.setKeyMapValue("F", noteContainer.getCurrentNoteIndex());
+                    tabSelectionWindow.setKeyMapValue("F", noteContainer.getCurrentNoteIndex());
                 } else {
-                    triggerNote(lightSelectionWindow.getKeyMap("F"), false);
+                    triggerNote(tabSelectionWindow.getKeyMap("F"), false);
                 }
             } else if (event.getCode() == KeyCode.G) {
                 if (event.isAltDown()) {
-                    lightSelectionWindow.setKeyMapValue("G", noteContainer.getCurrentNoteIndex());
+                    tabSelectionWindow.setKeyMapValue("G", noteContainer.getCurrentNoteIndex());
                 } else {
-                    triggerNote(lightSelectionWindow.getKeyMap("G"), false);
+                    triggerNote(tabSelectionWindow.getKeyMap("G"), false);
                 }
             } else if (event.getCode() == KeyCode.H) {
                 if (event.isAltDown()) {
-                    lightSelectionWindow.setKeyMapValue("H", noteContainer.getCurrentNoteIndex());
+                    tabSelectionWindow.setKeyMapValue("H", noteContainer.getCurrentNoteIndex());
                 } else {
-                    triggerNote(lightSelectionWindow.getKeyMap("H"), false);
+                    triggerNote(tabSelectionWindow.getKeyMap("H"), false);
                 }
             } else if (event.getCode() == KeyCode.J) {
                 if (event.isAltDown()) {
-                    lightSelectionWindow.setKeyMapValue("J", noteContainer.getCurrentNoteIndex());
+                    tabSelectionWindow.setKeyMapValue("J", noteContainer.getCurrentNoteIndex());
                 } else {
-                    triggerNote(lightSelectionWindow.getKeyMap("J"), false);
+                    triggerNote(tabSelectionWindow.getKeyMap("J"), false);
                 }
             } else if (event.getCode() == KeyCode.K) {
                 if (event.isAltDown()) {
-                    lightSelectionWindow.setKeyMapValue("K", noteContainer.getCurrentNoteIndex());
+                    tabSelectionWindow.setKeyMapValue("K", noteContainer.getCurrentNoteIndex());
                 } else {
-                    triggerNote(lightSelectionWindow.getKeyMap("K"), false);
+                    triggerNote(tabSelectionWindow.getKeyMap("K"), false);
                 }
             } else if (event.getCode() == KeyCode.L) {
                 if (event.isAltDown()) {
-                    lightSelectionWindow.setKeyMapValue("L", noteContainer.getCurrentNoteIndex());
+                    tabSelectionWindow.setKeyMapValue("L", noteContainer.getCurrentNoteIndex());
                 } else {
-                    triggerNote(lightSelectionWindow.getKeyMap("L"), false);
+                    triggerNote(tabSelectionWindow.getKeyMap("L"), false);
                 }
             }
 

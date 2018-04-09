@@ -67,7 +67,6 @@ public class Sequencer {
     public void setNoteMapping(String s) {
         String a[] = s.split(";");
         if (a.length == 2) {
-            System.out.println("SEQ " + id + " POS. " + s);
             int i = Integer.parseInt(a[0]);
             int j = Integer.parseInt(a[1]);
             noteMapping[i] = j;
@@ -78,7 +77,6 @@ public class Sequencer {
         String a[] = s.split(";");
 
         if (a.length == 2) {
-            System.out.println("SEQ " + id +" POS. " + s);
             int i = Integer.parseInt(a[0]);
             int j = Integer.parseInt(a[1]);
             noteSelected[i][j] = !noteSelected[i][j];
@@ -123,11 +121,33 @@ public class Sequencer {
             rFile.put(Integer.toString(i), cFile);
         }
         tFile.put("Note Selection", rFile);
-
         tFile.put("Note Amount", noteAmount);
 
-
         return tFile;
+    }
+
+    public void loadData(JSONObject tFile) {
+        noteAmount = tFile.getInt("Note Amount");
+
+        for (int i = 0; i < activeChannels.length; i++) {
+            activeChannels[i] = tFile.getJSONObject("Active Channels").getBoolean(Integer.toString(i));
+        }
+
+        for (int i = 0; i < noteMapping.length; i++) {
+            noteMapping[i] = tFile.getJSONObject("Note Mapping").getInt(Integer.toString(i));
+        }
+
+        JSONObject rFile = tFile.getJSONObject("Note Selection");
+
+        for (int i = 0; i < channels; i++) {
+            JSONObject cFile = rFile.getJSONObject(Integer.toString(i));
+            for (int j = 0; j < maxNoteAmount; j++) {
+                noteSelected[i][j] = cFile.getBoolean(Integer.toString(j));
+            }
+        }
+
+
+
     }
 
 }

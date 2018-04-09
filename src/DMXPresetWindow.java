@@ -38,8 +38,9 @@ public class DMXPresetWindow extends VBox{
             changedValues.set(String.valueOf(ind)+";"+String.valueOf(valStart.getValue().get()));
         } else if (ind == 1) {
             changedValues.set(String.valueOf(ind)+";"+String.valueOf(valEnd.getValue().get()));
-
         }
+        changedValues.set("");
+
     }
 
     public void setValues(DMXChannel[] v) {

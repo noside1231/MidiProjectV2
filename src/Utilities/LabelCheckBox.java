@@ -26,7 +26,7 @@ public class LabelCheckBox extends HBox {
         selected.set(b);
         c.setOnAction(event -> checkBoxChecked());
 
-        getChildren().addAll(l,c);
+        getChildren().addAll(c,l);
     }
 
     void checkBoxChecked() {

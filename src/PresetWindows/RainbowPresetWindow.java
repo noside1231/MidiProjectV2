@@ -2,12 +2,13 @@ package PresetWindows;
 
 import Utilities.SliderTextField;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
  * Created by Edison on 1/17/18.
  */
-public class RainbowPresetWindow extends VBox {
+public class RainbowPresetWindow extends HBox {
 
     private SliderTextField speedField;
     private SliderTextField spreadField;
@@ -15,6 +16,8 @@ public class RainbowPresetWindow extends VBox {
     private SliderTextField skipField;
     private SimpleStringProperty lastChanged;
     private String presetName;
+
+    private VBox sliderContainer;
 
     public RainbowPresetWindow(String p) {
         presetName = p;
@@ -32,9 +35,8 @@ public class RainbowPresetWindow extends VBox {
         offsetField.getValue().addListener(event -> presetChanged(offsetField.getName(), offsetField.getValue().get()));
         skipField.getValue().addListener(event -> presetChanged(skipField.getName(), skipField.getValue().get()));
 
-
-        getChildren().addAll(speedField, spreadField, offsetField, skipField);
-
+        sliderContainer = new VBox(speedField, spreadField, offsetField, skipField);
+        getChildren().add(sliderContainer);
     }
 
     private void presetChanged(String field, int val) {

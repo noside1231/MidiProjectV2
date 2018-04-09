@@ -2,12 +2,13 @@ package PresetWindows;
 
 import Utilities.SliderTextField;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
  * Created by edisongrauman on 1/18/18.
  */
-public class TwinklePresetWindow extends VBox{
+public class TwinklePresetWindow extends HBox {
 
     SliderTextField amountField;
     SliderTextField varianceField;
@@ -16,6 +17,8 @@ public class TwinklePresetWindow extends VBox{
     SliderTextField fadeOutField;
     SimpleStringProperty lastChanged;
     String presetName;
+
+    private VBox sliderContainer;
 
     public TwinklePresetWindow(String p) {
         presetName = p;
@@ -35,8 +38,8 @@ public class TwinklePresetWindow extends VBox{
         holdField.getValue().addListener(event -> presetChanged(holdField.getName(), holdField.getValue().get()));
         fadeOutField.getValue().addListener(event ->presetChanged(fadeOutField.getName(), fadeOutField.getValue().get()));
 
-
-        getChildren().addAll(amountField, varianceField, fadeInField, holdField, fadeOutField);
+        sliderContainer = new VBox(amountField, varianceField, fadeInField, holdField, fadeOutField);
+        getChildren().add(sliderContainer);
 
     }
 

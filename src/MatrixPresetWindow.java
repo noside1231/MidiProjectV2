@@ -1,6 +1,7 @@
 import PresetWindows.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -11,30 +12,33 @@ import java.util.ArrayList;
  */
 public class MatrixPresetWindow extends VBox {
 
-    String[] presets = {"None", "Rainbow", "Flash", "Trail", "Twinkle"};
+    private String[] presets = {"None", "Rainbow", "Flash", "Translate", "Twinkle"};
 
-    ChoiceBox<String> presetOptions;
-    Pane presetPane;
+    private ChoiceBox<String> presetOptions;
+    private Pane presetPane;
 
-    ArrayList<VBox> presetWindows;
-    NonePresetWindow nonePresetWindow;
-    RainbowPresetWindow rainbowPresetWindow;
-    FlashPresetWindow flashPresetWindow;
-    TrailPresetWindow trailPresetWindow;
-    TwinklePresetWindow twinklePresetWindow;
+    private ArrayList<HBox> presetWindows;
+    private NonePresetWindow nonePresetWindow;
+    private RainbowPresetWindow rainbowPresetWindow;
+    private FlashPresetWindow flashPresetWindow;
+    private TrailPresetWindow trailPresetWindow;
+    private TwinklePresetWindow twinklePresetWindow;
 
-    SimpleStringProperty lastChangedPresetProperty;
-    SimpleStringProperty lastSelectedPreset;
+    private SimpleStringProperty lastChangedPresetProperty;
+    private SimpleStringProperty lastSelectedPreset;
 
-    int id;
+    private int id;
 
+    private int windowWidth = 275;
+    private int windowHeight = 150;
 
     public MatrixPresetWindow(int ind, int ledsPerStrip, int strips) {
         id = ind;
-        lastChangedPresetProperty = new SimpleStringProperty();
-        lastSelectedPreset = new SimpleStringProperty();
+        lastChangedPresetProperty = new SimpleStringProperty("");
+        lastSelectedPreset = new SimpleStringProperty("");
 
         presetOptions = new ChoiceBox<>();
+        presetOptions.setMinWidth(windowWidth);
         presetOptions.getItems().addAll(presets);
         presetOptions.setValue(presets[0]);
         presetOptions.setOnAction(event -> switchPreset(presetOptions.getValue()));
@@ -49,7 +53,6 @@ public class MatrixPresetWindow extends VBox {
         trailPresetWindow = new TrailPresetWindow(presets[3], ledsPerStrip, strips);
         twinklePresetWindow = new TwinklePresetWindow(presets[4]);
 
-        lastChangedPresetProperty.set("A");
         rainbowPresetWindow.changedProperty().addListener(event -> changedPresetProperty(rainbowPresetWindow.changedProperty().get()));
         flashPresetWindow.changedProperty().addListener(event -> changedPresetProperty(flashPresetWindow.changedProperty().get()));
         trailPresetWindow.changedProperty().addListener(event -> changedPresetProperty(trailPresetWindow.changedProperty().get()));
@@ -66,11 +69,13 @@ public class MatrixPresetWindow extends VBox {
         }
         switchPreset("None");
 
+        setMinHeight(windowHeight);
+        setMinWidth(windowWidth);
         getChildren().addAll(presetOptions, presetPane);
 
     }
 
-    void switchPreset(String i) {
+    private void switchPreset(String i) {
         lastSelectedPreset.set(i);
         presetOptions.setValue(i);
         int ind = 0;
@@ -84,8 +89,9 @@ public class MatrixPresetWindow extends VBox {
         presetPane.getChildren().add(presetWindows.get(ind));
     }
 
-    void changedPresetProperty(String c) {
+    private void changedPresetProperty(String c) {
         lastChangedPresetProperty.set(c);
+        lastChangedPresetProperty.set("");
     }
 
     public SimpleStringProperty getLastChangedPresetProperty() {
@@ -103,12 +109,11 @@ public class MatrixPresetWindow extends VBox {
         trailPresetWindow.resetFields();
         twinklePresetWindow.resetFields();
 
-
         //lol don't mess with this mess
         String[] s = pText.toArray(new String[pText.size()]);
         for (int i = 0; i < s.length; i++) {
             String[] splitted = s[i].split(";");
-//            System.out.println(pText);
+//            System.out.println("PTEXT: " + s[i]);
             if (splitted[0].equals(Integer.toString(id))) {
                 if (splitted[1].equals(presets[1])) { //If Rainbow
                     rainbowPresetWindow.setPresetField(splitted[2], splitted[3]);
