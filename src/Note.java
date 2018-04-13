@@ -74,6 +74,10 @@ public class Note {
         matrix.reset();
     }
 
+    public void setMatrix(LEDMatrix c) {
+        matrix.setMatrix(c);
+    }
+
     void setFadeIn(float f) {
         fadeIn = f;
     }

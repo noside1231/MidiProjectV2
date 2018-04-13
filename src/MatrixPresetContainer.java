@@ -1,12 +1,13 @@
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 import java.util.ArrayList;
 
 /**
  * Created by edisongrauman on 2/25/18.
  */
-public class MatrixPresetContainer extends GridPane {
+public class MatrixPresetContainer extends HBox {
 
 
     private int currentlyDisplayingNote;
@@ -31,11 +32,7 @@ public class MatrixPresetContainer extends GridPane {
         lastChangedPresetProperty = new SimpleStringProperty("");
         lastSelectedPresetValue = new SimpleStringProperty("");
 
-        add(matrixPresetWindows[0], 0, 0);
-        add(matrixPresetWindows[1], 0, 1);
-        add(matrixPresetWindows[2], 1, 0);
-        add(matrixPresetWindows[3], 1, 1);
-
+        getChildren().addAll(matrixPresetWindows);
     }
 
     //fix to include which preset number it should go to

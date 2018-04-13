@@ -7,7 +7,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -148,9 +147,9 @@ public class MainWindow extends Parent {
         //Add To Menu
         editMenu.getItems().addAll(copyItem, pasteItem, new SeparatorMenuItem(), clearItem);
         //Handlers
-        copyItem.setOnAction(event -> copy());
+        copyItem.setOnAction(event -> copyAll());
         copyItem.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.META_DOWN));
-        pasteItem.setOnAction(event -> paste());
+        pasteItem.setOnAction(event -> pasteAll());
         pasteItem.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.META_DOWN));
         clearItem.setOnAction(event -> clear());
         //Options Menu
@@ -200,8 +199,20 @@ public class MainWindow extends Parent {
         tabSelectionWindow.getSelectedColor().addListener(event -> updateSelectedColor(tabSelectionWindow.getSelectedColor().get()));
         tabSelectionWindow.getLastChangedPresetProperty().addListener(event -> noteContainer.setCurrentNotePresetProperty(tabSelectionWindow.getLastChangedPresetProperty().get()));
         tabSelectionWindow.getLastSelectedPresetValue().addListener(event -> noteContainer.setCurrentNoteCurrentPreset(tabSelectionWindow.getLastSelectedPresetValue().get()));
-        tabSelectionWindow.getMultiTriggerChangedVal().addListener(event -> noteContainer.setMultiTriggerVal(tabSelectionWindow.getMultiTriggerChangedVal().get()));
+        tabSelectionWindow.getMultiTriggerChangedVal().addListener(event -> {
+            noteContainer.setMultiTriggerVal(tabSelectionWindow.getMultiTriggerChangedVal().get());
+            setDisplay(); //to update both dmx and matrix multi selections
+        });
         tabSelectionWindow.getDMXChangedTimes().addListener(event -> noteContainer.setCurrentNoteDMXTimes(tabSelectionWindow.getDMXChangedTimes().get()));
+        tabSelectionWindow.getCurrentTabVal().addListener(event -> {
+            if (tabSelectionWindow.getCurrentTabVal().get().equals("DMX")) {
+                displayNoteWindow.setEditMode(true);
+            } else if (tabSelectionWindow.getCurrentTabVal().get().equals("Led Strips")) {
+                displayNoteWindow.setEditMode(true);
+            } else {
+                displayNoteWindow.setEditMode(false);
+            }
+        });
 
         //Mixer
         mixer = new Mixer(strips, ledsPerStrip, dmxChannels);
@@ -297,13 +308,16 @@ public class MainWindow extends Parent {
         System.exit(0);
     }
 
-    void copy() {
+    void copyAll() {
         System.out.println("COPY");
+        noteClipboard.resetMatrix();
+        noteClipboard.setMatrix(noteContainer.getCurrentNote().getMatrix());
     }
 
-    void paste() {
+    void pasteAll() {
         System.out.println("PASTE");
-
+        noteContainer.getCurrentNote().setMatrix(noteClipboard.getMatrix());
+        setDisplay();
     }
 
     void clear() {
@@ -443,6 +457,12 @@ public class MainWindow extends Parent {
                 break;
             case "Palette":
                 tabSelectionWindow.setColorFromPalette(Integer.parseInt(a[1]));
+                break;
+            case "CopyAll":
+                copyAll();
+                break;
+            case "PasteAll":
+                pasteAll();
             default:
                 break;
         }
@@ -497,6 +517,11 @@ public class MainWindow extends Parent {
                 } else {
                     triggerNote(tabSelectionWindow.getKeyMap("A"), false);
                 }
+            }
+            else if (event.getCode() == KeyCode.A) {
+                if (event.isAltDown()) {
+                    copyAll();
+                }
             } else if (event.getCode() == KeyCode.S) {
                 if (event.isAltDown()) {
                     tabSelectionWindow.setKeyMapValue("S", noteContainer.getCurrentNoteIndex());
@@ -545,7 +570,12 @@ public class MainWindow extends Parent {
                 } else {
                     triggerNote(tabSelectionWindow.getKeyMap("L"), false);
                 }
+            } else if (event.getCode() == KeyCode.V) {
+                if (event.isAltDown()) {
+                    pasteAll();
+                }
             }
+
 
         });
     }

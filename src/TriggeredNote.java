@@ -91,6 +91,8 @@ public class TriggeredNote {
                 case "Twinkle":
                     tColors = applyTwinklePreset(tColors, t, i);
                     break;
+                case "Wave":
+                    tColors = applyWavePreset(tColors, t, i);
             }
         }
 
@@ -289,6 +291,44 @@ public class TriggeredNote {
         int fadeIn = note.getPresetParameter("Twinkle", "Fade In", ind);
         int hold = note.getPresetParameter("Twinkle", "Hold", ind);
         int fadeOut = note.getPresetParameter("Twinkle", "Fade Out", ind);
+
+        return cols;
+    }
+
+    Color[][] applyWavePreset(Color[][] cols, long t, int ind) {
+        double curT = (t - originalTriggerTime) / 1000000000.0;
+
+        int f = note.getPresetParameter("Wave", "Frequency", ind);
+        int s = note.getPresetParameter("Wave", "Speed", ind);
+        int type = note.getPresetParameter("Wave", "WaveType", ind);
+
+        double speed = Math.toRadians(s)*20;
+
+        double frequency = Math.toRadians(f)*2;
+
+        if (type == 0) {
+            for (int y = 0; y < note.getMatrix().getStrips(); y++) {
+                for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
+                    cols[x][y] = Color.color(cols[x][y].getRed() * ((Math.sin((curT*speed)+(frequency*x))+1)/2),
+                            cols[x][y].getGreen() *((Math.sin((curT*speed)+(frequency*x))+1)/2),
+                            cols[x][y].getBlue() * ((Math.sin((curT*speed)+(frequency*x))+1)/2));
+                }
+            }
+        }
+        else if (type == 1) {
+            for (int y = 0; y < note.getMatrix().getStrips(); y++) {
+                for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
+
+                    if (Math.sin((curT*speed)+(frequency*x)) > 0) {
+                        cols[x][y] = Color.BLACK;
+                    }
+
+
+                }
+            }
+        }
+
+
 
         return cols;
     }

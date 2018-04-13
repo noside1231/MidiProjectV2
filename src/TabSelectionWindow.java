@@ -47,6 +47,7 @@ public class TabSelectionWindow extends AnchorPane {
     private SimpleStringProperty multiTriggerChangedVal;
 
     private SimpleStringProperty dmxChangedTimes;
+    private SimpleStringProperty currentTabVal;
 
     public TabSelectionWindow(int ledsPerStrip, int strips, int dmxChannels) {
 
@@ -87,6 +88,7 @@ public class TabSelectionWindow extends AnchorPane {
         multiTriggerChangedVal = new SimpleStringProperty("");
         dmxChangedTimes = new SimpleStringProperty("");
         lastMatrixRectSelected = new SimpleObjectProperty<>();
+        currentTabVal = new SimpleStringProperty("");
 
         keyMapWindow = new KeyMapWindow();
 
@@ -107,6 +109,7 @@ public class TabSelectionWindow extends AnchorPane {
 
         editDMXWindow = new EditDMXWindow(dmxChannels);
         editDMXWindow.getDMXChangedTimes().addListener(event -> dmxChangedTimes.set(editDMXWindow.getDMXChangedTimes().get()));
+        editDMXWindow.getMultiTriggerChangedVal().addListener(event -> multiTriggerChangedVal.set(editDMXWindow.getMultiTriggerChangedVal().get()));
 
         ledDisplayTab.setContent(editMatrixWindow);
         dmxTab.setContent(editDMXWindow);
@@ -121,11 +124,32 @@ public class TabSelectionWindow extends AnchorPane {
         currentNoteInfoContainer.getFadeOutVal().addListener(event -> fadeOutVal.set(currentNoteInfoContainer.getFadeOutVal().get()));
         currentNoteInfoContainer.getEditModeVal().addListener(event -> setEditMode(currentNoteInfoContainer.getEditModeVal().get()));
         currentNoteInfoContainer.getEndTriggerVal().addListener(event -> endTriggerVal.set(currentNoteInfoContainer.getEndTriggerVal().get()));
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener(event -> {
+            currentTabVal.set(tabPane.getSelectionModel().getSelectedItem().getText());
+            if (currentTabVal.get().equals("DMX")) {
+                currentNoteInfoContainer.setVisible(true);
+            }
+            else if (currentTabVal.get().equals("Led Strips")) {
+                currentNoteInfoContainer.setVisible(true);
+            }
+            else {
+                currentNoteInfoContainer.setVisible(false);
+            }
+        });
+        tabPane.getSelectionModel().select(ledDisplayTab);
+
+    }
+
+    public SimpleStringProperty getCurrentTabVal() {
+        return currentTabVal;
     }
 
     public void setTabFieldValues(Note n) {
         currentNoteInfoContainer.setValues(n);
         editMatrixWindow.resetMultiValues(n.getID(), n.getMultiTrigger());
+        editDMXWindow.resetMultiValues(n.getID(), n.getMultiTrigger());
+
     }
 
     public SimpleIntegerProperty getNoteChangedVal() {
@@ -165,7 +189,7 @@ public class TabSelectionWindow extends AnchorPane {
         setMaxWidth(w);
 
         sequencerWindow.setScale();
-        editMatrixWindow.setScale(windowWidth, windowHeight);
+        editMatrixWindow.setScale(w, h);
     }
 
     private void dmxValueChanged(String s) {
@@ -262,6 +286,7 @@ public class TabSelectionWindow extends AnchorPane {
     }
 
     public SimpleStringProperty getMultiTriggerChangedVal() {
+
         return multiTriggerChangedVal;
     }
 

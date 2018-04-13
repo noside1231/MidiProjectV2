@@ -99,6 +99,15 @@ public class LEDMatrix {
         }
     }
 
+    public void setMatrix(LEDMatrix c) {
+        for (int y = 0; y < strips; y++) {
+            for (int x = 0; x < ledsPerStrip; x++) {
+                setLED(x,y,c.getLED(x,y));
+            }
+        }
+    }
+
+
 
 
 }

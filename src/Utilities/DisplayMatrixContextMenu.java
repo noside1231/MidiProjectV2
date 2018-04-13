@@ -18,6 +18,8 @@ public class DisplayMatrixContextMenu extends ContextMenu{
     private MenuItem deselectAllItem;
     private MenuItem selectRowItem[];
     private MenuItem selectColItem[];
+    private MenuItem copyItem;
+    private MenuItem pasteItem;
     private CustomMenuItem paletteItem;
     private Menu selectRowMenu;
     private Menu selectColMenu;
@@ -75,8 +77,15 @@ public class DisplayMatrixContextMenu extends ContextMenu{
 
         paletteItem = new CustomMenuItem(paletteContainer);
 
+        copyItem = new MenuItem("Copy All");
+        copyItem.setOnAction(event -> copyAllPressed());
+        pasteItem = new MenuItem("Paste All");
+        pasteItem.setOnAction(event -> pasteAllPressed());
 
-        getItems().addAll(set, paletteItem, selectAllItem, deselectAllItem, new SeparatorMenuItem(), selectRowMenu, selectColMenu);
+
+        getItems().addAll(set, paletteItem, selectAllItem, deselectAllItem, new SeparatorMenuItem(),
+                          copyItem, pasteItem, new SeparatorMenuItem(),
+                          selectRowMenu, selectColMenu);
     }
 
     public SimpleStringProperty getLastChangedVal() {
@@ -110,6 +119,18 @@ public class DisplayMatrixContextMenu extends ContextMenu{
         for (int i = 0; i < paletteRectangles.length; i++) {
             paletteRectangles[i].setFill(c[i]);
         }
+    }
+
+    private void copyAllPressed() {
+        lastChangedVal.set("CopyAll");
+        lastChangedVal.set("");
+
+    }
+
+    private void pasteAllPressed() {
+        lastChangedVal.set("PasteAll");
+        lastChangedVal.set("");
+
     }
 
 

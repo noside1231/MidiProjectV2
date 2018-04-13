@@ -16,7 +16,7 @@ import org.json.JSONObject;
 /**
  * Created by edisongrauman on 2/26/18.
  */
-public class SequencerWindow extends HBox {
+public class SequencerWindow extends VBox {
 
     private int rows;
     private int currentColumn;
@@ -199,6 +199,7 @@ public class SequencerWindow extends HBox {
 
     private void startPressed() {
         resetSequencerTimer(bpmAverge);
+        currentColumn = -1;
         advanceSequencer();
     }
 
@@ -210,8 +211,15 @@ public class SequencerWindow extends HBox {
     }
 
     private void halfNotes() {
+
+
         if (sequencers.getCurrentSequencerNoteAmount() > 1) {
             sequencers.setCurrentSequencerNoteAmount(sequencers.getCurrentSequencerNoteAmount() / 2);
+
+            if (currentColumn > sequencers.getCurrentSequencer().getNoteAmount()) {
+                currentColumn = 0;
+            }
+
             setSequencer(Integer.toString(sequencers.getCurrentSequencer().getID() + 1));
         }
     }
@@ -236,8 +244,8 @@ public class SequencerWindow extends HBox {
         sequencerGrid.getLastClickedNote().addListener(event -> sequencers.setCurrentSequencerNotePressed(sequencerGrid.getLastClickedNote().get()));
         sequencerGrid.getLastSelectedNoteMap().addListener(event -> sequencers.setCurrentSequencerNoteMapping(sequencerGrid.getLastSelectedNoteMap().get()));
         sequencerGrid.getLastSelectedCheckbox().addListener(event -> sequencers.setCurrentSequencerActiveChannel(sequencerGrid.getLastSelectedCheckbox().get()));
-        currentColumn = -1;
         sequencerGrid.displayRects(currentColumn);
+
     }
 
     public JSONObject saveData() {

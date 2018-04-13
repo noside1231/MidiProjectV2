@@ -1,13 +1,10 @@
 import PresetWindows.MultiTriggerWindow;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import org.w3c.dom.css.Rect;
 
 import java.util.ArrayList;
 
@@ -64,9 +61,9 @@ public class EditMatrixWindow extends VBox {
         multiTriggerWindow = new MultiTriggerWindow();
         multiTriggerWindow.getLastChanged().addListener(event -> multiTriggerChangedVal.set(multiTriggerWindow.getLastChanged().get()));
 
-        hContainer = new HBox(matrixPresetContainer, colorPickerWindow, multiTriggerWindow);
+        hContainer = new HBox(matrixPresetContainer, multiTriggerWindow);
 
-        getChildren().addAll(displayMatrixWindow, hContainer);
+        getChildren().addAll(displayMatrixWindow, hContainer, colorPickerWindow);
 
 
     }
@@ -74,6 +71,7 @@ public class EditMatrixWindow extends VBox {
     public void setScale(int w, int h) {
         displayMatrixWindow.setScale(w, h);
         colorPickerWindow.setScale();
+        hContainer.setMinHeight(200);
     }
 
     public void setLEDDisplay(Led[][] leds) {

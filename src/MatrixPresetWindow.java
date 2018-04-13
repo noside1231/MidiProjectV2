@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class MatrixPresetWindow extends VBox {
 
-    private String[] presets = {"None", "Rainbow", "Flash", "Translate", "Twinkle"};
+    private String[] presets = {"None", "Rainbow", "Flash", "Translate", "Twinkle", "Wave"};
 
     private ChoiceBox<String> presetOptions;
     private Pane presetPane;
@@ -23,6 +23,7 @@ public class MatrixPresetWindow extends VBox {
     private FlashPresetWindow flashPresetWindow;
     private TrailPresetWindow trailPresetWindow;
     private TwinklePresetWindow twinklePresetWindow;
+    private WavePresetWindow wavePresetWindow;
 
     private SimpleStringProperty lastChangedPresetProperty;
     private SimpleStringProperty lastSelectedPreset;
@@ -52,17 +53,20 @@ public class MatrixPresetWindow extends VBox {
         flashPresetWindow = new FlashPresetWindow(presets[2]);
         trailPresetWindow = new TrailPresetWindow(presets[3], ledsPerStrip, strips);
         twinklePresetWindow = new TwinklePresetWindow(presets[4]);
+        wavePresetWindow = new WavePresetWindow(presets[5]);
 
         rainbowPresetWindow.changedProperty().addListener(event -> changedPresetProperty(rainbowPresetWindow.changedProperty().get()));
         flashPresetWindow.changedProperty().addListener(event -> changedPresetProperty(flashPresetWindow.changedProperty().get()));
         trailPresetWindow.changedProperty().addListener(event -> changedPresetProperty(trailPresetWindow.changedProperty().get()));
         twinklePresetWindow.changedProperty().addListener(event -> changedPresetProperty(twinklePresetWindow.changedProperty().get()));
+        wavePresetWindow.changedProperty().addListener(event -> changedPresetProperty(wavePresetWindow.changedProperty().get()));
 
         presetWindows.add(nonePresetWindow);
         presetWindows.add(rainbowPresetWindow);
         presetWindows.add(flashPresetWindow);
         presetWindows.add(trailPresetWindow);
         presetWindows.add(twinklePresetWindow);
+        presetWindows.add(wavePresetWindow);
 
         for (int i = 0; i < presetWindows.size(); i++) {
             presetPane.getChildren().add(presetWindows.get(i));

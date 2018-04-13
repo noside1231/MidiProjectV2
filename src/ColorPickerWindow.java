@@ -56,8 +56,11 @@ public class ColorPickerWindow extends VBox{
         setButton.setOnAction(event -> setColor());
 
         buttonOptions.getChildren().addAll(previewColor, setButton);
+        buttonOptions.setMaxWidth(200);
 
         tabPane.getTabs().addAll(colorPickerSliderTab, colorPickerPaletteTab);
+        tabPane.setMaxWidth(200);
+        setMinHeight(300);
 
         getChildren().addAll(tabPane, buttonOptions);
 
@@ -82,7 +85,6 @@ public class ColorPickerWindow extends VBox{
         palette.setScale();
         previewColor.setHeight(buttonOptions.getHeight());
         previewColor.setWidth(buttonOptions.getWidth()-setButton.getWidth());
-
     }
 
     public void setColor() {

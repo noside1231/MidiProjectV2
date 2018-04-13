@@ -1,14 +1,9 @@
-import Utilities.NumberTextField;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
-
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
@@ -20,8 +15,12 @@ public class DisplayNoteWindow extends HBox {
     private int noteAmount;
     private SimpleIntegerProperty notePressed;
 
+    private boolean editMode;
+
     public DisplayNoteWindow(int nA) {
         noteAmount = nA;
+
+        editMode = true;
 
         notePressed = new SimpleIntegerProperty();
         noteRects = new Rectangle[noteAmount];
@@ -34,20 +33,23 @@ public class DisplayNoteWindow extends HBox {
             noteRects[i].setStroke(Color.WHITE);
             int ti = i;
             noteRects[i].setOnMouseClicked(event -> rectanglePressed(ti));
-            noteRects[i].setOnMouseEntered(event -> { //FIX FOR DRAG
-                if (event.isPrimaryButtonDown()) {
-                    rectanglePressed(ti);
-                }
-                event.consume();
+
+
+            //drag
+            noteRects[i].addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
+                noteRects[ti].startFullDrag();
             });
+            noteRects[i].setOnMouseDragEntered(event -> rectanglePressed(ti));
         }
         rectanglePressed(0);
         getChildren().addAll(noteRects);
     }
 
     public void rectanglePressed(int i) {
-        if (i >= 0 && i < noteAmount) {
-            notePressed.set(i);
+        if (editMode) {
+            if (i >= 0 && i < noteAmount) {
+                notePressed.set(i);
+            }
         }
     }
 
@@ -70,10 +72,16 @@ public class DisplayNoteWindow extends HBox {
         for (int i  = 0; i < noteAmount; i++) {
             noteRects[i].setFill(Color.BLACK);
         }
-        noteRects[currentNote].setFill(Color.WHITE);
+        if (editMode) {
+            noteRects[currentNote].setFill(Color.WHITE);
+        }
         for (int i = 0; i < currentlyTriggeredNotes.size(); i++) {
             noteRects[currentlyTriggeredNotes.get(i)].setFill(Color.GOLD);
         }
+    }
+
+    public void setEditMode(boolean b) {
+        editMode = b;
     }
 
 }

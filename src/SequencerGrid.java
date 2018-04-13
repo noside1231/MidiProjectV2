@@ -167,9 +167,9 @@ public class SequencerGrid extends GridPane {
     }
 
     public void setScale(double w) {
-//        System.out.println("SETSCALE " + w);
-        setMinWidth(w*(3/4.));
-        setMaxWidth(w*(3/4.));
+        System.out.println("SETSCALE " + w);
+        setMinWidth(w);
+        setMaxWidth(w);
 
         ColumnConstraints fieldConstraint = new ColumnConstraints(selectionBoxScaleX);
         getColumnConstraints().add(fieldConstraint);
