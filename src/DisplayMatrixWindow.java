@@ -133,7 +133,7 @@ public class DisplayMatrixWindow extends GridPane {
         if (event.getButton() == MouseButton.PRIMARY) {
             rightClickOptionMenu.hide();
             lastClicked.set(new Integer[]{x, y});
-            System.out.println(x + " " + y);
+//            System.out.println(x + " " + y);
         } else if (event.getButton() == MouseButton.SECONDARY) {
             if (editModeVal.get()) {
                 rightClickOptionMenu.show(this, event.getScreenX(), event.getScreenY());

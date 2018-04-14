@@ -62,6 +62,10 @@ public class NoteContainer {
         return notes[currentNote].getDmxValues();
     }
 
+    public DMXChannelContainer getCurrentNoteDMXContainer() {
+        return notes[currentNote].getDMXContainer();
+    }
+
     public ArrayList<String> getCurrentNotePresetContainer() {
         return notes[currentNote].getPresetContainer();
     }
@@ -88,6 +92,10 @@ public class NoteContainer {
 
     public void setCurrentNoteDMXTimes(String s) {
         notes[currentNote].setDMXTimes(s);
+    }
+
+    public void setCurrentNoteDMXSelectedChannel(int s) {
+        notes[currentNote].setDMXSelectedChannel(s);
     }
 
     public void setCurrentNoteFadeInTime(float v) {

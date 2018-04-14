@@ -110,6 +110,9 @@ public class TabSelectionWindow extends AnchorPane {
         editDMXWindow = new EditDMXWindow(dmxChannels);
         editDMXWindow.getDMXChangedTimes().addListener(event -> dmxChangedTimes.set(editDMXWindow.getDMXChangedTimes().get()));
         editDMXWindow.getMultiTriggerChangedVal().addListener(event -> multiTriggerChangedVal.set(editDMXWindow.getMultiTriggerChangedVal().get()));
+        editDMXWindow.getEditModeVal().addListener(event -> setEditMode(editDMXWindow.getEditModeVal().get()));
+        editDMXWindow.getSelectedChannelVal().addListener(event -> selectedDmxChannel.set(editDMXWindow.getSelectedChannelVal().getValue()));
+        editDMXWindow.getDMXvalueChanged().addListener(event -> dmxChangedVal.set(editDMXWindow.getDMXvalueChanged().get()));
 
         ledDisplayTab.setContent(editMatrixWindow);
         dmxTab.setContent(editDMXWindow);
@@ -175,10 +178,6 @@ public class TabSelectionWindow extends AnchorPane {
     public SimpleStringProperty getMatrixContextMenuVal() {
         return matrixContextMenuVal;
     }
-    private void selectedDmxChannelChanged(int i) {
-        selectedDmxChannel.set(i);
-    }
-
     public void setScale(int w,int h) {
 
         int windowHeight = (int)Math.round(h/2.);
@@ -192,12 +191,8 @@ public class TabSelectionWindow extends AnchorPane {
         editMatrixWindow.setScale(w, h);
     }
 
-    private void dmxValueChanged(String s) {
-        dmxChangedVal.set(s);
-    }
-
-    public void setDMXValues(DMXChannel[] vals) {
-//        displayDmxWindow.setDMXValues(vals);
+    public void setDMXDisplay(DMXChannelContainer dmxChannelContainer) {
+        editDMXWindow.setDMXDisplay(dmxChannelContainer);
     }
 
     private void setLastPressed(Integer[] p) {
@@ -205,7 +200,6 @@ public class TabSelectionWindow extends AnchorPane {
     }
 
     public void setLEDDisplay(Led[][] leds) {
-//        displayMatrixWindow.setLEDS(leds);
         editMatrixWindow.setLEDDisplay(leds);
     }
 
@@ -215,8 +209,7 @@ public class TabSelectionWindow extends AnchorPane {
 
     public void setEditMode(boolean t) {
         editModeVal.set(t);
-//        displayMatrixWindow.setEditMode(t);
-//        displayDmxWindow.setEditMode(t);
+        editDMXWindow.setEditMode(t);
         currentNoteInfoContainer.setEditMode(t);
         editMatrixWindow.setEditMode(t);
     }
@@ -294,8 +287,8 @@ public class TabSelectionWindow extends AnchorPane {
         return dmxChangedTimes;
     }
 
-    public void setDMXPresetValues(DMXChannel[] channels) {
-        editDMXWindow.setDMXPresetValues(channels);
+    public void setDMXPresetValues(DMXChannelContainer dmxChannelContainer) {
+        editDMXWindow.setDMXPresetValues(dmxChannelContainer);
     }
 
 }

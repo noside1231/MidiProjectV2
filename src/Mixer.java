@@ -46,15 +46,13 @@ public class Mixer {
         return mixerMatrix.getLEDS();
     }
 
-    public DMXChannel[] updateDMX() {
+    public DMXChannelContainer updateDMX() {
 
-        DMXChannel[] s = new DMXChannel[dmxChannels.length];
+        DMXChannelContainer dmxChannelContainer = new DMXChannelContainer(dmxChannels.length);
         for (int i = 0; i < dmxChannels.length; i++) {
-            s[i] = new DMXChannel(i);
-            s[i].setValue(dmxChannels[i]);
-
+            dmxChannelContainer.getDMXChannels()[i].setValue(dmxChannels[i]);
         }
-        return s;
+        return dmxChannelContainer;
     }
 
     public LEDMatrix getMixerMatrix() {

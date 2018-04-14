@@ -224,6 +224,14 @@ public class Note {
         return dmxChannels.getDMXChannels();
     }
 
+    public DMXChannelContainer getDMXContainer() {
+        return dmxChannels;
+    }
+
+    public void setDMXSelectedChannel(int s) {
+        dmxChannels.setCurrentChannel(s);
+    }
+
     public int getPresetParameter(String preset, String parameter, int presetInd) {
         for (int i = 0; i < presetContainer.size(); i++) {
             String[] temp = presetContainer.get(i).split(";");

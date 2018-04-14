@@ -43,10 +43,10 @@ public class DMXPresetWindow extends VBox{
 
     }
 
-    public void setValues(DMXChannel[] v) {
-        System.out.println(v[currentSelectedDmx].getStartVal());
-        valStart.setValue(v[currentSelectedDmx].getStartVal());
-        valEnd.setValue(v[currentSelectedDmx].getEndVal());
+    public void setValues(DMXChannelContainer dmxChannelContainer) {
+        System.out.println(dmxChannelContainer.getDMXChannels()[currentSelectedDmx].getStartVal());
+        valStart.setValue(dmxChannelContainer.getDMXChannels()[currentSelectedDmx].getStartVal());
+        valEnd.setValue(dmxChannelContainer.getDMXChannels()[currentSelectedDmx].getEndVal());
     }
 
     public void setCurrentlySelectedDmx(int ch) {

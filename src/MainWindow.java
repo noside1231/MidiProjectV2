@@ -241,7 +241,7 @@ public class MainWindow extends Parent {
 
         if (!editMode) {
             tabSelectionWindow.setLEDDisplay(lastUpdatedMixer);
-            tabSelectionWindow.setDMXValues(mixer.updateDMX());
+            tabSelectionWindow.setDMXDisplay(mixer.updateDMX());
         }
 
         //update note display
@@ -349,9 +349,9 @@ public class MainWindow extends Parent {
     void setDisplay() {
 
         tabSelectionWindow.setLEDDisplay(noteContainer.getCurrentNoteLEDS());
-        tabSelectionWindow.setDMXValues(noteContainer.getCurrentNoteDMXChannels());
         tabSelectionWindow.setTabFieldValues(noteContainer.getCurrentNote());
-        tabSelectionWindow.setDMXPresetValues(noteContainer.getCurrentNoteDMXChannels());
+        tabSelectionWindow.setDMXPresetValues(noteContainer.getCurrentNoteDMXContainer());
+        tabSelectionWindow.setDMXDisplay(noteContainer.getCurrentNoteDMXContainer());
 
         if (noteContainer.getCurrentNoteIndex() != tabSelectionWindow.getCurrentDisplayedPresetInd()) {
             tabSelectionWindow.setMatrixPresets(noteContainer.getCurrentNotePresetContainer(), noteContainer.getCurrentNoteCurrentPreset(), noteContainer.getCurrentNoteIndex());
@@ -389,8 +389,9 @@ public class MainWindow extends Parent {
     }
 
     void setSelectedDmxChannel(int ch) {
-        dmxPresetWindow.setCurrentlySelectedDmx(ch);
-        setDisplay();
+//        tabSelectionWindow.setDMXSelectedChannel(ch);
+        noteContainer.setCurrentNoteDMXSelectedChannel(ch);
+            setDisplay();
     }
 
 

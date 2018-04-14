@@ -79,6 +79,7 @@ public class EditMatrixWindow extends VBox {
     }
 
     public void setEditMode(boolean t) {
+        editModeVal.set(t);
         displayMatrixWindow.setEditMode(t);
     }
 

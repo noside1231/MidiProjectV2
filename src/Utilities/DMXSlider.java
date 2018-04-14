@@ -2,7 +2,6 @@ package Utilities;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
@@ -16,11 +15,13 @@ import javafx.scene.paint.Color;
 public class DMXSlider extends VBox {
 
     private SliderTextFieldVertical s;
-    private CheckBox active;
+    private CheckBox activeCheckBox;
+    private boolean selected;
 
     private SimpleBooleanProperty checked;
     private SimpleIntegerProperty changedVal;
-    private SimpleBooleanProperty selected;
+
+    private SimpleBooleanProperty pressed;
 
     private boolean editMode;
 
@@ -29,50 +30,61 @@ public class DMXSlider extends VBox {
         editMode = true;
         checked = new SimpleBooleanProperty(false);
         changedVal = new SimpleIntegerProperty(0);
-        selected = new SimpleBooleanProperty(false);
+        pressed = new SimpleBooleanProperty(false);
+
+        selected = false;
 
         s = new SliderTextFieldVertical(def, lower, upper, name);
         s.getValue().addListener(event -> valueChanged(s.getValue().get()));
 
-        active = new CheckBox();
-        active.setOnAction(event -> checkBoxChecked());
+        activeCheckBox = new CheckBox();
+        activeCheckBox.setOnAction(event -> checkBoxChecked());
 
-        getChildren().addAll(s, active);
+        getChildren().addAll(s, activeCheckBox);
         setAlignment(Pos.CENTER);
         setPadding(new Insets(10,2,10,2));
         setSpacing(5);
 
-        setOnMousePressed(event -> setSelected(true));
+        setOnMousePressed(event -> pressed());
 
         setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
     }
 
+    private void pressed() {
+        if (editMode) {
+            pressed.set(true);
+            pressed.set(false);
+        }
+    }
+
+    public SimpleBooleanProperty getPressed() {
+        return pressed;
+    }
+
     public void setSelected(boolean b) {
+        System.out.println(s.getName() + " " + b);
         if (editMode) {
             if (b) {
-                selected.set(true);
+                selected = true;
                 setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
             } else {
-                selected.set(false);
+                selected = false;
                 setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
 
             }
         }
     }
 
-    public SimpleBooleanProperty getSelected() {
-        return selected;
-    }
-
     private void valueChanged(int val) {
-        setSelected(true);
+        pressed();
         changedVal.set(val);
     }
 
     private void checkBoxChecked() {
-        setSelected(true);
-        checked.set(active.isSelected());
+        pressed();
+        checked.set(activeCheckBox.isSelected());
+
     }
 
     public SimpleIntegerProperty getChangedVal() {
@@ -84,7 +96,7 @@ public class DMXSlider extends VBox {
     }
 
     public void setChecked(boolean b) {
-        active.setSelected(b);
+        activeCheckBox.setSelected(b);
     }
 
     public void setValue(int b) {
@@ -97,12 +109,16 @@ public class DMXSlider extends VBox {
         if (b) {
             setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         } else {
-            if (selected.get()) {
+            if (selected) {
                 setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
-
             }
         }
         s.disable(b);
+        activeCheckBox.setDisable(b);
+    }
+
+    public int getValue() {
+        return s.getValue().get();
     }
 
     public void setScale(double h) {

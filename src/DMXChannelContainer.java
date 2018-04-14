@@ -24,6 +24,14 @@ public class DMXChannelContainer {
         return channels;
     }
 
+    public int getCurrentChannel() {
+        return currentChannel;
+    }
+
+    public void setCurrentChannel(int s) {
+        currentChannel = s;
+    }
+
     public void setDMXValue(String s) {
         String[] a = s.split(";");
         channels[Integer.parseInt(a[0])].setValue(Integer.parseInt(a[1]));
