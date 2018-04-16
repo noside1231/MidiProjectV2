@@ -109,6 +109,9 @@ public class TriggeredNote {
                     break;
                 case "Wave":
                     tColors = applyWavePreset(tColors, t, i);
+                    break;
+                case "Oscillate":
+                    tColors = applyOscillatePreset(tColors, t, i);
             }
         }
 
@@ -320,9 +323,9 @@ public class TriggeredNote {
 
         double speed = Math.toRadians(s)*20;
 
-        double frequency = Math.toRadians(f)*2;
-
         if (type == 0) {
+            double frequency = Math.toRadians(f)*2;
+
             for (int y = 0; y < note.getMatrix().getStrips(); y++) {
                 for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
                     cols[x][y] = Color.color(cols[x][y].getRed() * ((Math.sin((curT*speed)+(frequency*x))+1)/2),
@@ -332,21 +335,61 @@ public class TriggeredNote {
             }
         }
         else if (type == 1) {
+
+            double frequency = note.getMatrix().getLedsPerStrip()-f;
+
+            if (frequency <= 0) { //mod by 0 error
+                frequency = 1;
+            }
+
             for (int y = 0; y < note.getMatrix().getStrips(); y++) {
                 for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
 
-                    if (Math.sin((curT*speed)+(frequency*x)) > 0) {
+
+                    if (((int)(curT*speed+x)%(2*frequency) >= frequency) & speed >= 0) {
+                        cols[x][y] = Color.BLACK;
+                    } else if (((int)(curT*speed+x)%(2*frequency) > -frequency) & speed < 0){
                         cols[x][y] = Color.BLACK;
                     }
-
-
                 }
+            }
+        }
+        return cols;
+    }
+
+    Color[][] applyOscillatePreset(Color[][] cols, long t, int ind) {
+        double curT = (t - originalTriggerTime) / 1000000000.0;
+
+        int s = note.getPresetParameter("Oscillate", "Speed", ind);
+        int amt = note.getPresetParameter("Oscillate", "Amount", ind);
+        int o = note.getPresetParameter("Oscillate", "Offset", ind);
+        boolean inverted = note.getPresetParameter("Oscillate", "Invert", ind) == 0 ? false : true;
+
+        double offset = o/100. * (2*Math.PI);
+
+        for (int y = 0; y < note.getMatrix().getStrips(); y++) {
+            for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
+
+
+                int range = (int)(((Math.sin(curT*s+y*offset)+1)/2)*(note.getMatrix().getLedsPerStrip()-amt+1)); //range 0 : lps-amt
+
+
+                if (x >= range && x-range < amt) {
+                    if (inverted) {
+                        cols[x][y] = Color.BLACK;
+                    }
+                } else {
+                    if (!inverted) {
+                        cols[x][y] = Color.BLACK;
+                    }
+                }
+
+
             }
         }
 
 
-
-        return cols;
+                return cols;
     }
 
 
