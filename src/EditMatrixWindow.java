@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -133,6 +134,18 @@ public class EditMatrixWindow extends VBox {
 
     public void resetMultiValues(int id, boolean[] v) {
         multiTriggerWindow.resetFields(id, v);
+    }
+
+    public JSONObject saveData() {
+        JSONObject tFile = new JSONObject();
+        tFile.put("ColorPicker", colorPickerWindow.saveData());
+        return tFile;
+    }
+
+    public void loadData(JSONObject tFile) {
+        colorPickerWindow.loadData(tFile.getJSONObject("ColorPicker"));
+        displayMatrixWindow.updateContextMenuPalette(colorPickerWindow.getTopPalette());
+
     }
 
 

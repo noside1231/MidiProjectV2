@@ -242,12 +242,14 @@ public class TabSelectionWindow extends AnchorPane {
     public void loadData(JSONObject curFile) {
         keyMapWindow.loadData(curFile.getJSONObject("KeyMap"));
         sequencerWindow.loadData(curFile.getJSONObject("Sequencer"));
+        editMatrixWindow.loadData(curFile.getJSONObject("EditMatrix"));
     }
 
     public JSONObject saveData() {
         JSONObject tFile = new JSONObject();
         tFile.put("KeyMap", keyMapWindow.saveData());
         tFile.put("Sequencer", sequencerWindow.saveData());
+        tFile.put("EditMatrix", editMatrixWindow.saveData());
         return tFile;
     }
 

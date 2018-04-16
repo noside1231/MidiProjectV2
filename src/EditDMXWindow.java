@@ -48,7 +48,7 @@ public class EditDMXWindow extends VBox {
     }
 
     public SimpleStringProperty getDMXChangedTimes() {
-        System.out.println(dmxChangedTimes.get());
+//        System.out.println(dmxChangedTimes.get());
         return dmxChangedTimes;
     }
 

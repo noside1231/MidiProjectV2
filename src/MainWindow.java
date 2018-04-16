@@ -375,7 +375,6 @@ public class MainWindow extends Parent {
         JSONObject tFile = new JSONObject();
 
         tFile.put("Notes", noteContainer.saveData());
-//        tFile.put("Palette", colorPickerWindow.saveData());
         tFile.put("TabSelectionWindow", tabSelectionWindow.saveData());
 
         return tFile;

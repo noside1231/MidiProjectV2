@@ -60,7 +60,7 @@ public class DisplayDMXWindow extends ScrollPane{
     }
 
     public void setSelectedChannel(int i) {
-        System.out.println("SETSELECTEDCHANNEL  " + i);
+//        System.out.println("SETSELECTEDCHANNEL  " + i);
         dmxSliders[selectedChannel.get()].setSelected(false);
         dmxSliders[i].setSelected(true);
         selectedChannel.set(i);

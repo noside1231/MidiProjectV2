@@ -5,6 +5,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 /**
  * Created by Edison on 1/16/18.
@@ -68,15 +70,18 @@ public class DisplayNoteWindow extends HBox {
         }
     }
 
-    public void update(ArrayList<Integer> currentlyTriggeredNotes, int currentNote) {
+
+    public void update(LinkedList<TriggeredNote> currentlyTriggeredNotes, int currentNote) {
         for (int i  = 0; i < noteAmount; i++) {
             noteRects[i].setFill(Color.BLACK);
         }
         if (editMode) {
             noteRects[currentNote].setFill(Color.WHITE);
         }
-        for (int i = 0; i < currentlyTriggeredNotes.size(); i++) {
-            noteRects[currentlyTriggeredNotes.get(i)].setFill(Color.GOLD);
+        ListIterator<TriggeredNote> iterator = currentlyTriggeredNotes.listIterator();
+        while (iterator.hasNext()) {
+            TriggeredNote tNote = iterator.next();
+            noteRects[tNote.getNote().getID()].setFill(Color.hsb((tNote.getTimeRemainingPercentage())*(120), 1, 1));
         }
     }
 

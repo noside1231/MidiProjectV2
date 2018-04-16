@@ -19,6 +19,8 @@ public class TriggeredNote {
 
     private int status; //0 fade in, 1 hold, 2 fade out
 
+    private double timePassed;
+
     public TriggeredNote(Note n, long t) {
         note = n;
         timeStatus = t;
@@ -54,6 +56,18 @@ public class TriggeredNote {
         status = 0;
     }
 
+    public float getTotalTriggerDuration() {
+        return note.getFadeIn()+note.getFadeOut()+note.getHold();
+    }
+
+    public double getTotalTriggerTimeRemaining() {
+        return getTotalTriggerDuration()-timePassed;
+    }
+
+    public double getTimeRemainingPercentage() {
+        return 2-(getTotalTriggerTimeRemaining()/getTotalTriggerDuration());
+    }
+
     public void incrementStatus(long t) {
         timeStatus = t;
         status++;
@@ -64,6 +78,8 @@ public class TriggeredNote {
     }
 
     public Color[][] update(long t) {
+
+        timePassed = (originalTriggerTime-t) / 1000000000.0;
 
         Color[][] tColors = new Color[note.getMatrix().ledsPerStrip][note.getMatrix().getStrips()];
 
@@ -151,7 +167,7 @@ public class TriggeredNote {
                         vals[i] = 0;
                     }
 
-                            System.out.println(vals[i]);
+//                            System.out.println(vals[i]);
                 } else {
                     vals[i] = note.getDmxValues()[i].getValue();
                 }

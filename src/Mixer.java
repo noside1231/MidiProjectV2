@@ -62,8 +62,8 @@ public class Mixer {
     public void setTriggered(Note n) {
 
         //if retriggered currently triggered note, reset the note
-        for (int j = 0; j < getCurrentlyTriggeredNotes().size(); j++) {
-            if (n.getID() == getCurrentlyTriggeredNotes().get(j)) {
+        for (int j = 0; j < getCurrentlyTriggeredNotesIndices().size(); j++) {
+            if (n.getID() == getCurrentlyTriggeredNotesIndices().get(j)) {
                 resetNote(n.getID());
                 return;
             }
@@ -87,12 +87,16 @@ public class Mixer {
         currentlyTriggeredNotes.add(t);
     }
 
-    public ArrayList<Integer> getCurrentlyTriggeredNotes() {
+    public ArrayList<Integer> getCurrentlyTriggeredNotesIndices() {
         ArrayList<Integer> a = new ArrayList<>();
         for (int i = 0; i < currentlyTriggeredNotes.size(); i++) {
             a.add(currentlyTriggeredNotes.get(i).getNote().getID());
         }
         return a;
+    }
+
+    public LinkedList<TriggeredNote> getCurrentlyTriggeredNotes() {
+        return currentlyTriggeredNotes;
     }
 
     public SimpleObjectProperty<ArrayList<Integer>> getTriggerMultiList() {
@@ -103,6 +107,8 @@ public class Mixer {
         for (int j = 0; j < currentlyTriggeredNotes.size(); j++) {
             if (id == currentlyTriggeredNotes.get(j).getNote().getID()) {
                 currentlyTriggeredNotes.get(j).resetTrigger(currentTime);
+                triggerMultiList.set(currentlyTriggeredNotes.get(j).getTriggeredMulti());
+                triggerMultiList.set(new ArrayList<>());
                 return;
             }
         }

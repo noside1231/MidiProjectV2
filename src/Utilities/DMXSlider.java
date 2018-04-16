@@ -63,7 +63,7 @@ public class DMXSlider extends VBox {
     }
 
     public void setSelected(boolean b) {
-        System.out.println(s.getName() + " " + b);
+//        System.out.println(s.getName() + " " + b);
         if (editMode) {
             if (b) {
                 selected = true;
