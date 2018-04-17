@@ -17,6 +17,7 @@ public class SliderTextField extends HBox {
     Label l;
     int lowerBound;
     int upperBound;
+    int defaultVal;
     IntegerProperty val = new SimpleIntegerProperty(this, "val", 0);
 
     public SliderTextField(int lowerB, int upperB) {
@@ -26,6 +27,7 @@ public class SliderTextField extends HBox {
     public SliderTextField(int defV, int lowerB, int upperB, String name) {
         lowerBound = lowerB;
         upperBound = upperB;
+        defaultVal = defV;
         val.set(defV);
         s = new Slider(lowerB, upperB, defV);
         l = new Label(name);
@@ -48,6 +50,10 @@ public class SliderTextField extends HBox {
 
     public String getName() {
         return l.getText();
+    }
+
+    public void resetField() {
+        setValue(defaultVal);
     }
 
 }

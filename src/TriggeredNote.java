@@ -1,4 +1,3 @@
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -98,8 +97,8 @@ public class TriggeredNote {
                 case "Rainbow":
                     tColors = applyRainbowPreset(tColors, t, i);
                     break;
-                case "Flash":
-                    tColors = applyFlashPreset(tColors, t, i);
+                case "Strobe":
+                    tColors = applyStrobePreset(tColors, t, i);
                     break;
                 case "Trail":
                     tColors = applyTrailPreset(tColors, t, i);
@@ -235,12 +234,12 @@ public class TriggeredNote {
         return cols;
     }
 
-    Color[][] applyFlashPreset(Color[][] cols, long t, int ind) {
+    Color[][] applyStrobePreset(Color[][] cols, long t, int ind) {
 
         double curT = (t - originalTriggerTime) / 1000000000.0;
 
-        double frequency = note.getPresetParameter("Flash", "Speed", ind);
-        double length = note.getPresetParameter("Flash", "Spread", ind);
+        double frequency = note.getPresetParameter("Strobe", "Frequency", ind);
+        double length = note.getPresetParameter("Strobe", "Spread", ind);
 
         boolean on = (curT * frequency - Math.floor(curT * frequency)) < length / 100;
 
@@ -257,12 +256,12 @@ public class TriggeredNote {
     Color[][] applyTrailPreset(Color[][] cols, long t, int ind) {
         double curT = (t - originalTriggerTime) / 1000000000.0;
 
-        int speedX = note.getPresetParameter("Trail", "SpeedX", ind);
-        int speedY = note.getPresetParameter("Trail", "SpeedY", ind);
-        int lengthX = note.getPresetParameter("Trail", "LengthX", ind);
-        int lengthY = note.getPresetParameter("Trail", "LengthY", ind);
-        double skipX = note.getPresetParameter("Trail", "SkipX", ind);
-        double skipd = note.getPresetParameter("Trail", "SkipY", ind);
+        int speedX = note.getPresetParameter("Translate", "SpeedX", ind);
+        int speedY = note.getPresetParameter("Translate", "SpeedY", ind);
+        int lengthX = note.getPresetParameter("Translate", "LengthX", ind);
+        int lengthY = note.getPresetParameter("Translate", "LengthY", ind);
+        double skipX = note.getPresetParameter("Translate", "SkipX", ind);
+        double skipY = note.getPresetParameter("Translate", "SkipY", ind);
 
         int trailIndexX, trailIndexY;
         if (speedX < 0) {
@@ -311,6 +310,9 @@ public class TriggeredNote {
         int hold = note.getPresetParameter("Twinkle", "Hold", ind);
         int fadeOut = note.getPresetParameter("Twinkle", "Fade Out", ind);
 
+
+
+
         return cols;
     }
 
@@ -319,7 +321,7 @@ public class TriggeredNote {
 
         int f = note.getPresetParameter("Wave", "Frequency", ind);
         int s = note.getPresetParameter("Wave", "Speed", ind);
-        int type = note.getPresetParameter("Wave", "WaveType", ind);
+        int type = note.getPresetParameter("Wave", "WaveTypeSelection", ind);
 
         double speed = Math.toRadians(s)*20;
 
@@ -361,18 +363,20 @@ public class TriggeredNote {
         double curT = (t - originalTriggerTime) / 1000000000.0;
 
         int s = note.getPresetParameter("Oscillate", "Speed", ind);
-        int amt = note.getPresetParameter("Oscillate", "Amount", ind);
+        int amt = note.getPresetParameter("Oscillate", "Length", ind);
         int o = note.getPresetParameter("Oscillate", "Offset", ind);
+        int sO = note.getPresetParameter("Oscillate", "Start", ind);
         boolean inverted = note.getPresetParameter("Oscillate", "Invert", ind) == 0 ? false : true;
 
         double offset = o/100. * (2*Math.PI);
 
+        double startOffset = sO/10.;
+
+        double speed = s/2.;
+
         for (int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
-
-
-                int range = (int)(((Math.sin(curT*s+y*offset)+1)/2)*(note.getMatrix().getLedsPerStrip()-amt+1)); //range 0 : lps-amt
-
+                int range = (int)(((Math.sin(curT*speed+y*offset+startOffset)+1)/2)*(note.getMatrix().getLedsPerStrip()-amt+1)); //range 0 : lps-amt
 
                 if (x >= range && x-range < amt) {
                     if (inverted) {
@@ -384,11 +388,8 @@ public class TriggeredNote {
                     }
                 }
 
-
             }
         }
-
-
                 return cols;
     }
 

@@ -1,5 +1,4 @@
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
 import java.util.ArrayList;
@@ -9,40 +8,45 @@ import java.util.ArrayList;
  */
 public class MatrixPresetContainer extends HBox {
 
-
     private int currentlyDisplayingNote;
 
-    private MatrixPresetWindow[] matrixPresetWindows;
+    private NewMatrixPresetWindow[] newMatrixPresetWindows;
 
     private SimpleStringProperty lastSelectedPresetValue;
     private SimpleStringProperty lastChangedPresetProperty;
 
     public MatrixPresetContainer(int ledsPerStrip, int strips) {
 
-        matrixPresetWindows = new MatrixPresetWindow[4];
         currentlyDisplayingNote = 0;
 
-        for (int i = 0; i < matrixPresetWindows.length; i++) {
+        newMatrixPresetWindows = new NewMatrixPresetWindow[4];
+
+        for (int i = 0; i < newMatrixPresetWindows.length; i++) {
             int ti = i;
-            matrixPresetWindows[i] = new MatrixPresetWindow(i, ledsPerStrip, strips);
-            matrixPresetWindows[i].getLastChangedPresetProperty().addListener(event -> setLastChangedPresetProperty(Integer.toString(ti)+";"+matrixPresetWindows[ti].getLastChangedPresetProperty().get()));
-            matrixPresetWindows[i].getLastSelectedPreset().addListener(event -> setLastSelectedPresetValue(Integer.toString(ti)+";"+matrixPresetWindows[ti].getLastSelectedPreset().get()));
+            newMatrixPresetWindows[i] = new NewMatrixPresetWindow(i, ledsPerStrip, strips);
+            newMatrixPresetWindows[i].getLastChangedPresetProperty().addListener(event -> setLastChangedPresetProperty(Integer.toString(ti)+";"+newMatrixPresetWindows[ti].getLastChangedPresetProperty().get()));
+            newMatrixPresetWindows[i].getLastSelectedPreset().addListener(event -> setLastSelectedPresetValue(Integer.toString(ti)+";"+newMatrixPresetWindows[ti].getLastSelectedPreset().get()));
         }
 
         lastChangedPresetProperty = new SimpleStringProperty("");
         lastSelectedPresetValue = new SimpleStringProperty("");
 
-        getChildren().addAll(matrixPresetWindows);
+        getChildren().addAll(newMatrixPresetWindows);
     }
 
     //fix to include which preset number it should go to
     private void setLastSelectedPresetValue(String val) {
             lastSelectedPresetValue.set(val);
+//            lastSelectedPresetValue.set("");
 
     }
 
     private void setLastChangedPresetProperty(String val) {
+        System.out.println("PRESETPROPERTY " + val);
+
         lastChangedPresetProperty.set(val);
+//        lastChangedPresetProperty.set("");
+
     }
 
     public SimpleStringProperty getLastSelectedPresetValue() {
@@ -59,13 +63,8 @@ public class MatrixPresetContainer extends HBox {
 
     public void setPresetDisplay(ArrayList<String> pText, String[] curPreset, int curNote) {
         currentlyDisplayingNote = curNote;
-
         for (int i = 0; i < 4; i++) {
-            matrixPresetWindows[i].setPresetDisplay(pText, curPreset[i], curNote);
+            newMatrixPresetWindows[i].setPresetDisplay(pText, curPreset[i]);
         }
-
-
-
-
     }
 }

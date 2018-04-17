@@ -1,5 +1,3 @@
-package PresetWindows;
-
 import Utilities.LabelCheckBox;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.beans.property.SimpleStringProperty;

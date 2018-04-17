@@ -13,12 +13,14 @@ public class LabelCheckBox extends HBox {
     Label l;
     CheckBox c;
     SimpleBooleanProperty selected;
+    boolean defaultVal;
 
     public LabelCheckBox(String s) {
         this(s, false);
     }
 
     public LabelCheckBox(String s, Boolean b) {
+        defaultVal = b;
         l = new Label(s);
         c = new CheckBox();
         c.setSelected(b);
@@ -45,6 +47,12 @@ public class LabelCheckBox extends HBox {
         c.setSelected(t);
         selected.set(t);
     }
+
+    public void resetField() {
+        setChecked(defaultVal);
+    }
+
+
 
 
 
