@@ -322,23 +322,31 @@ public class TriggeredNote {
         int f = note.getPresetParameter("Wave", "Frequency", ind);
         int s = note.getPresetParameter("Wave", "Speed", ind);
         int type = note.getPresetParameter("Wave", "WaveTypeSelection", ind);
+        int sO = note.getPresetParameter("Wave", "Start", ind);
+        int direction = note.getPresetParameter("Wave", "Direction", ind);
 
-        double speed = Math.toRadians(s)*20;
 
-        if (type == 0) {
+        double startPhase  = sO/10.;
+        double speed = -Math.toRadians(s)*20;
+
+        if (type == 0) { //sine wave
             double frequency = Math.toRadians(f)*2;
-
             for (int y = 0; y < note.getMatrix().getStrips(); y++) {
                 for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
-                    cols[x][y] = Color.color(cols[x][y].getRed() * ((Math.sin((curT*speed)+(frequency*x))+1)/2),
-                            cols[x][y].getGreen() *((Math.sin((curT*speed)+(frequency*x))+1)/2),
-                            cols[x][y].getBlue() * ((Math.sin((curT*speed)+(frequency*x))+1)/2));
+
+                    int phaseDir = direction == 0 ?  x : y;
+                    double phase = ((Math.sin(startPhase + (curT * speed) + (frequency * phaseDir)) + 1) / 2);
+
+                    cols[x][y] = Color.color(cols[x][y].getRed() * phase,
+                            cols[x][y].getGreen() * phase,
+                            cols[x][y].getBlue() * phase);
                 }
+
             }
         }
-        else if (type == 1) {
-
+        else if (type == 1) { //square wave
             double frequency = note.getMatrix().getLedsPerStrip()-f;
+            speed = speed*5;
 
             if (frequency <= 0) { //mod by 0 error
                 frequency = 1;
@@ -347,12 +355,14 @@ public class TriggeredNote {
             for (int y = 0; y < note.getMatrix().getStrips(); y++) {
                 for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
 
+                    int phaseDir = direction == 0 ? x : y;
 
-                    if (((int)(curT*speed+x)%(2*frequency) >= frequency) & speed >= 0) {
+                    if (((int) (curT * speed + phaseDir + startPhase) % (2 * frequency) >= frequency) & speed >= 0) {
                         cols[x][y] = Color.BLACK;
-                    } else if (((int)(curT*speed+x)%(2*frequency) > -frequency) & speed < 0){
+                    } else if (((int) (curT * speed + phaseDir + startPhase) % (2 * frequency) > -frequency) & speed < 0) {
                         cols[x][y] = Color.BLACK;
                     }
+
                 }
             }
         }
@@ -366,19 +376,22 @@ public class TriggeredNote {
         int amt = note.getPresetParameter("Oscillate", "Length", ind);
         int o = note.getPresetParameter("Oscillate", "Offset", ind);
         int sO = note.getPresetParameter("Oscillate", "Start", ind);
+        int direction = note.getPresetParameter("Oscillate", "Direction", ind);
         boolean inverted = note.getPresetParameter("Oscillate", "Invert", ind) == 0 ? false : true;
 
         double offset = o/100. * (2*Math.PI);
-
         double startOffset = sO/10.;
-
         double speed = s/2.;
 
         for (int y = 0; y < note.getMatrix().getStrips(); y++) {
             for (int x = 0; x < note.getMatrix().getLedsPerStrip(); x++) {
-                int range = (int)(((Math.sin(curT*speed+y*offset+startOffset)+1)/2)*(note.getMatrix().getLedsPerStrip()-amt+1)); //range 0 : lps-amt
 
-                if (x >= range && x-range < amt) {
+                int rangeDir = direction == 0 ? x : y;
+                int rangeDirInv = direction == 0 ? y : x;
+                int rangeLen = direction == 0 ? note.getMatrix().getLedsPerStrip() : note.getMatrix().getStrips();
+                int range = (int)(((Math.sin(curT*speed+rangeDirInv*offset+startOffset)+1)/2)*(rangeLen-amt+1)); //range 0 : lps-amt
+
+                if (rangeDir >= range && rangeDir-range < amt) {
                     if (inverted) {
                         cols[x][y] = Color.BLACK;
                     }
@@ -387,10 +400,9 @@ public class TriggeredNote {
                         cols[x][y] = Color.BLACK;
                     }
                 }
-
             }
         }
-                return cols;
+        return cols;
     }
 
 

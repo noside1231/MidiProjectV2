@@ -8,8 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by edisongrauman on 4/16/18.
  */
-public class NewMatrixPresetWindow extends VBox {
-
+public class MatrixPresetWindow extends VBox {
 
     private int id;
     private int ledsPerStrip;
@@ -26,7 +25,7 @@ public class NewMatrixPresetWindow extends VBox {
     private SimpleStringProperty lastSelectedPreset;
 
 
-    public NewMatrixPresetWindow(int ind, int lps, int s) {
+    public MatrixPresetWindow(int ind, int lps, int s) {
         id = ind;
         ledsPerStrip = lps;
         strips = s;
@@ -139,7 +138,9 @@ public class NewMatrixPresetWindow extends VBox {
     private void addWavePresetWindow() {
         PresetWindow p = new PresetWindow("Wave");
         p.addSlider("Frequency", 0,100,0);
-        p.addSlider("Speed", 0, 100, 0);
+        p.addSlider("Speed", -100, 100, 0);
+        p.addSlider("Start", 0, 100, 0);
+        p.addChoiceBox("Direction", new String[]{"Left/Right", "Up/Down"});
         p.addChoiceBox("WaveTypeSelection", new String[]{"Sine", "Square"});
         p.getLastChanged().addListener(event -> changedPresetProperty(p.getLastChanged().get()));
         presetWindows.add(p);
@@ -153,6 +154,7 @@ public class NewMatrixPresetWindow extends VBox {
         p.addSlider("Speed", 0, 100, 0);
         p.addSlider("Offset", 0, 100, 0);
         p.addSlider("Start", 0, 100, 0);
+        p.addChoiceBox("Direction", new String[]{"Left/Right", "Up/Down"});
         p.addCheckBox("Invert", false);
         p.getLastChanged().addListener(event -> changedPresetProperty(p.getLastChanged().get()));
         presetWindows.add(p);
