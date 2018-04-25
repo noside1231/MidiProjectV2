@@ -137,7 +137,17 @@ public class NoteContainer {
         notes[currentNote].setEndTrigger(b);
     }
 
+    public void incrementNoteIndex() {
+        if (currentNote < noteAmount) {
+            currentNote++;
+        }
+    }
 
+    public void decrementNoteIndex() {
+        if (currentNote > 0) {
+            currentNote--;
+        }
+    }
 
     public JSONObject saveData() {
         JSONObject tFile = new JSONObject();

@@ -1,5 +1,7 @@
 import javafx.beans.property.*;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import org.json.JSONObject;
@@ -49,6 +51,8 @@ public class TabSelectionWindow extends AnchorPane {
     private SimpleStringProperty dmxChangedTimes;
     private SimpleStringProperty currentTabVal;
 
+    private SimpleStringProperty keyPressedVal;
+
     public TabSelectionWindow(int ledsPerStrip, int strips, int dmxChannels) {
 
         ledDisplayTab = new Tab("Led Strips");
@@ -89,6 +93,7 @@ public class TabSelectionWindow extends AnchorPane {
         dmxChangedTimes = new SimpleStringProperty("");
         lastMatrixRectSelected = new SimpleObjectProperty<>();
         currentTabVal = new SimpleStringProperty("");
+        keyPressedVal = new SimpleStringProperty("");
 
         keyMapWindow = new KeyMapWindow();
 
@@ -142,6 +147,31 @@ public class TabSelectionWindow extends AnchorPane {
         });
         tabPane.getSelectionModel().select(ledDisplayTab);
 
+        addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.LEFT) {
+                keyPressedVal.set("LEFT");
+                keyPressedVal.set("");
+                event.consume();
+            } else if (event.getCode() == KeyCode.RIGHT) {
+                keyPressedVal.set("RIGHT");
+                keyPressedVal.set("");
+                event.consume();
+            } else if (event.getCode() == KeyCode.UP) {
+                keyPressedVal.set("UP");
+                keyPressedVal.set("");
+                event.consume();
+            } else if (event.getCode() == KeyCode.DOWN) {
+                keyPressedVal.set("DOWN");
+                keyPressedVal.set("");
+                event.consume();
+            }
+        });
+
+
+    }
+
+    public SimpleStringProperty getKeyPressedVal() {
+        return keyPressedVal;
     }
 
     public SimpleStringProperty getCurrentTabVal() {

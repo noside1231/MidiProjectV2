@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -36,6 +37,7 @@ public class MainWindow extends Parent {
     private MenuItem saveAsItem;
     private MenuItem quitItem;
     private MenuItem preferencesItem;
+    private MenuItem helpItem;
     private MenuButton editMenu;
     private MenuItem copyItem;
     private MenuItem pasteItem;
@@ -79,6 +81,7 @@ public class MainWindow extends Parent {
     private SimpleBooleanProperty saveFileAsItemPressed;
     private SimpleBooleanProperty preferenceItemPressed;
     private SimpleBooleanProperty newItemPressed;
+    private SimpleBooleanProperty helpItemPressed;
     private Stage curStage;
 
     public MainWindow(Stage mainWindow, JSONObject preferences) {
@@ -106,6 +109,7 @@ public class MainWindow extends Parent {
         saveFileAsItemPressed = new SimpleBooleanProperty(false);
         preferenceItemPressed = new SimpleBooleanProperty(false);
         newItemPressed = new SimpleBooleanProperty(false);
+        helpItemPressed = new SimpleBooleanProperty(false);
 
         //Midi Handler
         midiHandler = new MidiHandler();
@@ -159,7 +163,6 @@ public class MainWindow extends Parent {
         preferencesItem.setOnAction(event -> setPreferenceItemPressed());
         frameRateItem = new MenuItem("FrameRate: ");
         midiMenu = new Menu("Midi Devices: ");
-
         midiHandlerItems = new CheckMenuItem[midiHandler.getMidiDevices().size()];
         for (int i = 0; i < midiHandler.getMidiDevices().size(); i++) {
             int tempI = i;
@@ -167,14 +170,31 @@ public class MainWindow extends Parent {
             midiHandlerItems[i].selectedProperty().addListener(event -> selectMidiDevice(midiHandlerItems[tempI].getText(), midiHandlerItems[tempI].isSelected(), tempI));
         }
         midiMenu.getItems().addAll(midiHandlerItems);
+        helpItem = new MenuItem("Help");
+        helpItem.setOnAction(event -> setHelpItemPressed());
 
         //File Open Label
         fileOpenLabel = new Label();
         //Add To Menu
-        optionMenu.getItems().addAll(preferencesItem, frameRateItem, midiMenu);
+        optionMenu.getItems().addAll(preferencesItem, frameRateItem, midiMenu, helpItem);
         //Add Items To Toolbar
         toolbar.getItems().addAll(fileMenu, editMenu, optionMenu, fileOpenLabel);
 
+        toolbar.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.LEFT) {
+                processKeyPress("LEFT");
+                event.consume();
+            } else if (event.getCode() == KeyCode.RIGHT) {
+                processKeyPress("RIGHT");
+                event.consume();
+            } else if (event.getCode() == KeyCode.UP) {
+                processKeyPress("UP");
+                event.consume();
+            } else if (event.getCode() == KeyCode.DOWN) {
+                processKeyPress("DOWN");
+                event.consume();
+            }
+        });
         //Notes
         displayNoteWindow = new DisplayNoteWindow(noteAmount);
         displayNoteWindow.getNotePressed().addListener(event -> noteButtonPressed(displayNoteWindow.getNotePressed().get()));
@@ -203,6 +223,7 @@ public class MainWindow extends Parent {
             noteContainer.setMultiTriggerVal(tabSelectionWindow.getMultiTriggerChangedVal().get());
             setDisplay(); //to update both dmx and matrix multi selections
         });
+        tabSelectionWindow.getKeyPressedVal().addListener(event -> processKeyPress(tabSelectionWindow.getKeyPressedVal().get()));
         tabSelectionWindow.getDMXChangedTimes().addListener(event -> noteContainer.setCurrentNoteDMXTimes(tabSelectionWindow.getDMXChangedTimes().get()));
         tabSelectionWindow.getCurrentTabVal().addListener(event -> {
             if (tabSelectionWindow.getCurrentTabVal().get().equals("DMX")) {
@@ -222,6 +243,7 @@ public class MainWindow extends Parent {
         mainWindowContainer.getChildren().addAll(displayNoteWindow, tabSelectionWindow);
         exteriorPane.setTop(toolbar);
         exteriorPane.setCenter(mainWindowContainer);
+
 
         //keymap
         initializeKeyMap();
@@ -503,6 +525,15 @@ public class MainWindow extends Parent {
 
     }
 
+    public SimpleBooleanProperty getHelpWindowPressed() {
+        return helpItemPressed;
+    }
+
+    private void setHelpItemPressed() {
+        helpItemPressed.set(true);
+        helpItemPressed.set(false);
+    }
+
     public void setTitle(String s) {
             curStage.setTitle(s);
     }
@@ -575,9 +606,20 @@ public class MainWindow extends Parent {
                     pasteAll();
                 }
             }
-
-
         });
+    }
+
+    private void processKeyPress(String s) {
+        if (s.equals("LEFT")) {
+            noteContainer.decrementNoteIndex();
+        }
+        else if (s.equals("RIGHT")) {
+            noteContainer.incrementNoteIndex();
+        } else if (s.equals("UP")) {
+            triggerNote();
+        } else if(s.equals("DOWN")) {
+            setEditMode(!editMode);
+        }
     }
 
 

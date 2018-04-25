@@ -2,9 +2,14 @@ package Utilities;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+
+import java.security.Key;
 
 /**
  * Created by Edison on 1/14/18.
@@ -13,6 +18,8 @@ public class NumberTextField extends TextField{
     private IntegerProperty value = new SimpleIntegerProperty(this, "value", 0);
     private int minVal;
     private int maxVal;
+
+    private SimpleObjectProperty<KeyEvent> keyEventSimpleObjectProperty;
 
 
     public NumberTextField() {
@@ -36,6 +43,7 @@ public class NumberTextField extends TextField{
 
                 if (!newValue.matches("-?\\d{0,4}?")) {//allowing negative integers
                     setText(oldValue);
+
                 } else {
                     if (newValue.isEmpty()) {
                         setValue(minVal);
@@ -51,6 +59,8 @@ public class NumberTextField extends TextField{
                 }
             }
         });
+
+
     }
 
     public void setValue(int v) {

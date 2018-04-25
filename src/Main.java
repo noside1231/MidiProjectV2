@@ -16,6 +16,8 @@ public class Main extends Application {
 
     private NewFileWindow newFileWindow;
 
+    private HelpWindow helpWindow;
+
     JSONObject currentFile;
 
     private Stage w;
@@ -50,6 +52,7 @@ public class Main extends Application {
         preferencesWindow.getSerialPortValue().addListener(event -> serialPort.connectToPort(preferencesWindow.getSerialPortValue().get()));
         serialPort.getStatus().addListener(event -> preferencesWindow.setSerialStatusLabel(serialPort.getStatus().get()));
 
+        helpWindow = new HelpWindow();
 
         w = window;
         savePreferences(true);
@@ -110,6 +113,7 @@ public class Main extends Application {
         mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
         mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(mainWindow.getSaveFileAsItemPressed().get()));
         mainWindow.getNewItemPressed().addListener(event -> newFile(mainWindow.getNewItemPressed().get()));
+        mainWindow.getHelpWindowPressed().addListener(event -> showHelpWindow(mainWindow.getHelpWindowPressed().get()));
 
     }
 
@@ -188,6 +192,12 @@ public class Main extends Application {
         }
 
 
+    }
+
+    private void showHelpWindow(boolean b) {
+        if (b) {
+            helpWindow.showHelpWindow();
+        }
     }
 
 
