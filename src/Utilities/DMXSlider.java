@@ -2,26 +2,43 @@ package Utilities;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.stage.StageStyle;
+
+import java.util.Optional;
 
 
 /**
  * Created by edisongrauman on 2/22/18.
  */
-public class DMXSlider extends VBox {
+public class DMXSlider extends HBox {
 
     private SliderTextFieldVertical s;
     private CheckBox activeCheckBox;
+    private Text channelTitle;
     private boolean selected;
+
+    private VBox rightContainer;
 
     private SimpleBooleanProperty checked;
     private SimpleIntegerProperty changedVal;
-
+    private SimpleStringProperty title;
     private SimpleBooleanProperty pressed;
+
+    private DMXSliderContextMenu dmxSliderContextMenu;
 
     private boolean editMode;
 
@@ -31,8 +48,14 @@ public class DMXSlider extends VBox {
         checked = new SimpleBooleanProperty(false);
         changedVal = new SimpleIntegerProperty(0);
         pressed = new SimpleBooleanProperty(false);
+        title = new SimpleStringProperty(" ");
 
         selected = false;
+
+        dmxSliderContextMenu = new DMXSliderContextMenu();
+        dmxSliderContextMenu.getRenamePressed().addListener(event -> setChannelName(dmxSliderContextMenu.getRenamePressed().get()));
+
+
 
         s = new SliderTextFieldVertical(def, lower, upper, name);
         s.getValue().addListener(event -> valueChanged(s.getValue().get()));
@@ -40,12 +63,18 @@ public class DMXSlider extends VBox {
         activeCheckBox = new CheckBox();
         activeCheckBox.setOnAction(event -> checkBoxChecked());
 
-        getChildren().addAll(s, activeCheckBox);
-        setAlignment(Pos.CENTER);
-        setPadding(new Insets(10,2,10,2));
-        setSpacing(5);
+        channelTitle = new Text(title.get());
+        channelTitle.setRotate(-90);
 
-        setOnMousePressed(event -> pressed());
+        rightContainer = new VBox(s, activeCheckBox);
+        rightContainer.setSpacing(5);
+        rightContainer.setAlignment(Pos.CENTER);
+
+        getChildren().addAll(new Group(channelTitle), rightContainer);
+        setPadding(new Insets(10,2,10,2));
+        setAlignment(Pos.CENTER);
+
+        setOnMouseClicked(event -> pressed(event));
 
         setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -55,6 +84,27 @@ public class DMXSlider extends VBox {
         if (editMode) {
             pressed.set(true);
             pressed.set(false);
+        }
+    }
+
+    private void setChannelName(boolean b) {
+        if (!b) {
+            return;
+        }
+
+        TextInputDialog dialog = new TextInputDialog(title.get());
+        dialog.setHeaderText("Rename DMX Channel");
+        dialog.setContentText("Enter DMX Channel Name");
+        dialog.initStyle(StageStyle.UNDECORATED);
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> setTitle(name));
+    }
+
+    private void pressed(MouseEvent event) {
+        if (event.getButton() == MouseButton.SECONDARY) {
+            dmxSliderContextMenu.show(this, event.getScreenX(), event.getScreenY());
+        } else {
+            pressed();
         }
     }
 
@@ -101,6 +151,15 @@ public class DMXSlider extends VBox {
 
     public void setValue(int b) {
         s.setValue(b);
+    }
+
+    public void setTitle(String s) {
+        title.set(s);
+        channelTitle.setText(s);
+    }
+
+    public SimpleStringProperty getTitle() {
+        return title;
     }
 
     public void disable(boolean b) {

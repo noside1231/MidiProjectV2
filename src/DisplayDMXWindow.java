@@ -104,7 +104,7 @@ public class DisplayDMXWindow extends ScrollPane{
         setMinHeight(h/3);
 //
         for (int i = 0; i< dmxSliders.length; i++) {
-            dmxSliders[i].setScale(getHeight()*2);
+            dmxSliders[i].setScale(getHeight()*3);
         }
 
     }
