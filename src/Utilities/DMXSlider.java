@@ -55,8 +55,6 @@ public class DMXSlider extends HBox {
         dmxSliderContextMenu = new DMXSliderContextMenu();
         dmxSliderContextMenu.getRenamePressed().addListener(event -> setChannelName(dmxSliderContextMenu.getRenamePressed().get()));
 
-
-
         s = new SliderTextFieldVertical(def, lower, upper, name);
         s.getValue().addListener(event -> valueChanged(s.getValue().get()));
 
@@ -101,10 +99,9 @@ public class DMXSlider extends HBox {
     }
 
     private void pressed(MouseEvent event) {
-        if (event.getButton() == MouseButton.SECONDARY) {
+        pressed();
+        if (editMode & event.getButton() == MouseButton.SECONDARY) {
             dmxSliderContextMenu.show(this, event.getScreenX(), event.getScreenY());
-        } else {
-            pressed();
         }
     }
 

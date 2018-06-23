@@ -33,6 +33,7 @@ public class Serial {
         status = new SimpleStringProperty("");
         status.set("");
 
+
         detectPorts();
         state = "WAITING";
 
@@ -43,13 +44,16 @@ public class Serial {
 
 
     private void detectPorts() {
+        System.out.println("DETECT PORTS");
         portList = FXCollections.observableArrayList();
-        System.out.println(SerialPortList.getPortNames());
+
         String[] serialPortNames = SerialPortList.getPortNames();
         for (String name : serialPortNames) {
             System.out.println(name);
             portList.add(name);
         }
+
+        System.out.println("DONE DETECTING PORTS");
     }
 
     public boolean connectToPort(String port) {

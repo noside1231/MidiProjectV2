@@ -10,10 +10,10 @@ import javafx.scene.layout.HBox;
  */
 public class LabelCheckBox extends HBox {
 
-    Label l;
-    CheckBox c;
-    SimpleBooleanProperty selected;
-    boolean defaultVal;
+    private Label l;
+    private CheckBox c;
+    private SimpleBooleanProperty selected;
+    private boolean defaultVal;
 
     public LabelCheckBox(String s) {
         this(s, false);
@@ -31,7 +31,7 @@ public class LabelCheckBox extends HBox {
         getChildren().addAll(c,l);
     }
 
-    void checkBoxChecked() {
+    private void checkBoxChecked() {
         selected.set(c.isSelected());
     }
 

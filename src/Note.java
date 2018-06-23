@@ -220,6 +220,10 @@ public class Note {
         dmxChannels.setDMXTimes(s);
     }
 
+    public void setDMXChannelTitle(String s) {
+        dmxChannels.setDMXChannelTitle(s);
+    }
+
     public DMXChannel[] getDmxValues() {
         return dmxChannels.getDMXChannels();
     }

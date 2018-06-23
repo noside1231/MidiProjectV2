@@ -42,6 +42,11 @@ public class DMXChannelContainer {
         channels[Integer.parseInt(a[0])].setChecked(b);
     }
 
+    public void setDMXChannelTitle(String s) {
+        channels[currentChannel].setDMXChannelTitle(s);
+    }
+
+
     public void setDMXTimes(String s) {
         if (s.equals("")) {
             return;

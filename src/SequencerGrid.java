@@ -167,7 +167,7 @@ public class SequencerGrid extends GridPane {
     }
 
     public void setScale(double w) {
-        System.out.println("SETSCALE " + w);
+//        System.out.println("SETSCALE " + w);
         setMinWidth(w);
         setMaxWidth(w);
 

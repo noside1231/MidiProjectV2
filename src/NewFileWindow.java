@@ -2,6 +2,7 @@ import Utilities.SliderTextField;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.util.Optional;
@@ -20,7 +21,7 @@ public class NewFileWindow extends TextInputDialog {
     private int defaultStrips = 5;
 
 
-    public NewFileWindow() {
+    public NewFileWindow(Stage owner) {
 
         rootBox = new VBox();
 
@@ -34,6 +35,7 @@ public class NewFileWindow extends TextInputDialog {
         rootBox.getChildren().add(stripContainer);
         getDialogPane().setContent(rootBox);
         initStyle(StageStyle.UNDECORATED);
+        initOwner(owner);
 
         setResultConverter(dialogButton -> {
 

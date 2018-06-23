@@ -26,6 +26,7 @@ public class SequencerWindow extends VBox {
 
     private ComboBox<String> sequencerSelector;
     private Button newSequencer;
+    private Button removeSequencer;
 
     private SequencerGrid sequencerGrid;
     private VBox fieldContainer;
@@ -63,12 +64,11 @@ public class SequencerWindow extends VBox {
 
         sequencers = new SequencerContainer();
         sequencerSelector = new ComboBox<>();
-        sequencerSelector.getItems().add("1");
-        sequencerSelector.setValue("1");
-        sequencerSelector.valueProperty().addListener(event -> setSequencer(sequencerSelector.getValue()));
 
         newSequencer = new Button("New Sequencer");
         newSequencer.setOnAction(event -> addSequencer());
+        removeSequencer = new Button("Remove Sequencer");
+        removeSequencer.setOnAction(event -> removeSequencer());
 
         fieldContainer = new VBox();
 
@@ -105,15 +105,20 @@ public class SequencerWindow extends VBox {
         setNoteContainer.getChildren().addAll(halfNotesButton, doubleNotesButton);
 
         selectorContainer = new HBox();
-        selectorContainer.getChildren().addAll(sequencerSelector, newSequencer);
+        selectorContainer.getChildren().addAll(sequencerSelector, newSequencer, removeSequencer);
+        sequencerSelector.setMinWidth(160);
+        newSequencer.setMinWidth(160);
+        removeSequencer.setMinWidth(160);
 
         fieldContainer.getChildren().addAll(bpmField, bpmContainer, startStopContainer, setNoteContainer, selectorContainer);
         fieldContainer.setSpacing(15);
 
         getTriggeredNote = new SimpleIntegerProperty(0);
 
+        sequencerSelector.valueProperty().addListener(event -> setSequencer(sequencerSelector.getValue()));
 
-        initializeSequencer();
+        addSequencer();
+//        initializeSequencer();
 
         getChildren().addAll(sequencerGrid, fieldContainer);
 
@@ -122,6 +127,8 @@ public class SequencerWindow extends VBox {
 
         HBox.setHgrow(sequencerGrid, Priority.NEVER);
         HBox.setHgrow(bpmField, Priority.ALWAYS);
+
+
 
     }
 
@@ -225,14 +232,27 @@ public class SequencerWindow extends VBox {
     }
 
     private void addSequencer() {
-        sequencers.addSequencer(Integer.toString(sequencerSelector.getItems().size()));
-        sequencerSelector.getItems().add(Integer.toString(sequencerSelector.getItems().size() + 1));
-        sequencerSelector.setValue(Integer.toString(sequencerSelector.getItems().size()));
-        setSequencer(sequencerSelector.getValue());
+        System.out.println("ADDSEQ");
+        sequencers.addSequencer();
+        sequencerSelector.getItems().add(sequencers.getCurrentSequencer().getName());
+        sequencerSelector.setValue(Integer.toString(sequencerSelector.getItems().size())); //calls setsequencer
+    }
+
+    private void removeSequencer() {
+        for (int i = 0; i < sequencerSelector.getItems().size(); i++) {
+            if (sequencerSelector.getItems().get(i).equals(sequencers.getCurrentSequencer().getName())) {
+                sequencerSelector.getItems().remove(i);
+                sequencers.removeSequencer();
+                return;
+            }
+        }
+
     }
 
     private void setSequencer(String s) {
+        System.out.println("SETSEQUENCERWINDOW");
         sequencers.setCurrentSequencer(s);
+        currentColumn = -1;
         initializeSequencer();
         getChildren().remove(0);
         getChildren().add(0, sequencerGrid);
@@ -240,7 +260,9 @@ public class SequencerWindow extends VBox {
     }
 
     private void initializeSequencer() {
+        System.out.println("SEQINIT");
         sequencerGrid = new SequencerGrid(sequencers.getCurrentSequencer());
+        sequencerSelector.setValue(sequencers.getCurrentSequencer().getName());
         sequencerGrid.getLastClickedNote().addListener(event -> sequencers.setCurrentSequencerNotePressed(sequencerGrid.getLastClickedNote().get()));
         sequencerGrid.getLastSelectedNoteMap().addListener(event -> sequencers.setCurrentSequencerNoteMapping(sequencerGrid.getLastSelectedNoteMap().get()));
         sequencerGrid.getLastSelectedCheckbox().addListener(event -> sequencers.setCurrentSequencerActiveChannel(sequencerGrid.getLastSelectedCheckbox().get()));
@@ -253,11 +275,11 @@ public class SequencerWindow extends VBox {
     }
 
     public void loadData(JSONObject tFile) {
-        sequencers.loadData(tFile);
-        for (int i = 1; i < tFile.getInt("amt"); i++) {
-            sequencerSelector.getItems().add(Integer.toString(i+1));
-        }
-        setSequencer("1");
+//        sequencers.loadData(tFile);
+//        for (int i = 1; i < tFile.getInt("amt"); i++) {
+//            sequencerSelector.getItems().add(sequencers.get);
+//        }
+//        setSequencer("1");
     }
 
 

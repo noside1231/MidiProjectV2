@@ -5,11 +5,12 @@ import org.json.JSONObject;
  */
 public class DMXChannel {
 
-    int index;
-    int val = 0;
-    int beginVal = 0;
-    int endVal = 0;
-    boolean checked;
+    private int index;
+    private int val = 0;
+    private int beginVal = 0;
+    private int endVal = 0;
+    private boolean checked;
+    private String title = "";
 
     public DMXChannel(int ind) {
         index = ind;
@@ -32,6 +33,10 @@ public class DMXChannel {
         checked = b;
     }
 
+    public void setDMXChannelTitle(String s) {
+        title = s;
+    }
+
     public int getValue() {
         return val;
     }
@@ -48,6 +53,10 @@ public class DMXChannel {
         return checked;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     public JSONObject saveData() {
         JSONObject tFile = new JSONObject();
 
@@ -55,6 +64,7 @@ public class DMXChannel {
         tFile.put("beginVal", beginVal);
         tFile.put("endVal", endVal);
         tFile.put("checked", checked);
+        tFile.put("title", title);
 
         return tFile;
     }
@@ -65,6 +75,8 @@ public class DMXChannel {
         beginVal = curFile.getInt("beginVal");
         endVal = curFile.getInt("endVal");
         checked = curFile.getBoolean("checked");
+        title = curFile.getString("title");
+        System.out.println(title);
 
     }
 }

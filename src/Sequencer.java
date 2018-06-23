@@ -10,12 +10,15 @@ public class Sequencer {
     private int noteAmount = 16;
     private int channels = 8;
 
+    private String name;
+
     int noteMapping[];
     boolean activeChannels[];
     private boolean[][] noteSelected;
 
-    public Sequencer(int d) {
-        id = d;
+    public Sequencer(int ind, String n) {
+        id = ind;
+        name = n;
         noteMapping = new int[channels];
         for (int i =0; i < noteMapping.length; i++) {
             noteMapping[i] = -1;
@@ -45,6 +48,14 @@ public class Sequencer {
             activeChannels[i] = j;
 
         }
+    }
+
+    public void setName(String s) {
+        name = s;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setNoteAmount(int s) {

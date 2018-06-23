@@ -1,11 +1,10 @@
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.collections.ObservableList;
-import javafx.stage.FileChooser;
+import javafx.scene.input.KeyCombination;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.json.JSONObject;
-
-import java.io.*;
 
 public class Main extends Application {
 
@@ -18,14 +17,29 @@ public class Main extends Application {
 
     private HelpWindow helpWindow;
 
-    JSONObject currentFile;
+    private JSONObject currentFile;
 
     private Stage w;
-    private PreferencesWindow preferencesWindow;
 
-    private Serial serialPort;
-    private ObservableList<String> serialPortList;
-    boolean serialEnabled;
+    private PreferencesWindowNew preferencesWindowNew;
+
+    private SerialNew serialPort;
+
+    private int defaultStrips = 5;
+    private int defaultLedsPerstrip = 30;
+    private int defaultScreenX = 1200;
+    private int defaultScreenY = 800;
+
+    boolean fullScreen = false;
+
+    private int screenX = defaultScreenX;
+    private int screenY = defaultScreenY;
+    private int tempScreenX = defaultScreenX;
+    private int tempScreenY = defaultScreenY;
+
+    private int strips = defaultStrips;
+    private int ledsPerStrip = defaultLedsPerstrip;
+
 
     public static void main(String[] args) {
         launch(args);
@@ -33,29 +47,64 @@ public class Main extends Application {
 
     @Override
     public void start(Stage window) throws Exception {
+
+        window.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
+        window.fullScreenProperty().addListener(event -> {
+            if (window.isFullScreen()) {
+                screenX = (int)Screen.getPrimary().getBounds().getWidth();
+                screenY = (int)Screen.getPrimary().getBounds().getHeight();
+                window.initStyle(StageStyle.UNDECORATED);
+                resetWindow();
+            } else {
+                window.initStyle(StageStyle.DECORATED);
+            }
+        });
+
         currentFile = new JSONObject();
 
         fileManager = new FileManager();
 
-        //serial port
-        serialPort = new Serial();
-        serialPortList = serialPort.getPortNames();
+        serialPort = new SerialNew();
 
-        newFileWindow = new NewFileWindow();
+        w = window;
+        resetWindow();
 
-        preferencesWindow = new PreferencesWindow();
-        preferencesWindow.initializePreferencesObject();
-        preferencesWindow.setSerialPortList(serialPortList);
-        preferencesWindow.setSerialBaudRates(serialPort.getBaudRates());
-        preferencesWindow.getSaveButtonPressed().addListener(event -> savePreferences(preferencesWindow.getSaveButtonPressed().get()));
-        preferencesWindow.getBaudRateValue().addListener(event -> serialPort.setBaudRate(preferencesWindow.getBaudRateValue().get()));
-        preferencesWindow.getSerialPortValue().addListener(event -> serialPort.connectToPort(preferencesWindow.getSerialPortValue().get()));
-        serialPort.getStatus().addListener(event -> preferencesWindow.setSerialStatusLabel(serialPort.getStatus().get()));
+        newFileWindow = new NewFileWindow(window);
+
+        preferencesWindowNew = new PreferencesWindowNew(window);
+
+
+        preferencesWindowNew.getScreenXChanged().addListener(event -> tempScreenX = preferencesWindowNew.getScreenXChanged().get());
+        preferencesWindowNew.getScreenYChanged().addListener(event -> tempScreenY = preferencesWindowNew.getScreenYChanged().get());
+        preferencesWindowNew.getSetScreen().addListener(event -> {
+            screenX = tempScreenX;
+            screenY = tempScreenY;
+            resetWindow();
+        });
+        preferencesWindowNew.getRestoreScreen().addListener(event -> {
+            screenX = defaultScreenX;
+            screenY = defaultScreenY;
+            fullScreen = false;
+            resetWindow();
+        });
+        preferencesWindowNew.getFullscreenSelected().addListener(event -> {
+            fullScreen = preferencesWindowNew.getFullscreenSelected().get();
+            resetWindow();
+        } );
+
+        preferencesWindowNew.getSerialConnectDisconnectPressed().addListener(event -> serialPort.connectDisconnectSerial(preferencesWindowNew.getSerialConnectDisconnectPressed().get()));
+        preferencesWindowNew.getSerialRefreshPressed().addListener(event -> preferencesWindowNew.setSerialPortList(serialPort.getPorts(), serialPort.getConnectedPort(), preferencesWindowNew.getSerialRefreshPressed().get()));
+        preferencesWindowNew.getSerialPortSelected().addListener(event -> serialPort.setPort(preferencesWindowNew.getSerialPortSelected().get()));
+        preferencesWindowNew.getSerialBaudSelected().addListener(event -> serialPort.setBaudRate(preferencesWindowNew.getSerialBaudSelected().get()));
+        preferencesWindowNew.getSerialEnabled().addListener(event -> serialPort.setSerialEnabled(preferencesWindowNew.getSerialEnabled().get()));
+
+        serialPort.getStatus().addListener(event -> preferencesWindowNew.setSerialStatus(serialPort.getStatus().get()));
+        serialPort.isConnected().addListener(event -> preferencesWindowNew.setConnected(serialPort.isConnected().get()));
 
         helpWindow = new HelpWindow();
 
-        w = window;
-        savePreferences(true);
+
 
         //Animation Timer
         new AnimationTimer() {
@@ -81,11 +130,11 @@ public class Main extends Application {
                     long elapsedNanosPerFrame = elapsedNanos / frameTimes.length;
                     frameRate = 1_000_000_000.0 / elapsedNanosPerFrame;
                 }
-                mainWindow.update(now, frameRate);
 
-                if (serialEnabled) {
-                    serialPort.updateMatrixData(mainWindow.getMixerMatrix(), now);
-                }
+                //update
+                mainWindow.update(now, frameRate);
+                serialPort.updateMatrixData(mainWindow.getMixerMatrix());
+
 
 
             }
@@ -93,22 +142,11 @@ public class Main extends Application {
 
     }
 
-    void savePreferences(boolean t) {
-        if (!t) {
-            return;
-        }
-        currentFile.put("Preferences", preferencesWindow.saveData());
-        serialEnabled = currentFile.getJSONObject("Preferences").getBoolean("SerialEnabled");
-        resetWindow();
-
-    }
-
-    void resetWindow() {
+    private void resetWindow() {
         System.out.println("RESET");
-        mainWindow = new MainWindow(w, currentFile.getJSONObject("Preferences"));
+        mainWindow = new MainWindow(w, strips, ledsPerStrip, screenX, screenY, fullScreen);
         mainWindow.setTitle(fileManager.getCurrentFileTitle());
-        mainWindow.getPreferenceItemPressed().addListener(event -> preferencesWindow.showPreferencesWindow(mainWindow.getPreferenceItemPressed().get(),
-                currentFile.getJSONObject("Preferences"),serialPort.getCurrentSerialInfo()));
+        mainWindow.getPreferenceItemPressed().addListener(event -> openPreferencesWindow(mainWindow.getPreferenceItemPressed().get()));
         mainWindow.getOpenItemPressed().addListener(event -> openFile(mainWindow.getOpenItemPressed().get()));
         mainWindow.getSaveFileItemPressed().addListener(event -> saveFile(mainWindow.getSaveFileItemPressed().get()));
         mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(mainWindow.getSaveFileAsItemPressed().get()));
@@ -117,27 +155,44 @@ public class Main extends Application {
 
     }
 
+    private void openPreferencesWindow(boolean b) {
+        if (!b) {
+            return;
+        }
+
+        preferencesWindowNew.setSerialPortList(serialPort.getPorts(), serialPort.getConnectedPort(), b);
+        preferencesWindowNew.setBaudRates(serialPort.getBaudRates(), serialPort.getConnectedBaud());
+        preferencesWindowNew.setConnected(serialPort.isConnected().get());
+
+        preferencesWindowNew.setScreenX(screenX);
+        preferencesWindowNew.setScreenY(screenY);
+        preferencesWindowNew.setFullScreen(fullScreen);
+
+        preferencesWindowNew.showPreferencesWindow();
+    }
+
     private void saveFile(boolean t) {
         if (!t) {
             return;
         }
 
         currentFile.put("WindowData", mainWindow.saveData());
-        currentFile.put("Preferences", preferencesWindow.saveData());
+        currentFile.put("Strips", strips);
+        currentFile.put("LedsPerStrip", ledsPerStrip);
         String fName = fileManager.save(currentFile);
         mainWindow.setTitle(fileManager.getCurrentFileTitle());
         System.out.println(fName);
 
     }
 
-    void saveFileAs(boolean t) {
+    private void saveFileAs(boolean t) {
         if (!t) {
             return;
         }
 
         currentFile.put("WindowData", mainWindow.saveData());
-        currentFile.put("Preferences", preferencesWindow.saveData());
-
+        currentFile.put("Strips", strips);
+        currentFile.put("LedsPerStrip", ledsPerStrip);
         String fName = fileManager.saveAs(currentFile);
         mainWindow.setTitle(fileManager.getCurrentFileTitle());
         System.out.println(fName);
@@ -157,12 +212,9 @@ public class Main extends Application {
         }
 
         currentFile = tFile;
-        try {
-            preferencesWindow.loadData(currentFile.getJSONObject("Preferences"));
-        } catch (Exception e) {
-            System.out.println("COULD NOT LOAD PREFERENCES DATA");
-            return;
-        }
+
+        strips = currentFile.getInt("Strips");
+        ledsPerStrip = currentFile.getInt("LedsPerStrip");
 
         resetWindow();
 
@@ -181,16 +233,13 @@ public class Main extends Application {
 
         String a = newFileWindow.showNewFileWindow().get();
         if (!a.isEmpty()) {
-            String[] s = a.split(";");
-            preferencesWindow.initializePreferencesObject();
-            preferencesWindow.setLedsPerStrip(Integer.parseInt(s[0]));
-            preferencesWindow.setStrips(Integer.parseInt(s[1]));
-            savePreferences(true);
+            String[] s = a.split(";"); //ledsperstrip, strip
+            strips = Integer.parseInt(s[1]);
+            ledsPerStrip = Integer.parseInt(s[0]);
             fileManager.resetCurrentFile();
             resetWindow();
 
         }
-
 
     }
 
@@ -199,7 +248,6 @@ public class Main extends Application {
             helpWindow.showHelpWindow();
         }
     }
-
 
 }
 

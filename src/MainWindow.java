@@ -71,8 +71,8 @@ public class MainWindow extends Parent {
 
     //default preferences
     private int noteAmount = 128;
-    private int ledsPerStrip = 30;
-    private int strips = 5;
+    private int ledsPerStrip;
+    private int strips;
     private boolean editMode = true;
     private int dmxChannels = 50;
 
@@ -84,15 +84,15 @@ public class MainWindow extends Parent {
     private SimpleBooleanProperty helpItemPressed;
     private Stage curStage;
 
-    public MainWindow(Stage mainWindow, JSONObject preferences) {
+    public MainWindow(Stage mainWindow, int s, int lps, int sX, int sY, boolean fullScreen) {
 
         curStage = mainWindow;
-        setPreferences(mainWindow, preferences);
 
-        screenX = Integer.parseInt(preferences.getString("screenX"));
-        screenY = Integer.parseInt(preferences.getString("screenY"));
-        strips = Integer.parseInt(preferences.getString("strips"));
-        ledsPerStrip = Integer.parseInt(preferences.getString("ledsperstrip"));
+        strips = s;
+        ledsPerStrip = lps;
+        screenX = sX;
+        screenY = sY;
+
 
         exteriorPane = new BorderPane();
         exteriorPane.setMaxHeight(screenY);
@@ -223,6 +223,7 @@ public class MainWindow extends Parent {
             noteContainer.setMultiTriggerVal(tabSelectionWindow.getMultiTriggerChangedVal().get());
             setDisplay(); //to update both dmx and matrix multi selections
         });
+        tabSelectionWindow.getDmxTitleChaned().addListener(event -> setDMXChannelTitle(tabSelectionWindow.getDmxTitleChaned().get()));
         tabSelectionWindow.getKeyPressedVal().addListener(event -> processKeyPress(tabSelectionWindow.getKeyPressedVal().get()));
         tabSelectionWindow.getDMXChangedTimes().addListener(event -> noteContainer.setCurrentNoteDMXTimes(tabSelectionWindow.getDMXChangedTimes().get()));
         tabSelectionWindow.getCurrentTabVal().addListener(event -> {
@@ -250,6 +251,7 @@ public class MainWindow extends Parent {
 
         //Show Window
         mainWindow.setScene(mainScene);
+        mainWindow.setFullScreen(fullScreen);
         mainWindow.show();
         setScales(); //set after window is shown
         setDisplay();
@@ -409,6 +411,10 @@ public class MainWindow extends Parent {
         }
     }
 
+    private void setDMXChannelTitle(String s) {
+        noteContainer.setCurrentNoteChannelTitle(s);
+    }
+
     void setSelectedDmxChannel(int ch) {
 //        tabSelectionWindow.setDMXSelectedChannel(ch);
         noteContainer.setCurrentNoteDMXSelectedChannel(ch);
@@ -517,13 +523,7 @@ public class MainWindow extends Parent {
         return mixer.getMixerMatrix();
     }
 
-    void setPreferences(Stage mainWindow, JSONObject preferencesObject) {
 
-        if (Integer.parseInt(preferencesObject.getString("fullscreen")) == 1) {
-            mainWindow.setFullScreen(true);
-        }
-
-    }
 
     public SimpleBooleanProperty getHelpWindowPressed() {
         return helpItemPressed;
@@ -611,10 +611,10 @@ public class MainWindow extends Parent {
 
     private void processKeyPress(String s) {
         if (s.equals("LEFT")) {
-            noteContainer.decrementNoteIndex();
+            noteButtonPressed(noteContainer.getCurrentNoteIndex()-1);
         }
         else if (s.equals("RIGHT")) {
-            noteContainer.incrementNoteIndex();
+            noteButtonPressed(noteContainer.getCurrentNoteIndex()+1);
         } else if (s.equals("UP")) {
             triggerNote();
         } else if(s.equals("DOWN")) {

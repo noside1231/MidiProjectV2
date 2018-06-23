@@ -32,6 +32,9 @@ public class NoteContainer {
     }
 
     public void setCurrentNoteIndex(int c) {
+        if (c < 0 | c > noteAmount ) {
+            return;
+        }
         currentNote = c;
     }
     public int getCurrentNoteIndex() {
@@ -88,6 +91,10 @@ public class NoteContainer {
 
     public void setCurrentNoteDMXValue(String s) {
         notes[currentNote].setDMXValue(s);
+    }
+
+    public void setCurrentNoteChannelTitle(String s) {
+        notes[currentNote].setDMXChannelTitle(s);
     }
 
     public void setCurrentNoteDMXTimes(String s) {

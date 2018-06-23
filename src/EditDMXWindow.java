@@ -18,6 +18,7 @@ public class EditDMXWindow extends VBox {
     private SimpleBooleanProperty editModeVal;
     private SimpleIntegerProperty selectedChannelVal;
     private SimpleStringProperty dmxvalueChanged;
+    private SimpleStringProperty dmxTitleChanged;
 
 
     private HBox hcontainer;
@@ -29,10 +30,12 @@ public class EditDMXWindow extends VBox {
         editModeVal = new SimpleBooleanProperty(true);
         selectedChannelVal = new SimpleIntegerProperty(0);
         dmxvalueChanged = new SimpleStringProperty("");
+        dmxTitleChanged = new SimpleStringProperty("");
 
         displayDMXWindow = new DisplayDMXWindow(ch);
         displayDMXWindow.getSelectedChannel().addListener(event -> selectedChannelVal.set(displayDMXWindow.getSelectedChannel().get()));
         displayDMXWindow.getChangedVal().addListener(event -> dmxvalueChanged.set(displayDMXWindow.getChangedVal().get()));
+        displayDMXWindow.getTitleChangedVal().addListener(event -> dmxTitleChanged.set(displayDMXWindow.getTitleChangedVal().get()));
 
         dmxPresetWindow = new DMXPresetWindow();
         dmxPresetWindow.getChangedValues().addListener(event -> dmxChangedTimes.set(dmxPresetWindow.getChangedValues().get()));
@@ -49,6 +52,10 @@ public class EditDMXWindow extends VBox {
     public SimpleStringProperty getDMXChangedTimes() {
 //        System.out.println(dmxChangedTimes.get());
         return dmxChangedTimes;
+    }
+
+    public SimpleStringProperty getDmxTitleChanged() {
+        return dmxTitleChanged;
     }
 
     public void setDMXPresetValues(DMXChannelContainer dmxChannelContainer) {

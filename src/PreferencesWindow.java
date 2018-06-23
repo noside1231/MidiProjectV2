@@ -3,21 +3,17 @@ import Utilities.SliderTextField;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 import org.json.JSONObject;
-
-import java.util.Optional;
+import java.util.ArrayList;
 
 /**
  * Created by Edison on 2/1/18.
  */
+
 public class PreferencesWindow extends TextInputDialog {
 
     int defaultStrips = 5;
@@ -49,7 +45,6 @@ public class PreferencesWindow extends TextInputDialog {
     private ComboBox<String> screenSize;
 
     private VBox rootBox;
-
 
     private SimpleBooleanProperty saveButtonPressed;
 
@@ -98,7 +93,7 @@ public class PreferencesWindow extends TextInputDialog {
         serialContainer = new HBox(serialPorts, serialBaudRates);
         serialContainer.setSpacing(5);
 
-        serialStatusLabel = new Label("not connected");
+        serialStatusLabel = new Label("Not Connected");
         serialStatusContainer = new HBox(serialEnabled, serialStatusLabel);
 
         ledsPerStripField.getValue().addListener(event -> setChanged());
@@ -167,35 +162,31 @@ public class PreferencesWindow extends TextInputDialog {
     public void loadData(JSONObject d) {
         stripsField.setValue(Integer.parseInt(d.getString("strips")));
         ledsPerStripField.setValue(Integer.parseInt(d.getString("ledsperstrip")));
-        screenX.setValue(Integer.parseInt(d.getString("screenX")));
-        screenY.setValue(Integer.parseInt(d.getString("screenY")));
-        fullscreen.setChecked(Integer.parseInt(d.getString("fullscreen")) == 1);
-//        serialEnabled.setChecked(d.getBoolean("SerialEnabled"));
-//
-//        defaultSerialPort = d.getString("DefaultSerialPort");
-//        defaultBaudRate = d.getString("DefaultBaudRate");
     }
 
     public JSONObject saveData() {
         preferencesObject.put("strips", Integer.toString(stripsField.getValue().get()));
         preferencesObject.put("ledsperstrip", Integer.toString(ledsPerStripField.getValue().get()));
-        preferencesObject.put("screenX", Integer.toString(screenX.getValue().get()));
-        preferencesObject.put("screenY", Integer.toString(screenY.getValue().get()));
-        preferencesObject.put("fullscreen", (fullscreen.getChecked().get() ? "1" : "0"));
-//        preferencesObject.put("SerialEnabled", serialEnabled.getChecked().get());
-//
-//        preferencesObject.put("DefaultSerialPort", defaultSerialPort);
-//        preferencesObject.put("DefaultBaudRate", defaultBaudRate);
         return preferencesObject;
     }
 
     public void setSerialPortList(ObservableList<String> s) {
+        serialPorts.getItems().removeAll();
         serialPorts.getItems().add(defaultSerialPort);
         serialPorts.getItems().addAll(s);
         serialPorts.setValue(defaultSerialPort);
     }
 
-    public void setSerialBaudRates(String[] s) {
+    public void resetSerialSettings(boolean connected) {
+
+        if (!connected) {
+            serialEnabled.setChecked(false);
+            serialPorts.setValue(defaultSerialPort);
+        }
+
+    }
+
+    public void setSerialBaudRates(ArrayList<String> s) {
         serialBaudRates.getItems().add(defaultBaudRate);
         serialBaudRates.getItems().addAll(s);
         serialBaudRates.setValue(defaultBaudRate);

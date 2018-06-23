@@ -47,6 +47,7 @@ public class TabSelectionWindow extends AnchorPane {
     private SimpleStringProperty lastChangedPresetProperty;
     private SimpleStringProperty lastSelectedPresetValue;
     private SimpleStringProperty multiTriggerChangedVal;
+    private SimpleStringProperty dmxTitleChaned;
 
     private SimpleStringProperty dmxChangedTimes;
     private SimpleStringProperty currentTabVal;
@@ -60,7 +61,7 @@ public class TabSelectionWindow extends AnchorPane {
         keyMapTab = new Tab("Key Map");
         sequencerTab = new Tab("SequencerWindow");
         mediaPlayerTab = new Tab("Media Player");
-        testTab = new Tab("test");
+        testTab = new Tab("Test");
         currentNoteInfoContainer = new DisplayCurrentNoteWindow();
 
         tabPane = new TabPane(ledDisplayTab, dmxTab, keyMapTab, sequencerTab, mediaPlayerTab, testTab);
@@ -94,6 +95,7 @@ public class TabSelectionWindow extends AnchorPane {
         lastMatrixRectSelected = new SimpleObjectProperty<>();
         currentTabVal = new SimpleStringProperty("");
         keyPressedVal = new SimpleStringProperty("");
+        dmxTitleChaned = new SimpleStringProperty("");
 
         keyMapWindow = new KeyMapWindow();
 
@@ -118,12 +120,22 @@ public class TabSelectionWindow extends AnchorPane {
         editDMXWindow.getEditModeVal().addListener(event -> setEditMode(editDMXWindow.getEditModeVal().get()));
         editDMXWindow.getSelectedChannelVal().addListener(event -> selectedDmxChannel.set(editDMXWindow.getSelectedChannelVal().getValue()));
         editDMXWindow.getDMXvalueChanged().addListener(event -> dmxChangedVal.set(editDMXWindow.getDMXvalueChanged().get()));
+        editDMXWindow.getDmxTitleChanged().addListener(event -> dmxTitleChaned.set(editDMXWindow.getDmxTitleChanged().get()));
 
         ledDisplayTab.setContent(editMatrixWindow);
         dmxTab.setContent(editDMXWindow);
         keyMapTab.setContent(keyMapWindow);
         sequencerTab.setContent(sequencerWindow);
         mediaPlayerTab.setContent(mediaPlayerWindow);
+
+
+
+
+
+//        AudioInput audioInputTest = new AudioInput();
+
+
+//        testTab.setContent(audioInputTest);
 
         currentNoteInfoContainer.getNoteChangedVal().addListener(event -> noteChangedVal.set(currentNoteInfoContainer.getNoteChangedVal().get()));
         currentNoteInfoContainer.getTriggerVal().addListener(event -> triggerNoteVal.set(currentNoteInfoContainer.getTriggerVal().get()));
@@ -168,6 +180,10 @@ public class TabSelectionWindow extends AnchorPane {
         });
 
 
+    }
+
+    public SimpleStringProperty getDmxTitleChaned() {
+        return dmxTitleChaned;
     }
 
     public SimpleStringProperty getKeyPressedVal() {

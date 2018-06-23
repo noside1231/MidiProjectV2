@@ -1,4 +1,5 @@
 import Utilities.DMXSlider;
+import Utilities.DMXSliderContextMenu;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -15,7 +16,11 @@ public class DisplayDMXWindow extends ScrollPane{
     private int dmxChannels;
     private StringProperty changedVal;
     private SimpleIntegerProperty selectedChannel;
+    private SimpleStringProperty titleChangedVal;
     private DMXSlider[] dmxSliders;
+
+    private DMXSliderContextMenu dmxSliderContextMenu;
+
 
     private boolean editMode;
 
@@ -29,15 +34,18 @@ public class DisplayDMXWindow extends ScrollPane{
 
         dmxSliders = new DMXSlider[this.dmxChannels];
 
+
         for (int i = 0; i < dmxSliders.length; i++) {
             dmxSliders[i] = new DMXSlider(0,0,255, String.valueOf(i+1));
             int tI = i;
             dmxSliders[i].getChangedVal().addListener(event -> valueChanged(tI, dmxSliders[tI].getChangedVal().get()));
             dmxSliders[i].getChecked().addListener(event -> valueChanged(tI, dmxSliders[tI].getChecked().get()));
             dmxSliders[i].getPressed().addListener(event -> sliderPressed(tI, dmxSliders[tI].getPressed().get()));
+            dmxSliders[i].getTitle().addListener(event -> titleChanged(dmxSliders[tI].getTitle().get()));
         }
         selectedChannel = new SimpleIntegerProperty(0);
         changedVal = new SimpleStringProperty("");
+        titleChangedVal = new SimpleStringProperty("");
 
 
         sliderContainer.getChildren().addAll(dmxSliders);
@@ -55,12 +63,19 @@ public class DisplayDMXWindow extends ScrollPane{
         }
     }
 
+    private void titleChanged(String t) {
+        titleChangedVal.set(t);
+    }
+
+    public SimpleStringProperty getTitleChangedVal() {
+        return titleChangedVal;
+    }
+
     public SimpleIntegerProperty getSelectedChannel() {
         return selectedChannel;
     }
 
     public void setSelectedChannel(int i) {
-//        System.out.println("SETSELECTEDCHANNEL  " + i);
         dmxSliders[selectedChannel.get()].setSelected(false);
         dmxSliders[i].setSelected(true);
         selectedChannel.set(i);
@@ -88,6 +103,12 @@ public class DisplayDMXWindow extends ScrollPane{
 
         if (editMode) {
             setSelectedChannel(dmxChannelContainer.getCurrentChannel());
+            for (int i = 0; i < dmxChannelContainer.getDMXChannels().length; i++) {
+                if (!dmxChannelContainer.getDMXChannels()[i].getTitle().equals("")) {
+                    System.out.println(dmxChannelContainer.getDMXChannels()[i].getTitle() + " " + i);
+                }
+                dmxSliders[i].setTitle(dmxChannelContainer.getDMXChannels()[i].getTitle());
+            }
         }
         for (int i = 0; i < dmxChannelContainer.getDMXChannels().length; i++) {
             if (dmxChannelContainer.getDMXChannels()[i].getValue() != dmxSliders[i].getValue()) {
