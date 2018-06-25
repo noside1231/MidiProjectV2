@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -86,7 +87,7 @@ public class PreferencesWindowNew extends TextInputDialog {
         serialRefresh.setOnAction(event -> serialRefreshPressed());
         serialConnectDisconnect = new Button("Connect");
         serialConnectDisconnect.setOnAction(event -> serialConnectDisconnectPressed());
-        serialStatus = new Label("Not Connected");
+        serialStatus = new Label("Status: Not Connected");
 
 
         screenWidth = new SliderTextField(defaultScreenX, 200, 2000, "Screen Width");
@@ -102,11 +103,17 @@ public class PreferencesWindowNew extends TextInputDialog {
 
 
         serialListBaudContainer = new HBox(serialPorts, baudRates, serialRefresh);
-        serialOptionContainer   = new HBox(serialConnectDisconnect, serialStatus, serialEnable);
-        screenOptionContainer   = new HBox(fullScreen, setScreenSettings, restoreDefaultScreenSettings);
+        serialOptionContainer   = new HBox(serialConnectDisconnect, serialEnable);
+        screenOptionContainer   = new HBox(setScreenSettings, restoreDefaultScreenSettings, fullScreen);
 
         rootBox.getChildren().addAll(new Label("Screen Settings"), screenWidth, screenHeight, screenOptionContainer, new Separator(),
-                                     new Label("Serial Settings"), serialListBaudContainer, serialOptionContainer);
+                                     new Label("Serial Settings"), serialListBaudContainer, serialOptionContainer, serialStatus);
+
+        rootBox.setSpacing(5);
+        screenWidth.setAlignment(Pos.CENTER_LEFT);
+        screenHeight.setAlignment(Pos.CENTER_LEFT);
+        screenOptionContainer.setSpacing(5);
+        serialOptionContainer.setSpacing(5);
 
 
     }
@@ -174,6 +181,9 @@ public class PreferencesWindowNew extends TextInputDialog {
     }
 
     private void restoreDefaultScreenSettingsPressed() {
+        screenWidth.setValue(defaultScreenX);
+        screenHeight.setValue(defaultScreenY);
+        fullScreen.setChecked(false);
         restoreScreen.set(true);
         System.out.println(restoreScreen.get());
         restoreScreen.set(false);

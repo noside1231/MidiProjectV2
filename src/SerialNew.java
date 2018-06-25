@@ -115,19 +115,19 @@ public class SerialNew {
 
     public void setBaudRate(String b) {
         tempBaud = b;
-        System.out.println("Baud Set: " + tempBaud);
+//        System.out.println("Baud Set: " + tempBaud);
 
     }
 
     public void setPort(String p) {
         tempPort = p;
-        System.out.println("Port Set: " + tempBaud);
+//        System.out.println("Port Set: " + tempBaud);
 
     }
 
     public void setSerialEnabled(boolean b) {
         serialEnabled = b;
-        System.out.println("Serial Enabled: " + b);
+//        System.out.println("Serial Enabled: " + b);
     }
 
     public SimpleBooleanProperty isConnected() {

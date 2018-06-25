@@ -313,8 +313,6 @@ public class MainWindow extends Parent {
     }
 
     void setPreferenceItemPressed() {
-
-        System.out.println("SHOWW");
         preferenceItemPressed.set(true);
         preferenceItemPressed.set(false);
     }

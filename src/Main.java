@@ -152,13 +152,16 @@ public class Main extends Application {
         mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(mainWindow.getSaveFileAsItemPressed().get()));
         mainWindow.getNewItemPressed().addListener(event -> newFile(mainWindow.getNewItemPressed().get()));
         mainWindow.getHelpWindowPressed().addListener(event -> showHelpWindow(mainWindow.getHelpWindowPressed().get()));
-
+        System.out.println("DONE RESET");
     }
 
     private void openPreferencesWindow(boolean b) {
+        System.out.println(b + " OPENNNN");
         if (!b) {
             return;
         }
+
+        System.out.println("OPEN PREFERENCE");
 
         preferencesWindowNew.setSerialPortList(serialPort.getPorts(), serialPort.getConnectedPort(), b);
         preferencesWindowNew.setBaudRates(serialPort.getBaudRates(), serialPort.getConnectedBaud());
