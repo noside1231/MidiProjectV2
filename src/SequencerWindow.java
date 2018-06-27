@@ -10,6 +10,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.json.JSONObject;
 
@@ -117,8 +118,8 @@ public class SequencerWindow extends VBox {
 
         sequencerSelector.valueProperty().addListener(event -> setSequencer(sequencerSelector.getValue()));
 
-        addSequencer();
-//        initializeSequencer();
+//        addSequencer();
+        initializeSequencer();
 
         getChildren().addAll(sequencerGrid, fieldContainer);
 
@@ -127,7 +128,6 @@ public class SequencerWindow extends VBox {
 
         HBox.setHgrow(sequencerGrid, Priority.NEVER);
         HBox.setHgrow(bpmField, Priority.ALWAYS);
-
 
 
     }

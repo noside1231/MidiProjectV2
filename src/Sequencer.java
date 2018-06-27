@@ -12,8 +12,8 @@ public class Sequencer {
 
     private String name;
 
-    int noteMapping[];
-    boolean activeChannels[];
+    private int noteMapping[];
+    private boolean activeChannels[];
     private boolean[][] noteSelected;
 
     public Sequencer(int ind, String n) {

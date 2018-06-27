@@ -1,6 +1,8 @@
 import org.json.JSONObject;
 import sun.awt.image.ImageWatched;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -20,9 +22,7 @@ public class SequencerContainer {
 
     public SequencerContainer() {
         sequencers = new LinkedList<>();
-//        sequencers.add(new Sequencer(lastAssignedID, defaultName+lastAssignedID));
-//        setCurrentSequencer(defaultName+lastAssignedID);
-//        lastAssignedID++;
+        addSequencer();
 
 
     }
@@ -43,7 +43,6 @@ public class SequencerContainer {
     }
 
     public void setCurrentSequencer(String s) {
-    System.out.println("SETCURRENTSEQUENCER");
         ListIterator<Sequencer> iterator = sequencers.listIterator();
 
         int ind = 0;
@@ -52,7 +51,6 @@ public class SequencerContainer {
 //            System.out.println(ind + " " + tSequencer.getName() + "   " + s);
             if (tSequencer.getName().equals(s)) {
                 currentSequencer = ind;
-                System.out.println("!!!"+currentSequencer + " " + tSequencer.getName());
                 return;
             }
             ind++;
@@ -68,14 +66,36 @@ public class SequencerContainer {
     }
 
     public void addSequencer() {
-        System.out.println("ADDSEQUENCER");
         sequencers.add(new Sequencer(lastAssignedID, "UNNAMED"+Integer.toString(lastAssignedID)));
         setCurrentSequencer("UNNAMED"+Integer.toString(lastAssignedID));
         lastAssignedID++;
     }
 
+    public ArrayList<String> getSequencerList() {
+        ArrayList<String> s = new ArrayList<>();
+
+        ListIterator<Sequencer> iterator = sequencers.listIterator();
+        while (iterator.hasNext()) {
+            Sequencer tSequencer = iterator.next();
+            s.add(tSequencer.getName());
+        }
+        return s;
+    }
+
     public void removeSequencer() {
         sequencers.remove(currentSequencer);
+        if (sequencers.isEmpty()) {
+            addSequencer();
+        }
+        setCurrentSequencer(sequencers.getFirst().getName());
+    }
+
+    public void renameCurrentSequencer(String s) {
+
+        if (!s.isEmpty()) {
+            sequencers.get(currentSequencer).setName(s);
+        }
+
     }
 
     public LinkedList<Sequencer> getSequencers() {

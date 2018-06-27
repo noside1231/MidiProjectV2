@@ -4,6 +4,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -19,12 +20,12 @@ public class TabSelectionWindow extends AnchorPane {
     private Tab ledDisplayTab;
     private Tab dmxTab;
     private Tab keyMapTab;
-    private Tab sequencerTab;
+    private Tab sequencerTabNew;
     private Tab mediaPlayerTab;
     private Tab testTab;
 
     private KeyMapWindow keyMapWindow;
-    private SequencerWindow sequencerWindow;
+    private SequencerWindowNew sequencerWindowNew;
     private MediaPlayerWindow mediaPlayerWindow;
 
     private EditMatrixWindow editMatrixWindow;
@@ -54,17 +55,17 @@ public class TabSelectionWindow extends AnchorPane {
 
     private SimpleStringProperty keyPressedVal;
 
-    public TabSelectionWindow(int ledsPerStrip, int strips, int dmxChannels) {
+    public TabSelectionWindow(Stage owner, int ledsPerStrip, int strips, int dmxChannels) {
 
         ledDisplayTab = new Tab("Led Strips");
         dmxTab = new Tab("DMX");
         keyMapTab = new Tab("Key Map");
-        sequencerTab = new Tab("SequencerWindow");
+        sequencerTabNew = new Tab("Sequencer");
         mediaPlayerTab = new Tab("Media Player");
         testTab = new Tab("Test");
         currentNoteInfoContainer = new DisplayCurrentNoteWindow();
 
-        tabPane = new TabPane(ledDisplayTab, dmxTab, keyMapTab, sequencerTab, mediaPlayerTab, testTab);
+        tabPane = new TabPane(ledDisplayTab, dmxTab, keyMapTab, sequencerTabNew, mediaPlayerTab, testTab);
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         getChildren().addAll(tabPane, currentNoteInfoContainer);
@@ -99,8 +100,8 @@ public class TabSelectionWindow extends AnchorPane {
 
         keyMapWindow = new KeyMapWindow();
 
-        sequencerWindow = new SequencerWindow();
-        sequencerWindow.getGetTriggeredNote().addListener(event -> sequencerTrigger(sequencerWindow.getGetTriggeredNote().get()));
+        sequencerWindowNew = new SequencerWindowNew(owner);
+        sequencerWindowNew.getGetTriggeredNote().addListener(event -> sequencerTrigger(sequencerWindowNew.getGetTriggeredNote().get()));
 
         mediaPlayerWindow = new MediaPlayerWindow();
 
@@ -125,7 +126,7 @@ public class TabSelectionWindow extends AnchorPane {
         ledDisplayTab.setContent(editMatrixWindow);
         dmxTab.setContent(editDMXWindow);
         keyMapTab.setContent(keyMapWindow);
-        sequencerTab.setContent(sequencerWindow);
+        sequencerTabNew.setContent(sequencerWindowNew);
         mediaPlayerTab.setContent(mediaPlayerWindow);
 
 
@@ -233,7 +234,7 @@ public class TabSelectionWindow extends AnchorPane {
         setPrefWidth(w);
         setMaxWidth(w);
 
-        sequencerWindow.setScale();
+        sequencerWindowNew.setScale(windowWidth);
         editMatrixWindow.setScale(w, h);
     }
 
@@ -287,14 +288,14 @@ public class TabSelectionWindow extends AnchorPane {
 
     public void loadData(JSONObject curFile) {
         keyMapWindow.loadData(curFile.getJSONObject("KeyMap"));
-        sequencerWindow.loadData(curFile.getJSONObject("Sequencer"));
+//        sequencerWindow.loadData(curFile.getJSONObject("Sequencer"));
         editMatrixWindow.loadData(curFile.getJSONObject("EditMatrix"));
     }
 
     public JSONObject saveData() {
         JSONObject tFile = new JSONObject();
         tFile.put("KeyMap", keyMapWindow.saveData());
-        tFile.put("Sequencer", sequencerWindow.saveData());
+//        tFile.put("Sequencer", sequencerWindow.saveData());
         tFile.put("EditMatrix", editMatrixWindow.saveData());
         return tFile;
     }
@@ -337,6 +338,10 @@ public class TabSelectionWindow extends AnchorPane {
 
     public void setDMXPresetValues(DMXChannelContainer dmxChannelContainer) {
         editDMXWindow.setDMXPresetValues(dmxChannelContainer);
+    }
+
+    public void setBPM() {
+        sequencerWindowNew.calculateBPM();
     }
 
 }

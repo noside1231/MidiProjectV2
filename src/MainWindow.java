@@ -202,7 +202,7 @@ public class MainWindow extends Parent {
         noteContainer = new NoteContainer(noteAmount, strips, ledsPerStrip, dmxChannels);
 
         //Tabs
-        tabSelectionWindow = new TabSelectionWindow(ledsPerStrip, strips, dmxChannels);
+        tabSelectionWindow = new TabSelectionWindow(mainWindow, ledsPerStrip, strips, dmxChannels);
         tabSelectionWindow.getLastPressed().addListener(event -> displayMatrixRectanglesPressed(tabSelectionWindow.getLastPressed().get()));
         tabSelectionWindow.getDmxChangedVal().addListener(event -> setNoteDMX(tabSelectionWindow.getDmxChangedVal().get()));
         tabSelectionWindow.getSelectedDmxChannel().addListener(event -> setSelectedDmxChannel(tabSelectionWindow.getSelectedDmxChannel().get()));
@@ -603,6 +603,8 @@ public class MainWindow extends Parent {
                 if (event.isAltDown()) {
                     pasteAll();
                 }
+            } else if (event.getCode() == KeyCode.B) {
+                tabSelectionWindow.setBPM();
             }
         });
     }

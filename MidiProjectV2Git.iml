@@ -11,5 +11,6 @@
     <orderEntry type="library" name="RXTXcomm" level="application" />
     <orderEntry type="library" name="RXTXcomm" level="project" />
     <orderEntry type="library" name="org.scream3r:jssc:2.8.0" level="project" />
+    <orderEntry type="library" name="org.bidib.com.serialpundit:sp-tty:1.0.4.1" level="project" />
   </component>
 </module>
