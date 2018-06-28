@@ -403,7 +403,7 @@ public class MainWindow extends Parent {
 
     }
 
-    void setNoteDMX(String s) {
+    private void setNoteDMX(String s) {
         if (editMode) {
             noteContainer.setCurrentNoteDMXValue(s);
         }
@@ -413,44 +413,44 @@ public class MainWindow extends Parent {
         noteContainer.setCurrentNoteChannelTitle(s);
     }
 
-    void setSelectedDmxChannel(int ch) {
+    private void setSelectedDmxChannel(int ch) {
 //        tabSelectionWindow.setDMXSelectedChannel(ch);
         noteContainer.setCurrentNoteDMXSelectedChannel(ch);
             setDisplay();
     }
 
 
-    void triggerNote() {
+    private void triggerNote() {
         mixer.setTriggered(noteContainer.getCurrentNote());
         setEditMode(false);
     }
 
-    void triggerNote(boolean b) {
+    private void triggerNote(boolean b) {
         if (b) {
             triggerNote();
         }
     }
 
-    void triggerNote(int n) {
+    private void triggerNote(int n) {
         if (n != -1) {
-            System.out.println("Triggered");
+//            System.out.println("Triggered");
             mixer.setTriggered(noteContainer.getNote(n));
         }
 
     }
 
-    void triggerNote(int n, boolean b) {
+    private void triggerNote(int n, boolean b) {
         triggerNote(n);
         setEditMode(b);
     }
 
-    void triggerNotes(ArrayList<Integer> l) {
+    private void triggerNotes(ArrayList<Integer> l) {
         for (int i = 0; i < l.size(); i++) {
             triggerNote(l.get(i));
         }
     }
 
-    void timesEntered(int ind, float val) {
+    private void timesEntered(int ind, float val) {
         switch (ind) {
             case 0:
                 noteContainer.setCurrentNoteFadeInTime(val);
@@ -536,7 +536,7 @@ public class MainWindow extends Parent {
             curStage.setTitle(s);
     }
 
-    void initializeKeyMap() {
+    private void initializeKeyMap() {
 
         mainScene.setOnKeyPressed(event -> {
 

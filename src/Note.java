@@ -118,7 +118,7 @@ public class Note {
     }
 
     public void setPresetProperty(String p) {
-        System.out.println("P: " + p);
+//        System.out.println("P: " + p);
 //        printPresetArray();
 
         String[] add = p.split(";");

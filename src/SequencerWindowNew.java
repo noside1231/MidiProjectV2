@@ -2,6 +2,7 @@ import Utilities.SliderTextField;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -10,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.json.JSONObject;
 
 /**
  * Created by edisongrauman on 6/25/18.
@@ -117,6 +119,8 @@ public class SequencerWindowNew extends VBox {
         settingsContainer.setSpacing(5);
 
         getChildren().addAll(settingsContainer, sequencerGrid);
+        setSpacing(5);
+        setPadding(new Insets(5,0,0,0));
 
         refreshSequencerList();
         sequencerGrid.loadSequencer(sequencerContainer.getCurrentSequencer(), width);
@@ -228,7 +232,6 @@ public class SequencerWindowNew extends VBox {
 
     private void halfNotes() {
 
-
         if (sequencerContainer.getCurrentSequencerNoteAmount() > 1) {
             sequencerContainer.setCurrentSequencerNoteAmount(sequencerContainer.getCurrentSequencerNoteAmount() / 2);
 
@@ -238,10 +241,20 @@ public class SequencerWindowNew extends VBox {
 
             sequencerGrid.loadSequencer(sequencerContainer.getCurrentSequencer(), width);
         }
+
     }
 
     public void setScale(double w) {
         width = w;
+    }
+
+    public JSONObject saveData() {
+        return sequencerContainer.saveData();
+    }
+
+    public void loadData(JSONObject tFile) {
+        sequencerContainer.loadData(tFile);
+        refreshSequencerList();
     }
 
 

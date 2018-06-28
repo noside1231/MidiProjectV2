@@ -133,11 +133,13 @@ public class Sequencer {
         }
         tFile.put("Note Selection", rFile);
         tFile.put("Note Amount", noteAmount);
+        tFile.put("Sequencer Name", name);
 
         return tFile;
     }
 
     public void loadData(JSONObject tFile) {
+        name = tFile.getString("Sequencer Name");
         noteAmount = tFile.getInt("Note Amount");
 
         for (int i = 0; i < activeChannels.length; i++) {

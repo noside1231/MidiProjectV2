@@ -143,7 +143,7 @@ public class Main extends Application {
     }
 
     private void resetWindow() {
-        System.out.println("RESET");
+//        System.out.println("RESET");
         mainWindow = new MainWindow(w, strips, ledsPerStrip, screenX, screenY, fullScreen);
         mainWindow.setTitle(fileManager.getCurrentFileTitle());
         mainWindow.getPreferenceItemPressed().addListener(event -> openPreferencesWindow(mainWindow.getPreferenceItemPressed().get()));
@@ -152,7 +152,7 @@ public class Main extends Application {
         mainWindow.getSaveFileAsItemPressed().addListener(event -> saveFileAs(mainWindow.getSaveFileAsItemPressed().get()));
         mainWindow.getNewItemPressed().addListener(event -> newFile(mainWindow.getNewItemPressed().get()));
         mainWindow.getHelpWindowPressed().addListener(event -> showHelpWindow(mainWindow.getHelpWindowPressed().get()));
-        System.out.println("DONE RESET");
+//        System.out.println("DONE RESET");
     }
 
     private void openPreferencesWindow(boolean b) {

@@ -120,7 +120,7 @@ public class NoteContainer {
     }
 
     public void setCurrentNoteSelectAll(boolean b) {
-        System.out.println("A"+b);
+//        System.out.println("A"+b);
         for (int y = 0; y < strips; y++) {
             for (int x = 0; x < ledsPerStrip; x++) {
                 notes[currentNote].setSelected(x, y, b);

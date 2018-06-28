@@ -110,16 +110,13 @@ public class SequencerContainer {
         for (i = 0; i < sequencers.size(); i++) {
             tFile.put(Integer.toString(i), sequencers.get(i).saveData());
         }
-        tFile.put("amt", i);
-
+        tFile.put("SequencerAmount", i);
         return tFile;
     }
 
     public void loadData(JSONObject tFile) {
-
-        sequencers.get(currentSequencer).loadData(tFile.getJSONObject("0"));
-
-        for (int i = 1; i < tFile.getInt("amt"); i++) {
+        sequencers.clear();
+        for (int i = 0; i < tFile.getInt("SequencerAmount"); i++) {
             addSequencer();
             sequencers.get(currentSequencer).loadData(tFile.getJSONObject(Integer.toString(i)));
         }

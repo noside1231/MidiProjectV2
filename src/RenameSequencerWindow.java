@@ -40,6 +40,7 @@ public class RenameSequencerWindow extends TextInputDialog {
     }
 
     public Optional<String> showRenameSequencerWindow() {
+        input.clear();
         return showAndWait();
     }
 

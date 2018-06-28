@@ -30,7 +30,7 @@ public class SequencerGridNew extends GridPane {
     private SimpleStringProperty lastSelectedCheckbox;
 
     private int selectionBoxScaleX = 125;
-    private int hgap = 2;
+    private int hgap = 1;
 
 
     public SequencerGridNew() {
@@ -59,11 +59,15 @@ public class SequencerGridNew extends GridPane {
 
         });
 
+        ColumnConstraints fieldConstraint = new ColumnConstraints(selectionBoxScaleX);
+        getColumnConstraints().add(fieldConstraint);
+
     }
 
     public void loadSequencer(Sequencer s, double width) {
         getChildren().clear();
         sequencer = s;
+
 
         noteRects = new Rectangle[sequencer.getChannelAmount()][sequencer.getNoteAmount()];
         for(int i = 0; i < sequencer.getChannelAmount(); i++) {
@@ -98,9 +102,6 @@ public class SequencerGridNew extends GridPane {
         }
 
         setScale(sequencer, width);
-        displayRects(currentCol);
-
-
     }
 
     private void rectPressed(MouseEvent e, int row, int col) {
@@ -138,8 +139,6 @@ public class SequencerGridNew extends GridPane {
                 }
             }
         }
-
-
     }
 
     private void setLastSelectedNoteMap(int ind, int val) {
@@ -167,8 +166,8 @@ public class SequencerGridNew extends GridPane {
         setMinWidth(w);
         setMaxWidth(w);
 
-        ColumnConstraints fieldConstraint = new ColumnConstraints(selectionBoxScaleX);
-        getColumnConstraints().add(fieldConstraint);
+        setHgap(hgap);
+
 
         double rectScaleX =  (getMaxWidth()-selectionBoxScaleX-noteCheckBoxes[0].getWidth() - 5 - ((hgap+1)*(s.getNoteAmount()-1))) / s.getNoteAmount();
         for(int i = 0; i < s.getChannelAmount(); i++) {
