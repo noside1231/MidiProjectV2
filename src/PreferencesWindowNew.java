@@ -10,6 +10,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -22,6 +24,7 @@ public class PreferencesWindowNew extends TextInputDialog {
 
     //serial
     private ComboBox<String> serialPorts;
+    private ComboBox<String> selectProtocol;
     private ComboBox<String> baudRates;
     private LabelCheckBox serialEnable;
     private Button serialRefresh;
@@ -48,6 +51,7 @@ public class PreferencesWindowNew extends TextInputDialog {
     private SimpleBooleanProperty serialConnectDisconnectPressed;
     private SimpleStringProperty serialPortSelected;
     private SimpleStringProperty serialBaudSelected;
+    private SimpleStringProperty protocolSelected;
     private SimpleBooleanProperty serialEnabled;
     private SimpleIntegerProperty screenXChanged;
     private SimpleIntegerProperty screenYChanged;
@@ -75,6 +79,7 @@ public class PreferencesWindowNew extends TextInputDialog {
         restoreScreen = new SimpleBooleanProperty(false);
         fullscreenSelected = new SimpleBooleanProperty(false);
         setScreen = new SimpleBooleanProperty(false);
+        protocolSelected = new SimpleStringProperty("");
 
 
         serialPorts = new ComboBox<>();
@@ -88,6 +93,9 @@ public class PreferencesWindowNew extends TextInputDialog {
         serialConnectDisconnect = new Button("Connect");
         serialConnectDisconnect.setOnAction(event -> serialConnectDisconnectPressed());
         serialStatus = new Label("Status: Not Connected");
+        selectProtocol = new ComboBox<>();
+        selectProtocol.getItems().addAll("Wireless LEDS", "Office Lights");
+        selectProtocol.setOnAction(event -> protocolSelected.set(selectProtocol.getValue()));
 
 
         screenWidth = new SliderTextField(defaultScreenX, 200, 2000, "Screen Width");
@@ -103,7 +111,7 @@ public class PreferencesWindowNew extends TextInputDialog {
 
 
         serialListBaudContainer = new HBox(serialPorts, baudRates, serialRefresh);
-        serialOptionContainer   = new HBox(serialConnectDisconnect, serialEnable);
+        serialOptionContainer   = new HBox(selectProtocol, serialConnectDisconnect, serialEnable);
         screenOptionContainer   = new HBox(setScreenSettings, restoreDefaultScreenSettings, fullScreen);
 
         rootBox.getChildren().addAll(new Label("Screen Settings"), screenWidth, screenHeight, screenOptionContainer, new Separator(),
@@ -126,6 +134,7 @@ public class PreferencesWindowNew extends TextInputDialog {
         serialConnectDisconnect.setText(b ? "Disconnect": "Connect");
         serialEnable.setDisable(!b);
         serialListBaudContainer.setDisable(b);
+        selectProtocol.setDisable(b);
 
     }
 
@@ -137,7 +146,12 @@ public class PreferencesWindowNew extends TextInputDialog {
         serialPorts.getItems().add(defaultSerialPort);
         serialPorts.getItems().addAll(s);
         serialPorts.setValue(connectedPort.equals("") ? defaultSerialPort : connectedPort);
+    }
 
+    public void setProtocolList(ArrayList<String> protocolList, String currentProtocol) {
+        selectProtocol.getItems().clear();
+        selectProtocol.getItems().addAll(protocolList);
+        selectProtocol.setValue(currentProtocol);
     }
 
     public SimpleStringProperty getSerialPortSelected() {
@@ -148,6 +162,8 @@ public class PreferencesWindowNew extends TextInputDialog {
         return serialBaudSelected;
     }
 
+    public SimpleStringProperty getProtocolSelected() { return protocolSelected; }
+
     public void setBaudRates(ArrayList<String> s, String connectedBaud) {
         baudRates.getItems().clear();
         baudRates.getItems().add(defaultBaudRate);
@@ -156,12 +172,10 @@ public class PreferencesWindowNew extends TextInputDialog {
     }
 
     public SimpleBooleanProperty getSerialRefreshPressed() {
-        System.out.println("REFRESH");
         return serialRefreshPressed;
     }
 
     private void serialRefreshPressed() {
-        System.out.println("Refresh Pressed");
         serialRefreshPressed.set(true);
         System.out.println(serialRefreshPressed.get());
         serialRefreshPressed.set(false);
@@ -172,12 +186,10 @@ public class PreferencesWindowNew extends TextInputDialog {
     }
 
     private void serialConnectDisconnectPressed() {
-        System.out.println("pressed");
         serialConnectDisconnectPressed.set(true);
         System.out.println(serialConnectDisconnectPressed.get());
         serialConnectDisconnectPressed.set(false);
         System.out.println(serialConnectDisconnectPressed.get());
-
     }
 
     private void restoreDefaultScreenSettingsPressed() {

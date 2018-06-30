@@ -98,6 +98,7 @@ public class Main extends Application {
         preferencesWindowNew.getSerialPortSelected().addListener(event -> serialPort.setPort(preferencesWindowNew.getSerialPortSelected().get()));
         preferencesWindowNew.getSerialBaudSelected().addListener(event -> serialPort.setBaudRate(preferencesWindowNew.getSerialBaudSelected().get()));
         preferencesWindowNew.getSerialEnabled().addListener(event -> serialPort.setSerialEnabled(preferencesWindowNew.getSerialEnabled().get()));
+        preferencesWindowNew.getProtocolSelected().addListener(event -> serialPort.setProtocol(preferencesWindowNew.getProtocolSelected().get()));
 
         serialPort.getStatus().addListener(event -> preferencesWindowNew.setSerialStatus(serialPort.getStatus().get()));
         serialPort.isConnected().addListener(event -> preferencesWindowNew.setConnected(serialPort.isConnected().get()));
@@ -166,6 +167,7 @@ public class Main extends Application {
         preferencesWindowNew.setSerialPortList(serialPort.getPorts(), serialPort.getConnectedPort(), b);
         preferencesWindowNew.setBaudRates(serialPort.getBaudRates(), serialPort.getConnectedBaud());
         preferencesWindowNew.setConnected(serialPort.isConnected().get());
+        preferencesWindowNew.setProtocolList(serialPort.getProtocols(), serialPort.getCurrentProtocol());
 
         preferencesWindowNew.setScreenX(screenX);
         preferencesWindowNew.setScreenY(screenY);

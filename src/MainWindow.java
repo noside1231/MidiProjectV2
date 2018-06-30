@@ -431,6 +431,18 @@ public class MainWindow extends Parent {
         }
     }
 
+    private void triggerNote(String s) {
+        if (s.equals("")) {
+            return;
+        }
+
+        if (s.equals("cur")) {
+            triggerNote();
+        } else {
+            triggerNote(Integer.parseInt(s));
+        }
+    }
+
     private void triggerNote(int n) {
         if (n != -1) {
 //            System.out.println("Triggered");

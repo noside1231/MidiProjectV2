@@ -39,7 +39,7 @@ public class TabSelectionWindow extends AnchorPane {
     private SimpleBooleanProperty editModeVal;
 
     private SimpleIntegerProperty noteChangedVal;
-    private SimpleBooleanProperty triggerNoteVal;
+    private SimpleStringProperty triggerNoteVal;
     private SimpleFloatProperty fadeInVal;
     private SimpleFloatProperty fadeOutVal;
     private SimpleFloatProperty holdVal;
@@ -83,7 +83,7 @@ public class TabSelectionWindow extends AnchorPane {
         matrixContextMenuVal = new SimpleStringProperty("");
         editModeVal = new SimpleBooleanProperty(true);
         noteChangedVal = new SimpleIntegerProperty(0);
-        triggerNoteVal = new SimpleBooleanProperty(false);
+        triggerNoteVal = new SimpleStringProperty("");
         fadeInVal = new SimpleFloatProperty(0);
         holdVal = new SimpleFloatProperty(0);
         fadeOutVal = new SimpleFloatProperty(0);
@@ -130,8 +130,10 @@ public class TabSelectionWindow extends AnchorPane {
         mediaPlayerTab.setContent(mediaPlayerWindow);
 //        AudioInput audioInputTest = new AudioInput();
 
-
-        testTab.setContent(new Label("Space for any testing"));
+        ClickButtonRectangle cbr = new ClickButtonRectangle(owner);
+        cbr.getTriggerNote().addListener(event -> triggerNoteVal.set(cbr.getTriggerNote().get()));
+        testTab.setContent(cbr);
+//        testTab.setContent(new Label("Space for any testing"));
 
         currentNoteInfoContainer.getNoteChangedVal().addListener(event -> noteChangedVal.set(currentNoteInfoContainer.getNoteChangedVal().get()));
         currentNoteInfoContainer.getTriggerVal().addListener(event -> triggerNoteVal.set(currentNoteInfoContainer.getTriggerVal().get()));
@@ -200,7 +202,7 @@ public class TabSelectionWindow extends AnchorPane {
     public SimpleIntegerProperty getNoteChangedVal() {
         return noteChangedVal;
     }
-    public SimpleBooleanProperty getTriggerVal() {
+    public SimpleStringProperty getTriggerVal() {
         return triggerNoteVal;
     }
     public SimpleBooleanProperty getEndTriggerVal() {

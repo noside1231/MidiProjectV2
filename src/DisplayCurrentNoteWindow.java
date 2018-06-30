@@ -32,7 +32,7 @@ public class DisplayCurrentNoteWindow extends HBox {
 
     private SimpleIntegerProperty noteChangedVal;
     private SimpleBooleanProperty endTriggerVal;
-    private SimpleBooleanProperty triggerVal;
+    private SimpleStringProperty triggerVal;
     private SimpleObjectProperty<Float[]> times;
     private SimpleFloatProperty fadeInVal;
     private SimpleFloatProperty holdVal;
@@ -43,7 +43,7 @@ public class DisplayCurrentNoteWindow extends HBox {
 
         noteChangedVal = new SimpleIntegerProperty(0);
         endTriggerVal = new SimpleBooleanProperty(false);
-        triggerVal = new SimpleBooleanProperty(false);
+        triggerVal = new SimpleStringProperty("");
         editModeVal = new SimpleBooleanProperty(true);
 
         fadeInField = new NumberTextFieldDecimal();
@@ -147,9 +147,8 @@ public class DisplayCurrentNoteWindow extends HBox {
     }
 
     private void triggerButtonPressed() {
-        triggerVal.set(true);
-        triggerVal.set(false);
-
+        triggerVal.set("cur");
+        triggerVal.set("");
     }
 
     private void endTriggerChanged(boolean newVal) {
@@ -164,7 +163,7 @@ public class DisplayCurrentNoteWindow extends HBox {
         return noteChangedVal;
     }
 
-    public SimpleBooleanProperty getTriggerVal() {
+    public SimpleStringProperty getTriggerVal() {
         return triggerVal;
     }
 

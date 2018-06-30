@@ -21,6 +21,10 @@ public class SerialNew {
     private String tempBaud = "";
     private String tempPort = "";
     private boolean serialEnabled = false;
+    private String protocol;
+    private ArrayList<String> protocolList;
+    private String wirelessLEDProtocol = "Wireless LEDS";
+    private String officeLEDProtocol = "Office LEDS";
 
     private int serOutCount = 0;
 
@@ -30,6 +34,10 @@ public class SerialNew {
 
         status = new SimpleStringProperty("Not Connected");
         connected = new SimpleBooleanProperty(false);
+        protocolList = new ArrayList<>();
+        protocolList.add(wirelessLEDProtocol);
+        protocolList.add(officeLEDProtocol);
+        protocol = protocolList.get(0);
 
         try {
             scm = new SerialComManager();
@@ -115,19 +123,26 @@ public class SerialNew {
 
     public void setBaudRate(String b) {
         tempBaud = b;
-//        System.out.println("Baud Set: " + tempBaud);
-
     }
 
     public void setPort(String p) {
         tempPort = p;
-//        System.out.println("Port Set: " + tempBaud);
-
     }
 
     public void setSerialEnabled(boolean b) {
         serialEnabled = b;
-//        System.out.println("Serial Enabled: " + b);
+    }
+
+    public ArrayList<String> getProtocols() {
+        return protocolList;
+    }
+
+    public String getCurrentProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String s) {
+        protocol = s;
     }
 
     public SimpleBooleanProperty isConnected() {
@@ -144,7 +159,6 @@ public class SerialNew {
                 e.printStackTrace();
             }
         }
-
     }
 
     public SimpleStringProperty getStatus() {
@@ -154,32 +168,58 @@ public class SerialNew {
     public void updateMatrixData(LEDMatrix m) {
 
         if (connected.get() && serialEnabled) {
-            try {
-                if (scm.readString(handle) != null) {
 
-                    byte[] toProcess = new byte[m.getLedsPerStrip() * 3];
+            if (protocol.equals(wirelessLEDProtocol)) {
+                try {
+                    if (scm.readString(handle) != null) {
+                        byte[] toProcess = new byte[m.getLedsPerStrip() * 3];
 
-                    for (int i = 0; i < m.getLedsPerStrip(); i++) {
-                        Color curColor = m.getLED(i, serOutCount);
-                        toProcess[i * 3]     = (byte) (curColor.getRed() * 31);
-                        toProcess[i * 3 + 1] = (byte) (curColor.getGreen() * 31);
-                        toProcess[i * 3 + 2] = (byte) (curColor.getBlue() * 31);
+                        for (int i = 0; i < m.getLedsPerStrip(); i++) {
+                            Color curColor = m.getLED(i, serOutCount);
+                            toProcess[i * 3] = (byte) (curColor.getRed() * 31);
+                            toProcess[i * 3 + 1] = (byte) (curColor.getGreen() * 31);
+                            toProcess[i * 3 + 2] = (byte) (curColor.getBlue() * 31);
+                        }
+                        byte[] toSend = processMessage(toProcess, (byte) serOutCount);
+
+                        writeData(toSend);
+
+                        serOutCount++;
+                        serOutCount = serOutCount % m.getStrips();
                     }
-                    byte[] toSend = processMessage(toProcess, (byte) serOutCount);
-
-                    writeData(toSend);
-
-                    serOutCount++;
-                    serOutCount = serOutCount % m.getStrips();
+                } catch (Exception e) {
+                    disconnectPort();
+                    e.printStackTrace();
                 }
 
+            } else if (protocol.equals(officeLEDProtocol)) {
+                try {
+                    if (scm.readString(handle) != null) {
+                        byte[] toProcess = new byte[2 + (m.getLedsPerStrip() * m.getStrips() * 3)];
 
-            } catch (Exception e) {
-                disconnectPort();
-                e.printStackTrace();
+                        toProcess[0] = '<';
+                        toProcess[1 + (m.getLedsPerStrip() * m.getStrips() * 3)] = '>';
+                        int count = 1;
+                        for (int y = 0; y < m.getStrips(); y++) {
+                            for (int x = 0; x < m.getLedsPerStrip(); x++) {
+                                Color curColor = m.getLED(x, y);
+                                toProcess[count++] = (byte) (curColor.getRed() * 255);
+                                toProcess[count++] = (byte) (curColor.getGreen() * 255);
+                                toProcess[count++] = (byte) (curColor.getBlue() * 255);
+
+
+                            }
+                        }
+
+                        writeData(toProcess);
+                    }
+
+                } catch (Exception e) {
+                    disconnectPort();
+                    e.printStackTrace();
+                }
             }
         }
-
     }
 
 
